@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <script src="script.js"></script>
+
+    <title>د شاګرد فیس راپور</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background: #f2f6fc;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #0d6efd,
+                #084298
+            );
+
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 0;
+        }
+
+        .box {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            background: #0d6efd;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+        }
+
+        .print-btn {
+            background: #198754;
+        }
+
+        .search-btn {
+            background: #0d6efd;
+        }
+
+        .student-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 13px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .student-card h3 {
+            margin-top: 0;
+            color: #084298;
+        }
+
+        .student-card p {
+            margin: 8px 0;
+        }
+
+        .paid {
+            color: green;
+            font-weight: bold;
+        }
+
+        .remaining {
+            color: red;
+            font-weight: bold;
+        }
+
+        .summary {
+            background: #e9f5ff;
+            border: 1px solid #b6d9ff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary p {
+            margin: 7px 0;
+            font-weight: bold;
+        }
+
+        .month-row {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+        }
+
+        @media print {
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .box,
+            .student-card {
+                box-shadow: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <h1>📊 د شاګرد فیس راپور</h1>
+
+    <p>
+        د شاګرد د میاشتني او کلني فیس معلومات
+    </p>
+
+</div>
+
+
+<!-- BUTTONS -->
+
+<div class="no-print">
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ⬅️ بېرته د فیس مدیریت ته
+
+    </button>
+
+
+    <button
+        class="print-btn"
+        onclick="window.print()">
+
+        🖨️ راپور چاپ کړه
+
+    </button>
+
+</div>
+
+
+<!-- SEARCH -->
+
+<div class="box no-print">
+
+    <h2>🔎 شاګرد انتخاب کړئ</h2>
+
+    <label>
+        شاګرد
+    </label>
+
+    <select id="studentSelect">
+
+        <option value="">
+            -- شاګرد انتخاب کړئ --
+        </option>
+
+    </select>
+
+
+    <label>
+        🔎 د شاګرد نوم لټون
+    </label>
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="د شاګرد نوم ولیکئ..."
+        oninput="searchStudent()">
+
+
+    <button
+        class="search-btn"
+        onclick="showSelectedStudent()">
+
+        📊 راپور ښکاره کړه
+
+    </button>
+
+</div>
+
+
+<!-- REPORT -->
+
+<div class="box">
+
+    <div id="report">
+
+        <div class="empty">
+
+            👨‍🎓 لومړی یو شاګرد انتخاب کړئ.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+
+/* =========================================
+   FIREBASE IMPORT
+========================================= */
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import {
+    db
+} from "./firebase.js";
+
+
+/* =========================================
+   LOGIN CHECK
+========================================= */
+
+if (
+    localStorage.getItem("adminLoggedIn") !== "true"
+) {
+
+    window.location.href = "index.html";
+
+}
+
+
+/* =========================================
+   ADMIN CHECK
+========================================= */
+
+if (
+    localStorage.getItem("userRole") !== "admin"
+) {
+
+    alert(
+        "❌ دا راپور یوازې مدیر ته اجازه لري."
+    );
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =========================================
+   DATA
+========================================= */
+
+let students = [];
+
+let fees = [];
+
+
+/* =========================================
+   LOCAL STUDENTS
+========================================= */
+
+function getLocalStudents() {
+
+    try {
+
+        const data =
+            localStorage.getItem("students");
+
+        if (!data) {
+            return [];
+        }
+
+        const result =
+            JSON.parse(data);
+
+        return Array.isArray(result)
+            ? result
+            : [];
+
+    }
+
+    catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================
+   LOCAL FEES
+========================================= */
+
+function getLocalFees() {
+
+    try {
+
+        const data =
+            localStorage.getItem("fees");
+
+        if (!data) {
+            return [];
+        }
+
+        const result =
+            JSON.parse(data);
+
+        return Array.isArray(result)
+            ? result
+            : [];
+
+    }
+
+    catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD STUDENTS
+========================================= */
+
+async function loadStudents() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "students")
+            );
+
+
+        students = [];
+
+
+        snapshot.forEach(function(item) {
+
+            students.push({
+
+                id: item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Students Firebase error:",
+            error
+        );
+
+
+        students =
+            getLocalStudents();
+
+    }
+
+
+    fillStudentSelect();
+
+}
+
+
+/* =========================================
+   LOAD FEES
+========================================= */
+
+async function loadFees() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "fees")
+            );
+
+
+        fees = [];
+
+
+        snapshot.forEach(function(item) {
+
+            fees.push({
+
+                id: item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Fees Firebase error:",
+            error
+        );
+
+
+        fees =
+            getLocalFees();
+
+    }
+
+}
+
+
+/* =========================================
+   FILL STUDENT SELECT
+========================================= */
+
+function fillStudentSelect() {
+
+    const select =
+        document.getElementById(
+            "studentSelect"
+        );
+
+
+    select.innerHTML =
+        '<option value="">-- شاګرد انتخاب کړئ --</option>';
+
+
+    if (
+        students.length === 0
+    ) {
+
+        select.innerHTML +=
+            '<option value="">تر اوسه شاګرد نشته</option>';
+
+        return;
+
+    }
+
+
+    students.forEach(function(student) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            student.id;
+
+
+        option.textContent =
+            String(
+                student.name ||
+                "بې نومه"
+            ) +
+            " - " +
+            String(
+                student.className ||
+                ""
+            );
+
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+}
+
+
+/* =========================================
+   SEARCH STUDENT
+========================================= */
+
+window.searchStudent = function() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const select =
+        document.getElementById(
+            "studentSelect"
+        );
+
+
+    if (!search) {
+
+        fillStudentSelect();
+
+        return;
+
+    }
+
+
+    select.innerHTML =
+        '<option value="">-- شاګرد انتخاب کړئ --</option>';
+
+
+    const result =
+        students.filter(function(student) {
+
+            return String(
+                student.name || ""
+            )
+            .toLowerCase()
+            .includes(search);
+
+        });
+
+
+    result.forEach(function(student) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            student.id;
+
+
+        option.textContent =
+            String(
+                student.name ||
+                "بې نومه"
+            ) +
+            " - " +
+            String(
+                student.className ||
+                ""
+            );
+
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+
+    if (
+        result.length === 1
+    ) {
+
+        select.value =
+            result[0].id;
+
+    }
+
+};
+
+
+/* =========================================
+   SHOW SELECTED STUDENT
+========================================= */
+
+window.showSelectedStudent =
+function() {
+
+    const studentId =
+        document.getElementById(
+            "studentSelect"
+        ).value;
+
+
+    if (!studentId) {
+
+        alert(
+            "❌ مهرباني وکړئ شاګرد انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    showStudentReport(
+        studentId
+    );
+
+};
+
+
+/* =========================================
+   SHOW REPORT
+========================================= */
+
+function showStudentReport(
+    studentId
+) {
+
+    const report =
+        document.getElementById(
+            "report"
+        );
+
+
+    const student =
+        students.find(function(item) {
+
+            return String(item.id) ===
+                   String(studentId);
+
+        });
+
+
+    if (!student) {
+
+        report.innerHTML =
+            '<div class="empty">' +
+            '❌ شاګرد پیدا نشو.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    const studentFees =
+        fees.filter(function(fee) {
+
+            return String(
+                fee.studentId
+            ) === String(studentId);
+
+        });
+
+
+    /* =====================================
+       TOTALS
+    ===================================== */
+
+    let totalFee = 0;
+
+    let totalPaid = 0;
+
+    let totalRemaining = 0;
+
+
+    studentFees.forEach(function(fee) {
+
+        totalFee +=
+            Number(fee.total) || 0;
+
+        totalPaid +=
+            Number(fee.paid) || 0;
+
+        totalRemaining +=
+            Number(fee.remaining) || 0;
+
+    });
+
+
+    /* =====================================
+       HEADER
+    ===================================== */
+
+    let html =
+
+        '<div class="student-card">' +
+
+        '<h3>👨‍🎓 ' +
+        escapeHTML(
+            student.name || "-"
+        ) +
+        '</h3>' +
+
+        '<p>👨‍👦 د پلار نوم: ' +
+        escapeHTML(
+            student.father || "-"
+        ) +
+        '</p>' +
+
+        '<p>🏫 ټولګی: ' +
+        escapeHTML(
+            student.className || "-"
+        ) +
+        '</p>' +
+
+        '<p>📱 د پلار WhatsApp: ' +
+        escapeHTML(
+            student.whatsapp || "-"
+        ) +
+        '</p>' +
+
+        '</div>';
+
+
+    /* =====================================
+       SUMMARY
+    ===================================== */
+
+    html +=
+
+        '<div class="summary">' +
+
+        '<p>💰 ټول فیس: ' +
+        totalFee +
+        ' افغانۍ</p>' +
+
+        '<p>💵 ټول ورکړل شوی: ' +
+        totalPaid +
+        ' افغانۍ</p>' +
+
+        '<p class="' +
+        (
+            totalRemaining > 0
+                ? "remaining"
+                : "paid"
+        ) +
+        '">' +
+
+        '⚠️ ټول پاتې: ' +
+        totalRemaining +
+        ' افغانۍ</p>' +
+
+        '<p>📋 ټول ثبتونه: ' +
+        studentFees.length +
+        '</p>' +
+
+        '</div>';
+
+
+    /* =====================================
+       MONTHLY REPORT
+    ===================================== */
+
+    html +=
+        '<h2>📅 میاشتنی فیس</h2>';
+
+
+    if (
+        studentFees.length === 0
+    ) {
+
+        html +=
+            '<div class="empty">' +
+            '📭 د دې شاګرد لپاره تر اوسه فیس نه دی ثبت شوی.' +
+            '</div>';
+
+    }
+
+    else {
+
+        studentFees
+            .slice()
+            .reverse()
+            .forEach(function(fee) {
+
+
+                let paymentText =
+                    "—";
+
+
+                if (
+                    fee.paymentMethod ===
+                    "cash"
+                ) {
+
+                    paymentText =
+                        "💵 نغدې";
+
+                }
+
+                else if (
+                    fee.paymentMethod ===
+                    "bank"
+                ) {
+
+                    paymentText =
+                        "🏦 بانک";
+
+                }
+
+
+                html +=
+
+                    '<div class="month-row">' +
+
+                    '<p><strong>📅 میاشت:</strong> ' +
+                    escapeHTML(
+                        fee.month || "-"
+                    ) +
+                    '</p>' +
+
+                    '<p>🧾 رسید نمبر: ' +
+                    escapeHTML(
+                        fee.receiptNo || "-"
+                    ) +
+                    '</p>' +
+
+                    '<p>💰 ټول فیس: ' +
+                    (
+                        Number(
+                            fee.total
+                        ) || 0
+                    ) +
+                    ' افغانۍ</p>' +
+
+                    '<p>💵 ورکړل شوی: ' +
+                    (
+                        Number(
+                            fee.paid
+                        ) || 0
+                    ) +
+                    ' افغانۍ</p>' +
+
+                    '<p class="' +
+                    (
+                        Number(
+                            fee.remaining
+                        ) > 0
+                            ? "remaining"
+                            : "paid"
+                    ) +
+                    '">' +
+
+                    '⚠️ پاتې: ' +
+                    (
+                        Number(
+                            fee.remaining
+                        ) || 0
+                    ) +
+                    ' افغانۍ</p>' +
+
+                    '<p>💳 د پیسو طریقه: ' +
+                    escapeHTML(
+                        paymentText
+                    ) +
+                    '</p>' +
+
+                    '<p>👤 پیسې ورکړي: ' +
+                    escapeHTML(
+                        fee.payerName || "-"
+                    ) +
+                    '</p>' +
+
+                    '<p>📆 د ثبت نېټه: ' +
+                    escapeHTML(
+                        fee.date || "-"
+                    ) +
+                    '</p>' +
+
+                    '</div>';
+
+            });
+
+    }
+
+
+    report.innerHTML =
+        html;
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   BACK
+========================================= */
+
+window.goBack =
+function() {
+
+    window.location.href =
+        "fees.html";
+
+};
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        const report =
+            document.getElementById(
+                "report"
+            );
+
+
+        report.innerHTML =
+            '<div class="loading">' +
+            '⏳ معلومات راټولېږي...' +
+            '</div>';
+
+
+        await loadStudents();
+
+        await loadFees();
+
+
+        report.innerHTML =
+            '<div class="empty">' +
+            '👨‍🎓 یو شاګرد انتخاب کړئ ترڅو راپور یې ښکاره شي.' +
+            '</div>';
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

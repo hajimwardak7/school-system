@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>د ښوونکو راپور - School System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,.15);
+        }
+
+        header h2 {
+            margin: 0 0 8px;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+
+        .top-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            width: 100%;
+            background: #6c757d;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #0d6efd;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0d6efd;
+        }
+
+        .filter-title {
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 3px;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .summary-box {
+            background: white;
+            padding: 15px 8px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,.07);
+        }
+
+        .summary-box .number {
+            font-size: 25px;
+            font-weight: bold;
+            color: #0d6efd;
+            margin-bottom: 5px;
+        }
+
+        .summary-box .label {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .teacher-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            border-right: 5px solid #0d6efd;
+        }
+
+        .teacher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .teacher-name {
+            color: #0d6efd;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .teacher-number {
+            background: #e7f1ff;
+            color: #084298;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .info-row {
+            padding: 5px 0;
+            line-height: 1.8;
+        }
+
+        .classes {
+            margin-top: 8px;
+        }
+
+        .class-badge {
+            display: inline-block;
+            background: #e7f1ff;
+            color: #084298;
+            padding: 6px 10px;
+            margin: 3px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .attendance-section {
+            margin-top: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .attendance-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .attendance-box {
+            background: white;
+            border-radius: 10px;
+            padding: 10px 5px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .attendance-box .num {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .attendance-box .txt {
+            font-size: 12px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .total .num {
+            color: #0d6efd;
+        }
+
+        .present .num {
+            color: #198754;
+        }
+
+        .absent .num {
+            color: #dc3545;
+        }
+
+        .percentage {
+            margin-top: 12px;
+            background: #e7f1ff;
+            color: #084298;
+            padding: 10px;
+            border-radius: 9px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #777;
+            padding: 15px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .print-btn {
+            width: 100%;
+            background: #198754;
+            color: white;
+            margin-top: 10px;
+        }
+
+        @media(max-width:700px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .attendance-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .teacher-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+        @media(max-width:450px) {
+
+            .attendance-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            header {
+                box-shadow: none;
+            }
+
+            .top-buttons,
+            .filters,
+            .print-btn {
+                display: none !important;
+            }
+
+            .teacher-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h2>👨‍🏫 د ښوونکو راپور</h2>
+
+    <div id="schoolName">
+        School System
+    </div>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- Back -->
+
+    <div class="top-buttons">
+
+        <button
+            class="back-btn"
+            onclick="goDashboard()"
+        >
+            ↩️ Dashboard ته بېرته تلل
+        </button>
+
+    </div>
+
+
+    <!-- Error -->
+
+    <div
+        id="errorBox"
+        class="error"
+    ></div>
+
+
+    <!-- Filters -->
+
+    <div class="card filters">
+
+        <h3>
+            🔎 د ښوونکي راپور لټون
+        </h3>
+
+
+        <div class="filter-title">
+            👨‍🏫 ښوونکی
+        </div>
+
+        <select
+            id="teacherFilter"
+            onchange="showReports()"
+        >
+
+            <option value="">
+                ټول ښوونکي
+            </option>
+
+        </select>
+
+
+        <div class="filter-title">
+            🔎 د نوم لټون
+        </div>
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="د ښوونکي نوم یا Username..."
+            oninput="showReports()"
+        >
+
+
+        <div class="filter-title">
+            📅 له نېټې
+        </div>
+
+        <input
+            type="date"
+            id="fromDate"
+            onchange="showReports()"
+        >
+
+
+        <div class="filter-title">
+            📅 تر نېټې
+        </div>
+
+        <input
+            type="date"
+            id="toDate"
+            onchange="showReports()"
+        >
+
+
+        <button
+            class="print-btn"
+            onclick="printReport()"
+        >
+            🖨️ راپور چاپول
+        </button>
+
+    </div>
+
+
+    <!-- Summary -->
+
+    <div class="summary">
+
+        <div class="summary-box">
+
+            <div
+                class="number"
+                id="totalTeachers"
+            >
+                0
+            </div>
+
+            <div class="label">
+                ټول ښوونکي
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div
+                class="number"
+                id="totalRecords"
+            >
+                0
+            </div>
+
+            <div class="label">
+                ټولې حاضري
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div
+                class="number"
+                id="totalPresent"
+            >
+                0
+            </div>
+
+            <div class="label">
+                حاضر
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div
+                class="number"
+                id="totalAbsent"
+            >
+                0
+            </div>
+
+            <div class="label">
+                غیر حاضر
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Reports -->
+
+    <div id="reportsList">
+
+        <div class="loading">
+            🔄 راپور لوډ کېږي...
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+
+<script type="module">
+
+
+import { db } from "./firebase.js";
+
+
+import {
+
+    collection,
+    getDocs
+
+}
+from
+"https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+/* ==========================================
+   Variables
+========================================== */
+
+let teachers = [];
+
+let attendanceRecords = [];
+
+
+/* ==========================================
+   Collections
+========================================== */
+
+const teachersCollection =
+    collection(
+        db,
+        "teachers"
+    );
+
+
+const attendanceCollection =
+    collection(
+        db,
+        "attendanceRecords"
+    );
+
+
+/* ==========================================
+   Escape HTML
+========================================== */
+
+function escapeHTML(value) {
+
+    return String(value || "")
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==========================================
+   School Name
+========================================== */
+
+function loadSchoolName() {
+
+    const schoolName =
+        localStorage.getItem(
+            "schoolName"
+        )
+        ||
+        "School System";
+
+
+    document.getElementById(
+        "schoolName"
+    ).textContent =
+        schoolName;
+
+}
+
+
+/* ==========================================
+   Show Error
+========================================== */
+
+function showError(message) {
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+/* ==========================================
+   Hide Error
+========================================== */
+
+function hideError() {
+
+    document.getElementById(
+        "errorBox"
+    ).style.display =
+        "none";
+
+}
+
+
+/* ==========================================
+   Load Teachers
+========================================== */
+
+async function loadTeachers() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                teachersCollection
+            );
+
+
+        teachers = [];
+
+
+        snapshot.forEach(
+            function(item) {
+
+                const data =
+                    item.data();
+
+
+                teachers.push({
+
+                    id:
+                        item.id,
+
+                    name:
+                        data.name || "",
+
+                    username:
+                        data.username || "",
+
+                    classes:
+                        Array.isArray(
+                            data.classes
+                        )
+                        ?
+                        data.classes
+                        :
+                        []
+
+                });
+
+            }
+        );
+
+
+        localStorage.setItem(
+            "teachers",
+            JSON.stringify(
+                teachers
+            )
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Teachers Firebase Error:",
+            error
+        );
+
+
+        try {
+
+            teachers =
+                JSON.parse(
+                    localStorage.getItem(
+                        "teachers"
+                    )
+                    ||
+                    "[]"
+                );
+
+        }
+
+        catch(e) {
+
+            teachers = [];
+
+        }
+
+    }
+
+}
+
+
+/* ==========================================
+   Load Attendance
+========================================== */
+
+async function loadAttendance() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                attendanceCollection
+            );
+
+
+        attendanceRecords = [];
+
+
+        snapshot.forEach(
+            function(item) {
+
+                const data =
+                    item.data();
+
+
+                attendanceRecords.push({
+
+                    id:
+                        item.id,
+
+                    studentId:
+                        data.studentId || "",
+
+                    studentName:
+                        data.studentName || "",
+
+                    status:
+                        data.status || "",
+
+                    teacherId:
+                        data.teacherId || "",
+
+                    teacherName:
+                        data.teacherName || "",
+
+                    className:
+                        data.className || "",
+
+                    date:
+                        data.date || ""
+
+                });
+
+            }
+        );
+
+
+        localStorage.setItem(
+            "attendanceRecords",
+            JSON.stringify(
+                attendanceRecords
+            )
+        );
+
+    }
+
+    catch(error) {
+
+        console.error(
+            "Attendance Firebase Error:",
+            error
+        );
+
+
+        try {
+
+            attendanceRecords =
+                JSON.parse(
+                    localStorage.getItem(
+                        "attendanceRecords"
+                    )
+                    ||
+                    "[]"
+                );
+
+        }
+
+        catch(e) {
+
+            attendanceRecords = [];
+
+        }
+
+    }
+
+}
+
+
+/* ==========================================
+   Fill Teacher Filter
+========================================== */
+
+function fillTeacherFilter() {
+
+    const select =
+        document.getElementById(
+            "teacherFilter"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            ټول ښوونکي
+        </option>
+
+    `;
+
+
+    teachers.forEach(
+        function(teacher) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                teacher.id;
+
+
+            option.textContent =
+                teacher.name;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   Date Helpers
+========================================== */
+
+function getFromDate() {
+
+    return document.getElementById(
+        "fromDate"
+    ).value;
+
+}
+
+
+function getToDate() {
+
+    return document.getElementById(
+        "toDate"
+    ).value;
+
+}
+
+
+/* ==========================================
+   Filter Attendance
+========================================== */
+
+function filterAttendance(records) {
+
+    const from =
+        getFromDate();
+
+
+    const to =
+        getToDate();
+
+
+    return records.filter(
+        function(record) {
+
+            if (
+                from &&
+                record.date &&
+                record.date < from
+            ) {
+
+                return false;
+
+            }
+
+
+            if (
+                to &&
+                record.date &&
+                record.date > to
+            ) {
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   Get Teacher Records
+========================================== */
+
+function getTeacherRecords(teacher) {
+
+    let records =
+        attendanceRecords.filter(
+            function(record) {
+
+
+                const sameId =
+
+                    String(
+                        record.teacherId
+                    )
+                    ===
+                    String(
+                        teacher.id
+                    );
+
+
+                const sameName =
+
+                    record.teacherName
+                    &&
+                    teacher.name
+                    &&
+                    record.teacherName
+                    ===
+                    teacher.name;
+
+
+                return (
+                    sameId ||
+                    sameName
+                );
+
+            }
+        );
+
+
+    records =
+        filterAttendance(
+            records
+        );
+
+
+    return records;
+
+}
+
+
+/* ==========================================
+   Show Reports
+========================================== */
+
+window.showReports =
+function() {
+
+    hideError();
+
+
+    const list =
+        document.getElementById(
+            "reportsList"
+        );
+
+
+    const selectedTeacher =
+        document.getElementById(
+            "teacherFilter"
+        ).value;
+
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    let filteredTeachers =
+        teachers.filter(
+            function(teacher) {
+
+                const matchesTeacher =
+
+                    !selectedTeacher
+                    ||
+                    String(
+                        teacher.id
+                    )
+                    ===
+                    String(
+                        selectedTeacher
+                    );
+
+
+                const matchesSearch =
+
+                    !search
+                    ||
+                    String(
+                        teacher.name
+                    )
+                    .toLowerCase()
+                    .includes(search)
+                    ||
+                    String(
+                        teacher.username
+                    )
+                    .toLowerCase()
+                    .includes(search);
+
+
+                return (
+                    matchesTeacher
+                    &&
+                    matchesSearch
+                );
+
+            }
+        );
+
+
+    /* Summary */
+
+    let summaryRecords = [];
+
+
+    filteredTeachers.forEach(
+        function(teacher) {
+
+            summaryRecords =
+                summaryRecords.concat(
+                    getTeacherRecords(
+                        teacher
+                    )
+                );
+
+        }
+    );
+
+
+    let presentTotal = 0;
+
+    let absentTotal = 0;
+
+
+    summaryRecords.forEach(
+        function(record) {
+
+            if (
+                record.status === "حاضر"
+                ||
+                record.status === "present"
+            ) {
+
+                presentTotal++;
+
+            }
+
+
+            if (
+                record.status === "غیر حاضر"
+                ||
+                record.status === "absent"
+            ) {
+
+                absentTotal++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "totalTeachers"
+    ).textContent =
+        filteredTeachers.length;
+
+
+    document.getElementById(
+        "totalRecords"
+    ).textContent =
+        summaryRecords.length;
+
+
+    document.getElementById(
+        "totalPresent"
+    ).textContent =
+        presentTotal;
+
+
+    document.getElementById(
+        "totalAbsent"
+    ).textContent =
+        absentTotal;
+
+
+    /* No Teachers */
+
+    if (
+        filteredTeachers.length === 0
+    ) {
+
+        list.innerHTML = `
+
+            <div class="card no-data">
+
+                👨‍🏫 هېڅ ښوونکی پیدا نشو.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    filteredTeachers.forEach(
+        function(teacher, index) {
+
+
+            const records =
+                getTeacherRecords(
+                    teacher
+                );
+
+
+            let present = 0;
+
+            let absent = 0;
+
+
+            records.forEach(
+                function(record) {
+
+                    if (
+                        record.status === "حاضر"
+                        ||
+                        record.status === "present"
+                    ) {
+
+                        present++;
+
+                    }
+
+
+                    if (
+                        record.status === "غیر حاضر"
+                        ||
+                        record.status === "absent"
+                    ) {
+
+                        absent++;
+
+                    }
+
+                }
+            );
+
+
+            const total =
+                present + absent;
+
+
+            let percentage = 0;
+
+
+            if (total > 0) {
+
+                percentage =
+                    Math.round(
+                        (
+                            present /
+                            total
+                        ) * 100
+                    );
+
+            }
+
+
+            let classesHTML = "";
+
+
+            if (
+                teacher.classes
+                &&
+                teacher.classes.length > 0
+            ) {
+
+                teacher.classes.forEach(
+                    function(className) {
+
+                        classesHTML += `
+
+                            <span class="class-badge">
+                                ${escapeHTML(className)}
+                            </span>
+
+                        `;
+
+                    }
+                );
+
+            }
+
+            else {
+
+                classesHTML =
+                    "هیڅ ټولګی نه دی ټاکل شوی.";
+
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "teacher-card";
+
+
+            card.innerHTML = `
+
+                <div class="teacher-header">
+
+                    <div class="teacher-name">
+
+                        👨‍🏫
+                        ${escapeHTML(
+                            teacher.name
+                        )}
+
+                    </div>
+
+
+                    <div class="teacher-number">
+
+                        #${index + 1}
+
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    👤 Username:
+
+                    <strong>
+                        ${escapeHTML(
+                            teacher.username
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    📚 ټاکل شوي ټولګي:
+
+                    <div class="classes">
+
+                        ${classesHTML}
+
+                    </div>
+
+                </div>
+
+
+                <div class="attendance-section">
+
+                    <div class="attendance-title">
+
+                        📊 د حاضري راپور
+
+                    </div>
+
+
+                    <div class="attendance-grid">
+
+
+                        <div class="attendance-box total">
+
+                            <div class="num">
+                                ${total}
+                            </div>
+
+                            <div class="txt">
+                                ټولې ثبت شوې
+                            </div>
+
+                        </div>
+
+
+                        <div class="attendance-box present">
+
+                            <div class="num">
+                                ${present}
+                            </div>
+
+                            <div class="txt">
+                                حاضر
+                            </div>
+
+                        </div>
+
+
+                        <div class="attendance-box absent">
+
+                            <div class="num">
+                                ${absent}
+                            </div>
+
+                            <div class="txt">
+                                غیر حاضر
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="percentage">
+
+                        📈 د حاضري سلنه:
+
+                        ${percentage}%
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            list.appendChild(
+                card
+            );
+
+        }
+    );
+
+};
+
+
+/* ==========================================
+   Print
+========================================== */
+
+window.printReport =
+function() {
+
+    window.print();
+
+};
+
+
+/* ==========================================
+   Dashboard
+========================================== */
+
+window.goDashboard =
+function() {
+
+    window.location.href =
+        "dashboard.html";
+
+};
+
+
+/* ==========================================
+   Set Today's Date
+========================================== */
+
+function setDates() {
+
+    /*
+      دلته تاریخونه خالي پرېښودل شوي،
+      څو ټول پخوانی راپور ښکاره شي.
+    */
+
+    document.getElementById(
+        "fromDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "toDate"
+    ).value = "";
+
+}
+
+
+/* ==========================================
+   Start System
+========================================== */
+
+async function start() {
+
+    loadSchoolName();
+
+    setDates();
+
+
+    await loadTeachers();
+
+    await loadAttendance();
+
+
+    fillTeacherFilter();
+
+
+    showReports();
+
+}
+
+
+start();
+
+
+</script>
+
+
+</body>
+</html>

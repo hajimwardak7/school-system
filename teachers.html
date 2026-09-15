@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>د ښوونکو مدیریت</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Tahoma,Arial,sans-serif;
+    background:#f4f6f9;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:22px 15px;
+    text-align:center;
+}
+
+.header h2{
+    margin:0 0 7px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:15px;
+}
+
+.back{
+    display:block;
+    background:white;
+    color:#0d6efd;
+    padding:13px;
+    border-radius:12px;
+    text-align:center;
+    text-decoration:none;
+    margin-bottom:15px;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    border-radius:16px;
+    margin-bottom:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h3{
+    margin-top:0;
+    color:#0d6efd;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    margin:10px 0 6px;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:15px;
+}
+
+button{
+    border:0;
+    border-radius:10px;
+    padding:12px 15px;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.save{
+    width:100%;
+    margin-top:15px;
+    background:#0d6efd;
+    color:white;
+}
+
+.teacher{
+    background:white;
+    padding:17px;
+    border-radius:15px;
+    margin-bottom:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.teacher h3{
+    margin:0 0 10px;
+    color:#0d6efd;
+}
+
+.info{
+    line-height:2;
+    color:#555;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
+    margin-top:12px;
+}
+
+.edit{
+    flex:1;
+    background:#ffc107;
+    color:#222;
+}
+
+.delete{
+    flex:1;
+    background:#dc3545;
+    color:white;
+}
+
+.classes{
+    display:none;
+    margin-top:10px;
+    padding:12px;
+    background:#f4f6f9;
+    border-radius:10px;
+}
+
+.class-item{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:white;
+    padding:8px;
+    margin:4px;
+    border-radius:8px;
+}
+
+.class-item input{
+    width:auto;
+}
+
+.class-button{
+    width:100%;
+    background:#eef4ff;
+    color:#0d6efd;
+    margin-top:8px;
+}
+
+.message{
+    display:none;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:12px;
+    line-height:1.8;
+}
+
+.success{
+    display:block;
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    display:block;
+    background:#f8d7da;
+    color:#842029;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+    <h2>👨‍🏫 د ښوونکو مدیریت</h2>
+
+    <div>
+        د ښوونکو معلومات او Login Email
+    </div>
+
+</div>
+
+
+<div class="container">
+
+
+<a href="dashboard.html" class="back">
+    ⬅️ Dashboard ته بېرته
+</a>
+
+
+<div id="message" class="message"></div>
+
+
+<div class="card">
+
+    <h3>
+        ➕ نوی ښوونکی
+    </h3>
+
+
+    <label>
+        👨‍🏫 د ښوونکي نوم
+    </label>
+
+    <input
+        type="text"
+        id="teacherName"
+        placeholder="مثلاً: احمد"
+    >
+
+
+    <label>
+        📧 Firebase Login Email
+    </label>
+
+    <input
+        type="email"
+        id="teacherEmail"
+        placeholder="teacher@gmail.com"
+        dir="ltr"
+    >
+
+
+    <label>
+        👤 Username
+    </label>
+
+    <input
+        type="text"
+        id="teacherUsername"
+        placeholder="ahmad"
+        dir="ltr"
+    >
+
+
+    <button
+        class="class-button"
+        onclick="toggleClasses()"
+    >
+        📚 ټولګي انتخاب کړئ ▼
+    </button>
+
+
+    <div
+        id="classBox"
+        class="classes"
+    >
+
+        <div class="class-item">
+            <input type="checkbox" value="اول">
+            اول
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="دوهم">
+            دوهم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="درېیم">
+            درېیم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="څلورم">
+            څلورم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="پنځم">
+            پنځم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="شپږم">
+            شپږم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="اووم">
+            اووم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="اتم">
+            اتم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="نهم">
+            نهم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="لسم">
+            لسم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="یوولسم">
+            یوولسم
+        </div>
+
+        <div class="class-item">
+            <input type="checkbox" value="دولسم">
+            دولسم
+        </div>
+
+    </div>
+
+
+    <button
+        class="save"
+        onclick="addTeacher()"
+    >
+        💾 ښوونکی ثبت کړه
+    </button>
+
+</div>
+
+
+<div class="card">
+
+    <h3>
+        📋 د ښوونکو لست
+    </h3>
+
+    <div id="teachersList">
+
+        <div class="loading">
+            ⏳ معلومات لوډ کېږي...
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<script type="module">
+
+import {
+
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc
+
+} from
+"https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+import { db } from "./firebase.js";
+
+
+let teachers = [];
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text,type){
+
+    const box =
+        document.getElementById("message");
+
+    box.innerHTML = text;
+
+    box.className =
+        "message " + type;
+
+}
+
+
+/* =========================
+   CLASSES
+========================= */
+
+window.toggleClasses =
+function(){
+
+    const box =
+        document.getElementById("classBox");
+
+    if(
+        box.style.display === "block"
+    ){
+
+        box.style.display = "none";
+
+    }else{
+
+        box.style.display = "block";
+
+    }
+
+};
+
+
+/* =========================
+   LOAD TEACHERS
+========================= */
+
+async function loadTeachers(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "teachers"
+                )
+            );
+
+
+        teachers = [];
+
+
+        snapshot.forEach(
+            function(docSnap){
+
+                teachers.push({
+
+                    id:docSnap.id,
+
+                    ...docSnap.data()
+
+                });
+
+            }
+        );
+
+
+        localStorage.setItem(
+            "teachers",
+            JSON.stringify(
+                teachers
+            )
+        );
+
+
+    }catch(error){
+
+        console.log(error);
+
+
+        teachers =
+            JSON.parse(
+                localStorage.getItem(
+                    "teachers"
+                )
+            ) || [];
+
+    }
+
+
+    displayTeachers();
+
+}
+
+
+/* =========================
+   DISPLAY
+========================= */
+
+function displayTeachers(){
+
+    const box =
+        document.getElementById(
+            "teachersList"
+        );
+
+
+    if(
+        teachers.length === 0
+    ){
+
+        box.innerHTML = `
+            <div class="loading">
+                👨‍🏫 تر اوسه ښوونکی ثبت شوی نه دی.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    box.innerHTML =
+        teachers.map(
+            function(teacher){
+
+                const classes =
+                    Array.isArray(
+                        teacher.classes
+                    )
+                    ?
+                    teacher.classes.join("، ")
+                    :
+                    "ټولګی نشته";
+
+
+                return `
+
+                <div class="teacher">
+
+                    <h3>
+                        👨‍🏫
+                        ${escapeHtml(
+                            teacher.name || ""
+                        )}
+                    </h3>
+
+
+                    <div class="info">
+
+                        📧
+                        <b>Email:</b>
+                        ${escapeHtml(
+                            teacher.email || "ثبت نه دی"
+                        )}
+
+                        <br>
+
+                        👤
+                        <b>Username:</b>
+                        ${escapeHtml(
+                            teacher.username || ""
+                        )}
+
+                        <br>
+
+                        📚
+                        <b>ټولګي:</b>
+                        ${escapeHtml(
+                            classes
+                        )}
+
+                    </div>
+
+
+                    <div class="actions">
+
+                        <button
+                            class="edit"
+                            onclick="editTeacher('${teacher.id}')"
+                        >
+                            ✏️ Edit
+                        </button>
+
+
+                        <button
+                            class="delete"
+                            onclick="deleteTeacher('${teacher.id}')"
+                        >
+                            🗑️ Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================
+   ADD TEACHER
+========================= */
+
+window.addTeacher =
+async function(){
+
+    const name =
+        document
+        .getElementById(
+            "teacherName"
+        )
+        .value
+        .trim();
+
+
+    const email =
+        document
+        .getElementById(
+            "teacherEmail"
+        )
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    const username =
+        document
+        .getElementById(
+            "teacherUsername"
+        )
+        .value
+        .trim();
+
+
+    const selectedClasses =
+        Array.from(
+            document.querySelectorAll(
+                "#classBox input:checked"
+            )
+        ).map(
+            checkbox =>
+                checkbox.value
+        );
+
+
+    if(!name){
+
+        showMessage(
+            "⚠️ د ښوونکي نوم ولیکئ.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!email){
+
+        showMessage(
+            "⚠️ د ښوونکي Email ولیکئ.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!email.includes("@")){
+
+        showMessage(
+            "⚠️ صحیح Email ولیکئ.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(
+        selectedClasses.length === 0
+    ){
+
+        showMessage(
+            "⚠️ لږ تر لږه یو ټولګی انتخاب کړئ.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const teacherData = {
+
+        name:name,
+
+        email:email,
+
+        username:
+            username || email,
+
+        classes:
+            selectedClasses,
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    try{
+
+        const result =
+            await addDoc(
+                collection(
+                    db,
+                    "teachers"
+                ),
+                teacherData
+            );
+
+
+        teachers.push({
+
+            id:result.id,
+
+            ...teacherData
+
+        });
+
+
+        localStorage.setItem(
+            "teachers",
+            JSON.stringify(
+                teachers
+            )
+        );
+
+
+        showMessage(
+            "✅ ښوونکی ثبت شو.<br>" +
+            "⚠️ اوس د همدې Email لپاره Firebase Authentication User هم جوړ کړئ.",
+            "success"
+        );
+
+
+        document
+        .getElementById(
+            "teacherName"
+        ).value = "";
+
+
+        document
+        .getElementById(
+            "teacherEmail"
+        ).value = "";
+
+
+        document
+        .getElementById(
+            "teacherUsername"
+        ).value = "";
+
+
+        document
+        .querySelectorAll(
+            "#classBox input"
+        )
+        .forEach(
+            checkbox =>
+                checkbox.checked = false
+        );
+
+
+        displayTeachers();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showMessage(
+            "❌ ښوونکی ثبت نه شو. Firebase Rules وګورئ.",
+            "error"
+        );
+
+    }
+
+};
+
+
+/* =========================
+   EDIT
+========================= */
+
+window.editTeacher =
+async function(id){
+
+    const teacher =
+        teachers.find(
+            function(item){
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if(!teacher){
+
+        return;
+
+    }
+
+
+    const name =
+        prompt(
+            "د ښوونکي نوم:",
+            teacher.name || ""
+        );
+
+
+    if(name === null){
+
+        return;
+
+    }
+
+
+    const email =
+        prompt(
+            "Email:",
+            teacher.email || ""
+        );
+
+
+    if(email === null){
+
+        return;
+
+    }
+
+
+    const classesText =
+        prompt(
+            "ټولګي د کامې په وسیله ولیکئ:\nمثال: اول,دوهم,درېیم",
+            Array.isArray(
+                teacher.classes
+            )
+            ?
+            teacher.classes.join(",")
+            :
+            ""
+        );
+
+
+    if(classesText === null){
+
+        return;
+
+    }
+
+
+    const classes =
+        classesText
+        .split(",")
+        .map(
+            item =>
+                item.trim()
+        )
+        .filter(
+            item =>
+                item !== ""
+        );
+
+
+    const newData = {
+
+        name:name.trim(),
+
+        email:
+            email.trim().toLowerCase(),
+
+        username:
+            teacher.username ||
+            email.trim().toLowerCase(),
+
+        classes:classes
+
+    };
+
+
+    try{
+
+        await updateDoc(
+            doc(
+                db,
+                "teachers",
+                id
+            ),
+            newData
+        );
+
+
+        const index =
+            teachers.findIndex(
+                item =>
+                    String(item.id) ===
+                    String(id)
+            );
+
+
+        if(index !== -1){
+
+            teachers[index] = {
+
+                ...teachers[index],
+
+                ...newData
+
+            };
+
+        }
+
+
+        localStorage.setItem(
+            "teachers",
+            JSON.stringify(
+                teachers
+            )
+        );
+
+
+        showMessage(
+            "✅ د ښوونکي معلومات بدل شول.",
+            "success"
+        );
+
+
+        displayTeachers();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showMessage(
+            "❌ معلومات بدل نه شول.",
+            "error"
+        );
+
+    }
+
+};
+
+
+/* =========================
+   DELETE
+========================= */
+
+window.deleteTeacher =
+async function(id){
+
+    const teacher =
+        teachers.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+
+    if(!teacher){
+
+        return;
+
+    }
+
+
+    const confirmDelete =
+        confirm(
+            "ایا غواړئ دا ښوونکی حذف کړئ؟\n\n" +
+            teacher.name
+        );
+
+
+    if(!confirmDelete){
+
+        return;
+
+    }
+
+
+    try{
+
+        await deleteDoc(
+            doc(
+                db,
+                "teachers",
+                id
+            )
+        );
+
+
+        teachers =
+            teachers.filter(
+                item =>
+                    String(item.id) !==
+                    String(id)
+            );
+
+
+        localStorage.setItem(
+            "teachers",
+            JSON.stringify(
+                teachers
+            )
+        );
+
+
+        showMessage(
+            "✅ ښوونکی حذف شو.",
+            "success"
+        );
+
+
+        displayTeachers();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showMessage(
+            "❌ ښوونکی حذف نه شو.",
+            "error"
+        );
+
+    }
+
+};
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadTeachers();
+
+</script>
+
+</body>
+
+</html>

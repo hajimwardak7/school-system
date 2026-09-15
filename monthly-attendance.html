@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>میاشتنی د حاضري راپور</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    direction:rtl;
+    font-family:Arial,sans-serif;
+    background:#f2f6fc;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:22px;
+    border-radius:15px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.header h1{
+    margin:0 0 10px;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+input,
+select{
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:17px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    color:white;
+    background:#0d6efd;
+    margin-bottom:12px;
+    cursor:pointer;
+}
+
+.back{
+    background:#6c757d;
+}
+
+.print{
+    background:#198754;
+}
+
+.student{
+    border:1px solid #ddd;
+    padding:16px;
+    border-radius:12px;
+    margin-bottom:15px;
+    background:#fff;
+}
+
+.student h3{
+    margin-top:0;
+    color:#0d6efd;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:15px;
+}
+
+.stat{
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    background:#f8f9fa;
+}
+
+.present{
+    color:#198754;
+    font-weight:bold;
+}
+
+.absent{
+    color:#dc3545;
+    font-weight:bold;
+}
+
+.percent{
+    color:#0d6efd;
+    font-weight:bold;
+}
+
+.summary{
+    background:#f8f9fa;
+    padding:18px;
+    border-radius:12px;
+    font-size:18px;
+    line-height:2;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+    font-size:18px;
+}
+
+.empty{
+    text-align:center;
+    padding:25px;
+    color:#777;
+    font-size:17px;
+}
+
+.error{
+    background:#f8d7da;
+    color:#842029;
+    padding:15px;
+    border-radius:10px;
+}
+
+@media(max-width:600px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media print{
+
+    button,
+    input,
+    select,
+    .back,
+    .print{
+        display:none !important;
+    }
+
+    body{
+        background:white;
+        padding:10px;
+    }
+
+    .box{
+        box-shadow:none;
+        border:1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================
+     Header
+========================= -->
+
+<div class="header">
+
+<h1>📊 د میاشتني حاضري راپور</h1>
+
+<p>د شاګردانو میاشتنی حاضري او غیر حاضري</p>
+
+</div>
+
+
+<!-- =========================
+     Back
+========================= -->
+
+<button
+class="back"
+onclick="goBack()">
+
+⬅️ بېرته Dashboard ته
+
+</button>
+
+
+<!-- =========================
+     Search
+========================= -->
+
+<div class="box">
+
+<h2>🔎 راپور انتخاب کړه</h2>
+
+
+<label>
+📅 میاشت
+</label>
+
+<input
+type="month"
+id="month">
+
+
+<label>
+🏫 ټولګی
+</label>
+
+<select id="className">
+
+<option value="ټول">
+ټول ټولګي
+</option>
+
+<option value="اول">اول</option>
+<option value="دوهم">دوهم</option>
+<option value="دریم">دریم</option>
+<option value="څلورم">څلورم</option>
+<option value="پنځم">پنځم</option>
+<option value="شپږم">شپږم</option>
+<option value="اووم">اووم</option>
+<option value="اتم">اتم</option>
+<option value="نهم">نهم</option>
+<option value="لسم">لسم</option>
+<option value="یوولسم">یوولسم</option>
+<option value="دولسم">دولسم</option>
+
+</select>
+
+
+<button onclick="loadReport()">
+
+🔍 میاشتنی راپور ښکاره کړه
+
+</button>
+
+</div>
+
+
+<!-- =========================
+     Loading
+========================= -->
+
+<div id="loading"
+class="loading">
+
+⏳ راپور لوډ کېږي...
+
+</div>
+
+
+<!-- =========================
+     Report
+========================= -->
+
+<div id="report"
+style="display:none;">
+
+
+<div class="box">
+
+<h2>📊 عمومي معلومات</h2>
+
+<div
+id="summary"
+class="summary">
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>👨‍🎓 د شاګردانو راپور</h2>
+
+<div id="studentReport"></div>
+
+</div>
+
+
+</div>
+
+
+<!-- =========================
+     Print
+========================= -->
+
+<button
+class="print"
+onclick="window.print()">
+
+🖨️ راپور چاپ کړه
+
+</button>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// ==================================================
+// د روانې میاشتې معلومول
+// ==================================================
+
+function getCurrentMonth(){
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2,"0");
+
+    return year + "-" + month;
+
+}
+
+
+// ==================================================
+// Students
+// ==================================================
+
+async function getStudents(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "students"
+                )
+            );
+
+        const students = [];
+
+        snapshot.forEach(function(doc){
+
+            students.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+        return students;
+
+    }catch(error){
+
+        console.error(error);
+
+        const data =
+            localStorage.getItem(
+                "students"
+            );
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// ==================================================
+// Attendance
+// ==================================================
+
+async function getAttendance(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "attendance"
+                )
+            );
+
+        const records = [];
+
+        snapshot.forEach(function(doc){
+
+            records.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        localStorage.setItem(
+            "attendanceRecords",
+            JSON.stringify(records)
+        );
+
+        console.log(
+            "Attendance:",
+            records
+        );
+
+        return records;
+
+    }catch(error){
+
+        console.error(
+            "Attendance Error:",
+            error
+        );
+
+        const data =
+            localStorage.getItem(
+                "attendanceRecords"
+            );
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// ==================================================
+// میاشتنی راپور
+// ==================================================
+
+window.loadReport = async function(){
+
+    const loading =
+        document.getElementById(
+            "loading"
+        );
+
+    const report =
+        document.getElementById(
+            "report"
+        );
+
+    const studentReport =
+        document.getElementById(
+            "studentReport"
+        );
+
+    loading.style.display =
+        "block";
+
+    report.style.display =
+        "none";
+
+    studentReport.innerHTML =
+        "";
+
+
+    try{
+
+        // ==========================================
+        // انتخاب شوې میاشت
+        // ==========================================
+
+        const selectedMonth =
+            document.getElementById(
+                "month"
+            ).value;
+
+
+        if(!selectedMonth){
+
+            alert(
+                "⚠️ مهرباني وکړئ میاشت انتخاب کړئ."
+            );
+
+            loading.style.display =
+                "none";
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // انتخاب شوی ټولګی
+        // ==========================================
+
+        const selectedClass =
+            document.getElementById(
+                "className"
+            ).value;
+
+
+        // ==========================================
+        // معلومات
+        // ==========================================
+
+        const students =
+            await getStudents();
+
+        const attendance =
+            await getAttendance();
+
+
+        // ==========================================
+        // د میاشتې حاضري
+        // ==========================================
+
+        const monthRecords =
+            attendance.filter(
+                function(record){
+
+                    const date =
+                        String(
+                            record.date || ""
+                        );
+
+                    const className =
+                        String(
+                            record.className || ""
+                        );
+
+
+                    const monthMatch =
+                        date.startsWith(
+                            selectedMonth
+                        );
+
+
+                    const classMatch =
+
+                        selectedClass ===
+                        "ټول"
+
+                        ||
+
+                        className ===
+                        selectedClass;
+
+
+                    return (
+                        monthMatch &&
+                        classMatch
+                    );
+
+                }
+            );
+
+
+        console.log(
+            "Monthly Records:",
+            monthRecords
+        );
+
+
+        // ==========================================
+        // شاګردان فلټر
+        // ==========================================
+
+        let filteredStudents =
+            students;
+
+
+        if(
+            selectedClass !== "ټول"
+        ){
+
+            filteredStudents =
+                students.filter(
+                    function(student){
+
+                        return String(
+                            student.className || ""
+                        ) ===
+                        selectedClass;
+
+                    }
+                );
+
+        }
+
+
+        // ==========================================
+        // که شاګردان نه وي
+        // ==========================================
+
+        if(
+            filteredStudents.length === 0
+        ){
+
+            studentReport.innerHTML =
+
+                '<div class="empty">' +
+
+                "❌ په دې ټولګي کې شاګردان پیدا نه شول." +
+
+                "</div>";
+
+        }
+
+
+        // ==========================================
+        // عمومي شمېرې
+        // ==========================================
+
+        let totalPresent = 0;
+
+        let totalAbsent = 0;
+
+        let totalRecords = 0;
+
+
+        // ==========================================
+        // د هر شاګرد راپور
+        // ==========================================
+
+        filteredStudents.forEach(
+            function(student){
+
+                const studentRecords =
+                    monthRecords.filter(
+                        function(record){
+
+                            return String(
+                                record.studentId
+                            ) ===
+                            String(
+                                student.id
+                            );
+
+                        }
+                    );
+
+
+                let present = 0;
+
+                let absent = 0;
+
+
+                studentRecords.forEach(
+                    function(record){
+
+                        const status =
+                            String(
+                                record.status || ""
+                            ).trim();
+
+
+                        if(
+                            status === "حاضر"
+                        ){
+
+                            present++;
+
+                        }
+
+
+                        if(
+                            status === "غیر حاضر"
+
+                            ||
+
+                            status === "غير حاضر"
+
+                            ||
+
+                            status.toLowerCase()
+                            === "absent"
+                        ){
+
+                            absent++;
+
+                        }
+
+                    }
+                );
+
+
+                totalPresent +=
+                    present;
+
+                totalAbsent +=
+                    absent;
+
+
+                totalRecords +=
+                    studentRecords.length;
+
+
+                // ==================================
+                // سلنه
+                // ==================================
+
+                const totalDays =
+                    present + absent;
+
+
+                let percentage = 0;
+
+
+                if(
+                    totalDays > 0
+                ){
+
+                    percentage =
+                        Math.round(
+                            (
+                                present /
+                                totalDays
+                            ) * 100
+                        );
+
+                }
+
+
+                // ==================================
+                // Card
+                // ==================================
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "student";
+
+
+                div.innerHTML =
+
+                    "<h3>👨‍🎓 " +
+
+                    escapeHtml(
+                        student.name || "-"
+                    ) +
+
+                    "</h3>" +
+
+                    "👨‍👦 پلار: " +
+
+                    escapeHtml(
+                        student.father || "-"
+                    ) +
+
+                    "<br>" +
+
+                    "🏫 ټولګی: " +
+
+                    escapeHtml(
+                        student.className || "-"
+                    ) +
+
+                    "<div class='stats'>" +
+
+                    "<div class='stat'>" +
+
+                    "<span class='present'>" +
+
+                    "✅ حاضر" +
+
+                    "</span>" +
+
+                    "<br>" +
+
+                    "<b>" +
+
+                    present +
+
+                    "</b>" +
+
+                    "</div>" +
+
+
+                    "<div class='stat'>" +
+
+                    "<span class='absent'>" +
+
+                    "❌ غیر حاضر" +
+
+                    "</span>" +
+
+                    "<br>" +
+
+                    "<b>" +
+
+                    absent +
+
+                    "</b>" +
+
+                    "</div>" +
+
+
+                    "<div class='stat'>" +
+
+                    "<span class='percent'>" +
+
+                    "📊 سلنه" +
+
+                    "</span>" +
+
+                    "<br>" +
+
+                    "<b>" +
+
+                    percentage +
+
+                    "%</b>" +
+
+                    "</div>" +
+
+                    "</div>";
+
+
+                if(
+                    studentRecords.length === 0
+                ){
+
+                    div.innerHTML +=
+
+                        "<br>" +
+
+                        '<span style="color:#777;">' +
+
+                        "⚠️ د دې میاشتې حاضري لا نه ده ثبت شوې." +
+
+                        "</span>";
+
+                }
+
+
+                studentReport.appendChild(
+                    div
+                );
+
+            }
+        );
+
+
+        // ==========================================
+        // Summary
+        // ==========================================
+
+        const summary =
+            document.getElementById(
+                "summary"
+            );
+
+
+        let overallPercentage = 0;
+
+
+        if(
+            totalPresent +
+            totalAbsent > 0
+        ){
+
+            overallPercentage =
+                Math.round(
+                    (
+                        totalPresent /
+                        (
+                            totalPresent +
+                            totalAbsent
+                        )
+                    ) * 100
+                );
+
+        }
+
+
+        summary.innerHTML =
+
+            "📅 میاشت: <b>" +
+
+            escapeHtml(
+                selectedMonth
+            ) +
+
+            "</b><br>" +
+
+            "🏫 ټولګی: <b>" +
+
+            escapeHtml(
+                selectedClass
+            ) +
+
+            "</b><br>" +
+
+            "👨‍🎓 ټول شاګردان: <b>" +
+
+            filteredStudents.length +
+
+            "</b><br>" +
+
+            "📋 ټول ثبت شوي ریکارډونه: <b>" +
+
+            totalRecords +
+
+            "</b><br>" +
+
+            "✅ ټولې حاضرې: <b>" +
+
+            totalPresent +
+
+            "</b><br>" +
+
+            "❌ ټولې غیر حاضرې: <b>" +
+
+            totalAbsent +
+
+            "</b><br>" +
+
+            "📊 عمومي حاضري: <b>" +
+
+            overallPercentage +
+
+            "%</b>";
+
+
+        // ==========================================
+        // Show
+        // ==========================================
+
+        loading.style.display =
+            "none";
+
+        report.style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(
+            "MONTHLY REPORT ERROR:",
+            error
+        );
+
+
+        loading.innerHTML =
+
+            '<div class="error">' +
+
+            "❌ راپور لوډ نه شو." +
+
+            "<br><br>" +
+
+            escapeHtml(
+                error.message
+            ) +
+
+            "</div>";
+
+    }
+
+};
+
+
+// ==================================================
+// HTML Escape
+// ==================================================
+
+function escapeHtml(value){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ==================================================
+// Back
+// ==================================================
+
+window.goBack = function(){
+
+    window.location.href =
+        "dashboard.html";
+
+};
+
+
+// ==================================================
+// Start
+// ==================================================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        document.getElementById(
+            "month"
+        ).value =
+            getCurrentMonth();
+
+
+        loadReport();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

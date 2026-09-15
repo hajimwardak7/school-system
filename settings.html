@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ps">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="script.js"></script>
+
+    <title>تنظیمات - School System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            direction: rtl;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: white;
+            padding: 22px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 18px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #0d6efd;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 9px;
+            font-size: 17px;
+            color: white;
+            background: #0d6efd;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .back {
+            background: #6c757d;
+        }
+
+        #message {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>⚙️ د مکتب تنظیمات</h1>
+</div>
+
+<div class="container">
+
+    <div class="box">
+
+        <!-- د مکتب نوم -->
+        <label>🏫 د مکتب نوم</label>
+
+        <input
+            type="text"
+            id="schoolName"
+            placeholder="د مکتب نوم"
+            autocomplete="off"
+        >
+
+
+        <!-- د مدیر نوم -->
+        <label>👨‍💼 د مدیر نوم</label>
+
+        <input
+            type="text"
+            id="adminName"
+            placeholder="د مدیر نوم"
+            autocomplete="off"
+        >
+
+
+        <!-- د مکتب شمېره -->
+        <label>📞 د مکتب شمېره</label>
+
+        <input
+            type="text"
+            id="schoolPhone"
+            placeholder="0700000000"
+            autocomplete="off"
+        >
+
+
+        <!-- Save Button -->
+        <button onclick="saveSettings()">
+            💾 معلومات خوندي کړئ
+        </button>
+
+
+        <!-- Back Button -->
+        <button
+            class="back"
+            onclick="goBack()"
+        >
+            ← Dashboard ته بېرته تلل
+        </button>
+
+
+        <!-- Message -->
+        <div id="message"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =========================
+    // Login Check
+    // =========================
+
+    if (
+        localStorage.getItem("adminLoggedIn") !== "true"
+    ) {
+        window.location.href = "index.html";
+    }
+
+
+    // =========================
+    // Save Settings
+    // =========================
+
+    function saveSettings() {
+
+        const schoolName =
+            document.getElementById("schoolName")
+            .value.trim();
+
+        const adminName =
+            document.getElementById("adminName")
+            .value.trim();
+
+        const schoolPhone =
+            document.getElementById("schoolPhone")
+            .value.trim();
+
+
+        // د مکتب نوم ضرور دی
+        if (!schoolName) {
+
+            showMessage(
+                "❌ د مکتب نوم ولیکئ.",
+                "red"
+            );
+
+            return;
+        }
+
+
+        // -------------------------
+        // د مکتب نوم
+        // -------------------------
+
+        localStorage.setItem(
+            "schoolName",
+            schoolName
+        );
+
+
+        // -------------------------
+        // ټول Settings
+        // -------------------------
+
+        localStorage.setItem(
+            "schoolSettings",
+            JSON.stringify({
+
+                schoolName: schoolName,
+
+                adminName: adminName,
+
+                schoolPhone: schoolPhone
+
+            })
+        );
+
+
+        // -------------------------
+        // جلا معلومات هم ساتل
+        // -------------------------
+
+        localStorage.setItem(
+            "adminName",
+            adminName
+        );
+
+        localStorage.setItem(
+            "schoolPhone",
+            schoolPhone
+        );
+
+
+        // -------------------------
+        // Success Message
+        // -------------------------
+
+        showMessage(
+            "✅ د مکتب معلومات خوندي شول.",
+            "green"
+        );
+
+    }
+
+
+    // =========================
+    // Load Settings
+    // =========================
+
+    function loadSettings() {
+
+        // د مکتب نوم
+        document.getElementById(
+            "schoolName"
+        ).value =
+            localStorage.getItem(
+                "schoolName"
+            ) || "";
+
+
+        // د مدیر نوم
+        document.getElementById(
+            "adminName"
+        ).value =
+            localStorage.getItem(
+                "adminName"
+            ) || "";
+
+
+        // د مکتب شمېره
+        document.getElementById(
+            "schoolPhone"
+        ).value =
+            localStorage.getItem(
+                "schoolPhone"
+            ) || "";
+
+    }
+
+
+    // =========================
+    // Message
+    // =========================
+
+    function showMessage(
+        text,
+        color
+    ) {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+        message.textContent =
+            text;
+
+        message.style.color =
+            color;
+
+    }
+
+
+    // =========================
+    // Back to Dashboard
+    // =========================
+
+    function goBack() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+
+    // =========================
+    // Start
+    // =========================
+
+    loadSettings();
+
+</script>
+
+</body>
+</html>

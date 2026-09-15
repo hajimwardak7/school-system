@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard - School System</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Tahoma,
+                sans-serif;
+
+            background: #f4f7fb;
+
+            color: #222;
+
+            padding-bottom: 80px;
+
+        }
+
+
+        /* HEADER */
+
+        .header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d6efd,
+                    #0b5ed7
+                );
+
+            color: white;
+
+            padding: 22px 18px;
+
+            border-radius:
+                0 0 25px 25px;
+
+        }
+
+
+        .header-top {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .header h1 {
+
+            font-size: 24px;
+
+        }
+
+
+        .logout {
+
+            background: #dc3545;
+
+            color: white;
+
+            border: none;
+
+            padding: 10px 15px;
+
+            border-radius: 12px;
+
+            font-size: 15px;
+
+        }
+
+
+        .user-box {
+
+            margin-top: 15px;
+
+            background:
+                rgba(255,255,255,.15);
+
+            padding: 14px;
+
+            border-radius: 15px;
+
+            line-height: 1.9;
+
+        }
+
+
+        /* CONTAINER */
+
+        .container {
+
+            width: 95%;
+
+            max-width: 1100px;
+
+            margin: 20px auto;
+
+        }
+
+
+        /* TEACHER */
+
+        .teacher-only {
+
+            display: none;
+
+        }
+
+
+        .teacher-card {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 25px;
+
+            text-align: center;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0,0,0,.08);
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .teacher-icon {
+
+            font-size: 65px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .teacher-card h2 {
+
+            color: #0d6efd;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .teacher-card p {
+
+            color: #666;
+
+            line-height: 1.9;
+
+        }
+
+
+        .attendance-btn {
+
+            display: block;
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: 20px auto 0;
+
+            padding: 20px;
+
+            background: #0d6efd;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 18px;
+
+            font-size: 21px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* STATS */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .stat {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,.06);
+
+        }
+
+
+        .stat-icon {
+
+            font-size: 35px;
+
+        }
+
+
+        .stat-number {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            color: #0d6efd;
+
+            margin-top: 8px;
+
+        }
+
+
+        .stat-title {
+
+            color: #666;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* MENU */
+
+        .section-title {
+
+            margin: 20px 0 15px;
+
+            font-size: 22px;
+
+            color: #333;
+
+        }
+
+
+        .menu {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+        }
+
+
+        .menu-card {
+
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 20px 10px;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            color: #222;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,.06);
+
+            transition: .2s;
+
+        }
+
+
+        .menu-card:active {
+
+            transform: scale(.97);
+
+        }
+
+
+        .menu-icon {
+
+            font-size: 38px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .menu-title {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+        }
+
+
+        /* FOOTER */
+
+        .footer {
+
+            text-align: center;
+
+            color: #888;
+
+            margin-top: 30px;
+
+            padding: 20px;
+
+        }
+
+
+        /* BOTTOM NAV */
+
+        .bottom-nav {
+
+            position: fixed;
+
+            bottom: 0;
+
+            right: 0;
+
+            left: 0;
+
+            height: 65px;
+
+            background: white;
+
+            display: flex;
+
+            justify-content:
+                space-around;
+
+            align-items: center;
+
+            box-shadow:
+                0 -3px 15px
+                rgba(0,0,0,.12);
+
+            z-index: 999;
+
+        }
+
+
+        .bottom-nav a {
+
+            text-decoration: none;
+
+            color: #555;
+
+            text-align: center;
+
+            font-size: 13px;
+
+        }
+
+
+        .bottom-nav span {
+
+            display: block;
+
+            font-size: 25px;
+
+        }
+
+
+        @media (min-width: 700px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+
+            }
+
+
+            .menu {
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="header-top">
+
+        <h1>
+            🏫 School Management
+        </h1>
+
+        <button
+            class="logout"
+            onclick="schoolLogout()"
+        >
+            وتل
+        </button>
+
+    </div>
+
+
+    <div
+        class="user-box"
+        id="userInfo"
+    >
+        حساب معلومات...
+    </div>
+
+</div>
+
+
+
+<div class="container">
+
+
+    <!-- ========================= -->
+    <!-- TEACHER DASHBOARD -->
+    <!-- ========================= -->
+
+    <div
+        id="teacherDashboard"
+        class="teacher-only"
+    >
+
+        <div class="teacher-card">
+
+            <div class="teacher-icon">
+                👨‍🏫
+            </div>
+
+            <h2>
+                د استاد برخه
+            </h2>
+
+            <p id="teacherWelcome">
+                ښه راغلاست
+            </p>
+
+            <p>
+                تاسو یوازې د خپلو ټاکل شوو
+                ټولګیو حاضري اخیستلای شئ.
+            </p>
+
+
+            <a
+                href="attendance.html"
+                class="attendance-btn"
+            >
+                📋 حاضري اخیستل
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ========================= -->
+
+    <div id="adminDashboard">
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    👨‍🎓
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalStudents"
+                >
+                    0
+                </div>
+
+                <div class="stat-title">
+                    شاګردان
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    👨‍🏫
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalTeachers"
+                >
+                    0
+                </div>
+
+                <div class="stat-title">
+                    ښوونکي
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    💰
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalPaid"
+                >
+                    0
+                </div>
+
+                <div class="stat-title">
+                    ټولې ورکړې
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon">
+                    📋
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalAttendance"
+                >
+                    0
+                </div>
+
+                <div class="stat-title">
+                    حاضري
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <h2 class="section-title">
+            📚 د سیستم برخې
+        </h2>
+
+
+        <div class="menu">
+
+
+            <a
+                href="students.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    👨‍🎓
+                </div>
+
+                <div class="menu-title">
+                    شاګردان
+                </div>
+
+            </a>
+
+
+            <a
+                href="attendance.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    📋
+                </div>
+
+                <div class="menu-title">
+                    حاضري
+                </div>
+
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    📊
+                </div>
+
+                <div class="menu-title">
+                    راپورونه
+                </div>
+
+            </a>
+
+
+            <a
+                href="teachers.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    👨‍🏫
+                </div>
+
+                <div class="menu-title">
+                    ښوونکي
+                </div>
+
+            </a>
+
+
+            <a
+                href="teacher-reports.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    📈
+                </div>
+
+                <div class="menu-title">
+                    د ښوونکو راپور
+                </div>
+
+            </a>
+
+
+            <a
+                href="fees.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    💰
+                </div>
+
+                <div class="menu-title">
+                    فیس
+                </div>
+
+            </a>
+
+
+            <a
+                href="student-fees.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    💵
+                </div>
+
+                <div class="menu-title">
+                    د شاګرد فیس
+                </div>
+
+            </a>
+
+
+            <a
+                href="monthly-fees.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    📅
+                </div>
+
+                <div class="menu-title">
+                    میاشتنی فیس
+                </div>
+
+            </a>
+
+
+            <a
+                href="financial-report.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    💹
+                </div>
+
+                <div class="menu-title">
+                    مالي راپور
+                </div>
+
+            </a>
+
+
+            <a
+                href="fee-history.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    🧾
+                </div>
+
+                <div class="menu-title">
+                    د فیس تاریخچه
+                </div>
+
+            </a>
+
+
+            <a
+                href="monthly-attendance.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    📅
+                </div>
+
+                <div class="menu-title">
+                    میاشتنی حاضري
+                </div>
+
+            </a>
+
+
+            <a
+                href="absent-report.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    ❌
+                </div>
+
+                <div class="menu-title">
+                    غیرحاضر راپور
+                </div>
+
+            </a>
+
+
+            <a
+                href="student-profile.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    👤
+                </div>
+
+                <div class="menu-title">
+                    د شاګرد پروفایل
+                </div>
+
+            </a>
+
+
+            <a
+                href="student-card.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    🪪
+                </div>
+
+                <div class="menu-title">
+                    د شاګرد کارت
+                </div>
+
+            </a>
+
+
+            <a
+                href="search.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    🔎
+                </div>
+
+                <div class="menu-title">
+                    لټون
+                </div>
+
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    ⚙️
+                </div>
+
+                <div class="menu-title">
+                    تنظیمات
+                </div>
+
+            </a>
+
+
+            <a
+                href="backup.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    💾
+                </div>
+
+                <div class="menu-title">
+                    Backup
+                </div>
+
+            </a>
+
+
+            <a
+                href="school-info.html"
+                class="menu-card"
+            >
+
+                <div class="menu-icon">
+                    🏫
+                </div>
+
+                <div class="menu-title">
+                    د مکتب معلومات
+                </div>
+
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+
+    <div class="footer">
+
+        School Management System ©
+
+    </div>
+
+</div>
+
+
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+    <a href="dashboard.html">
+
+        <span>🏠</span>
+
+        کور
+
+    </a>
+
+
+    <a href="attendance.html">
+
+        <span>📋</span>
+
+        حاضري
+
+    </a>
+
+
+    <a
+        href="#"
+        onclick="schoolLogout(); return false;"
+    >
+
+        <span>🚪</span>
+
+        وتل
+
+    </a>
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+
+
+<script type="module">
+
+    import {
+        collection,
+        getDocs
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+    import {
+        db
+    } from "./firebase.js";
+
+
+    /*
+    ========================================
+    USER INFORMATION
+    ========================================
+    */
+
+    const role =
+        localStorage.getItem(
+            "userRole"
+        ) || "";
+
+
+    const userName =
+        localStorage.getItem(
+            "userName"
+        ) || "";
+
+
+    const teacherClasses =
+        JSON.parse(
+            localStorage.getItem(
+                "teacherClasses"
+            ) || "[]"
+        );
+
+
+    const userInfo =
+        document.getElementById(
+            "userInfo"
+        );
+
+
+    /*
+    ========================================
+    TEACHER
+    ========================================
+    */
+
+    if (role === "teacher") {
+
+        document.getElementById(
+            "adminDashboard"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "teacherDashboard"
+        ).style.display = "block";
+
+
+        userInfo.innerHTML =
+
+            "👨‍🏫 حساب: " +
+            escapeHtml(userName) +
+            "<br>" +
+
+            "📚 ټولګي: " +
+            (
+                teacherClasses.length
+                    ? teacherClasses.join("، ")
+                    : "هیڅ ټولګی نه دی ټاکل شوی"
+            );
+
+
+        document.getElementById(
+            "teacherWelcome"
+        ).textContent =
+
+            "ښه راغلاست، " +
+            userName +
+            " 👋";
+
+
+    }
+
+
+    /*
+    ========================================
+    ADMIN
+    ========================================
+    */
+
+    else {
+
+        document.getElementById(
+            "adminDashboard"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "teacherDashboard"
+        ).style.display = "none";
+
+
+        userInfo.innerHTML =
+
+            "👨‍💼 حساب: مدیر";
+
+
+        loadAdminStats();
+
+    }
+
+
+    /*
+    ========================================
+    ESCAPE HTML
+    ========================================
+    */
+
+    function escapeHtml(value) {
+
+        return String(value || "")
+
+            .replace(/&/g, "&amp;")
+
+            .replace(/</g, "&lt;")
+
+            .replace(/>/g, "&gt;")
+
+            .replace(/"/g, "&quot;")
+
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /*
+    ========================================
+    ADMIN STATS
+    ========================================
+    */
+
+    async function loadAdminStats() {
+
+        try {
+
+            const studentsSnap =
+                await getDocs(
+                    collection(
+                        db,
+                        "students"
+                    )
+                );
+
+
+            document.getElementById(
+                "totalStudents"
+            ).textContent =
+                studentsSnap.size;
+
+
+        } catch (error) {
+
+            console.log(
+                "Students:",
+                error
+            );
+
+        }
+
+
+        try {
+
+            const teachersSnap =
+                await getDocs(
+                    collection(
+                        db,
+                        "teachers"
+                    )
+                );
+
+
+            document.getElementById(
+                "totalTeachers"
+            ).textContent =
+                teachersSnap.size;
+
+
+        } catch (error) {
+
+            console.log(
+                "Teachers:",
+                error
+            );
+
+        }
+
+
+        try {
+
+            const feesSnap =
+                await getDocs(
+                    collection(
+                        db,
+                        "fees"
+                    )
+                );
+
+
+            let paid = 0;
+
+
+            feesSnap.forEach(
+                function(doc) {
+
+                    const data =
+                        doc.data();
+
+
+                    paid +=
+                        Number(
+                            data.paid || 0
+                        );
+
+                }
+            );
+
+
+            document.getElementById(
+                "totalPaid"
+            ).textContent =
+                paid.toLocaleString();
+
+
+        } catch (error) {
+
+            console.log(
+                "Fees:",
+                error
+            );
+
+        }
+
+
+        try {
+
+            const attendanceSnap =
+                await getDocs(
+                    collection(
+                        db,
+                        "attendanceRecords"
+                    )
+                );
+
+
+            document.getElementById(
+                "totalAttendance"
+            ).textContent =
+                attendanceSnap.size;
+
+
+        } catch (error) {
+
+            console.log(
+                "Attendance:",
+                error
+            );
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

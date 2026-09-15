@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>شاګردان - School System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Tahoma, sans-serif;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0d6efd, #084298);
+            color: white;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,.15);
+        }
+
+        header h2 {
+            margin: 0 0 8px;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #0d6efd;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px;
+            margin: 7px 0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #0d6efd;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 5px 2px;
+        }
+
+        .btn-primary {
+            background: #0d6efd;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-success {
+            background: #198754;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-info {
+            background: #0dcaf0;
+            color: #000;
+        }
+
+        .top-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .top-buttons button {
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+            border-right: 5px solid #0d6efd;
+        }
+
+        .student-card h3 {
+            margin: 0 0 10px;
+            color: #0d6efd;
+        }
+
+        .student-info {
+            line-height: 1.9;
+            font-size: 15px;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .actions button {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .count-box {
+            background: #e7f1ff;
+            color: #084298;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 25px;
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .firebase-status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding-right: 42px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 13px;
+            top: 19px;
+        }
+
+        @media(max-width:600px) {
+            .container {
+                width: 96%;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>👨‍🎓 د شاګردانو مدیریت</h2>
+    <div id="schoolName">School System</div>
+</header>
+
+<div class="container">
+
+    <div class="top-buttons">
+        <button class="btn-secondary" onclick="goBack()">
+            ↩️ Dashboard
+        </button>
+
+        <button class="btn-info" onclick="exportStudents()">
+            📥 Excel/CSV
+        </button>
+    </div>
+
+    <div class="card">
+
+        <h3>➕ نوی شاګرد ثبتول</h3>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="👨‍🎓 د شاګرد نوم"
+        >
+
+        <input
+            type="text"
+            id="fatherName"
+            placeholder="👨 د پلار نوم"
+        >
+
+        <select id="className">
+            <option value="">📚 ټولګی انتخاب کړئ</option>
+            <option value="اول">اول</option>
+            <option value="دوهم">دوهم</option>
+            <option value="دریم">دریم</option>
+            <option value="څلورم">څلورم</option>
+            <option value="پنځم">پنځم</option>
+            <option value="شپږم">شپږم</option>
+            <option value="اووم">اووم</option>
+            <option value="اتم">اتم</option>
+            <option value="نهم">نهم</option>
+            <option value="لسم">لسم</option>
+            <option value="یوولسم">یوولسم</option>
+            <option value="دولسم">دولسم</option>
+        </select>
+
+        <input
+            type="tel"
+            id="whatsapp"
+            placeholder="📱 د پلار WhatsApp نمبر - مثال: 0701234567"
+        >
+
+        <button
+            class="btn-primary"
+            onclick="addStudent()"
+        >
+            💾 شاګرد ثبتول
+        </button>
+
+        <div id="message"></div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>🔎 د شاګرد لټون</h3>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+
+            <input
+                type="text"
+                id="search"
+                placeholder="نوم، د پلار نوم، ټولګی یا WhatsApp نمبر..."
+                oninput="showStudents()"
+            >
+        </div>
+
+    </div>
+
+    <div class="firebase-status" id="firebaseStatus">
+        🔄 معلومات لوډ کېږي...
+    </div>
+
+    <div class="count-box">
+        ټول شاګردان:
+        <span id="studentCount">0</span>
+    </div>
+
+    <div id="studentsList">
+        <div class="loading">
+            🔄 شاګردان لوډ کېږي...
+        </div>
+    </div>
+
+</div>
+
+
+<!-- اصلي سیستم امنیت -->
+<script src="script.js"></script>
+
+
+<!-- Firebase -->
+<script type="module">
+
+import { db } from "./firebase.js";
+
+import {
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+/* =========================
+   متغیر
+========================= */
+
+let students = [];
+
+const studentsCollection = collection(db, "students");
+
+
+/* =========================
+   HTML Escape
+========================= */
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================
+   پیغام
+========================= */
+
+function showMessage(text, type = "success") {
+
+    const message = document.getElementById("message");
+
+    message.style.display = "block";
+
+    message.textContent = text;
+
+    if (type === "success") {
+        message.style.background = "#d1e7dd";
+        message.style.color = "#0f5132";
+    }
+
+    else {
+        message.style.background = "#f8d7da";
+        message.style.color = "#842029";
+    }
+
+    setTimeout(function() {
+        message.style.display = "none";
+    }, 4000);
+}
+
+
+/* =========================
+   Firebase څخه شاګردان
+========================= */
+
+async function loadStudents() {
+
+    const status =
+        document.getElementById("firebaseStatus");
+
+    try {
+
+        status.innerHTML =
+            "🔄 Firebase څخه شاګردان لوډ کېږي...";
+
+        const snapshot =
+            await getDocs(studentsCollection);
+
+        students = [];
+
+        snapshot.forEach(function(item) {
+
+            students.push({
+                id: item.id,
+                name: item.data().name || "",
+                father: item.data().father || "",
+                className: item.data().className || "",
+                whatsapp: item.data().whatsapp || ""
+            });
+
+        });
+
+
+        /*
+
+        LocalStorage هم تازه کوو
+        تر څو د سیستم زاړه راپورونه
+        هم کار وکړي.
+
+        */
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        status.innerHTML =
+            "🟢 Firebase سره وصل دی";
+
+
+        showStudents();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            "⚠️ Firebase ته لاسرسی ونه شو؛ Local معلومات استعمالېږي.";
+
+        /*
+         که Firebase کار ونه کړي،
+         پخواني LocalStorage معلومات اخلو.
+        */
+
+        try {
+
+            students =
+                JSON.parse(
+                    localStorage.getItem("students") || "[]"
+                );
+
+        }
+
+        catch(e) {
+
+            students = [];
+
+        }
+
+        showStudents();
+
+    }
+}
+
+
+/* =========================
+   نوی شاګرد
+========================= */
+
+window.addStudent = async function() {
+
+    const name =
+        document.getElementById("studentName")
+        .value
+        .trim();
+
+    const father =
+        document.getElementById("fatherName")
+        .value
+        .trim();
+
+    const className =
+        document.getElementById("className")
+        .value;
+
+    const whatsapp =
+        document.getElementById("whatsapp")
+        .value
+        .trim();
+
+
+    if (!name) {
+
+        alert("❌ د شاګرد نوم ولیکئ.");
+        return;
+
+    }
+
+
+    if (!father) {
+
+        alert("❌ د پلار نوم ولیکئ.");
+        return;
+
+    }
+
+
+    if (!className) {
+
+        alert("❌ ټولګی انتخاب کړئ.");
+        return;
+
+    }
+
+
+    if (!whatsapp) {
+
+        alert("❌ د پلار WhatsApp نمبر ولیکئ.");
+        return;
+
+    }
+
+
+    const studentData = {
+
+        name: name,
+
+        father: father,
+
+        className: className,
+
+        whatsapp: whatsapp,
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    try {
+
+        /* Firebase */
+
+        const result =
+            await addDoc(
+                studentsCollection,
+                studentData
+            );
+
+
+        /* Local Array */
+
+        students.push({
+
+            id: result.id,
+
+            name: name,
+
+            father: father,
+
+            className: className,
+
+            whatsapp: whatsapp
+
+        });
+
+
+        /* LocalStorage */
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        /* Form پاکول */
+
+        document.getElementById("studentName").value = "";
+
+        document.getElementById("fatherName").value = "";
+
+        document.getElementById("className").value = "";
+
+        document.getElementById("whatsapp").value = "";
+
+
+        showMessage(
+            "✅ شاګرد په Firebase کې بریالی ثبت شو."
+        );
+
+
+        showStudents();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        /*
+         که Firebase خطا ورکړي،
+         LocalStorage کې یې ثبتوو.
+        */
+
+        const localStudent = {
+
+            id:
+                Date.now(),
+
+            name: name,
+
+            father: father,
+
+            className: className,
+
+            whatsapp: whatsapp
+
+        };
+
+
+        students.push(localStudent);
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        showMessage(
+            "⚠️ Firebase کې ثبت نشو، خو شاګرد په موبایل کې ثبت شو.",
+            "error"
+        );
+
+
+        showStudents();
+
+    }
+
+};
+
+
+/* =========================
+   شاګردان ښکاره کول
+========================= */
+
+window.showStudents = function() {
+
+    const list =
+        document.getElementById("studentsList");
+
+    const search =
+        document.getElementById("search")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    let filtered =
+        students.filter(function(student) {
+
+            return (
+
+                String(student.name)
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                String(student.father)
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                String(student.className)
+                    .toLowerCase()
+                    .includes(search)
+
+                ||
+
+                String(student.whatsapp)
+                    .toLowerCase()
+                    .includes(search)
+
+            );
+
+        });
+
+
+    document.getElementById("studentCount")
+        .textContent = filtered.length;
+
+
+    if (filtered.length === 0) {
+
+        list.innerHTML = `
+            <div class="empty">
+                👨‍🎓 هېڅ شاګرد پیدا نشو.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    filtered.forEach(function(student, index) {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "student-card";
+
+
+        card.innerHTML = `
+
+            <h3>
+                👨‍🎓 ${escapeHTML(student.name)}
+            </h3>
+
+            <div class="student-info">
+
+                <div>
+                    👨 د پلار نوم:
+                    <strong>
+                        ${escapeHTML(student.father)}
+                    </strong>
+                </div>
+
+                <div>
+                    📚 ټولګی:
+                    <strong>
+                        ${escapeHTML(student.className)}
+                    </strong>
+                </div>
+
+                <div>
+                    📱 WhatsApp:
+                    <strong>
+                        ${escapeHTML(student.whatsapp)}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="actions">
+
+                <button
+                    class="btn-warning"
+                    onclick="editStudent('${student.id}')"
+                >
+                    ✏️ Edit
+                </button>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteStudent('${student.id}')"
+                >
+                    🗑️ حذف
+                </button>
+
+                <button
+                    class="btn-info"
+                    onclick="openProfile('${student.id}')"
+                >
+                    👤 Profile
+                </button>
+
+                <button
+                    class="btn-success"
+                    onclick="sendWhatsApp('${student.id}')"
+                >
+                    📱 WhatsApp
+                </button>
+
+            </div>
+        `;
+
+
+        list.appendChild(card);
+
+    });
+
+};
+
+
+/* =========================
+   Edit
+========================= */
+
+window.editStudent = async function(id) {
+
+    const student =
+        students.find(function(item) {
+
+            return String(item.id) === String(id);
+
+        });
+
+
+    if (!student) {
+
+        alert("❌ شاګرد پیدا نشو.");
+        return;
+
+    }
+
+
+    const newName =
+        prompt(
+            "👨‍🎓 د شاګرد نوی نوم:",
+            student.name
+        );
+
+
+    if (newName === null) {
+        return;
+    }
+
+
+    const newFather =
+        prompt(
+            "👨 د پلار نوی نوم:",
+            student.father
+        );
+
+
+    if (newFather === null) {
+        return;
+    }
+
+
+    const newClass =
+        prompt(
+            "📚 نوی ټولګی:",
+            student.className
+        );
+
+
+    if (newClass === null) {
+        return;
+    }
+
+
+    const newWhatsapp =
+        prompt(
+            "📱 نوی WhatsApp نمبر:",
+            student.whatsapp
+        );
+
+
+    if (newWhatsapp === null) {
+        return;
+    }
+
+
+    const updatedData = {
+
+        name: newName.trim(),
+
+        father: newFather.trim(),
+
+        className: newClass.trim(),
+
+        whatsapp: newWhatsapp.trim()
+
+    };
+
+
+    try {
+
+        /*
+         که ID د Firebase ID وي
+        */
+
+        await updateDoc(
+            doc(db, "students", String(id)),
+            updatedData
+        );
+
+
+        student.name =
+            updatedData.name;
+
+        student.father =
+            updatedData.father;
+
+        student.className =
+            updatedData.className;
+
+        student.whatsapp =
+            updatedData.whatsapp;
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        alert(
+            "✅ د شاګرد معلومات Firebase کې تازه شول."
+        );
+
+
+        showStudents();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+
+        /*
+         LocalStorage fallback
+        */
+
+        student.name =
+            updatedData.name;
+
+        student.father =
+            updatedData.father;
+
+        student.className =
+            updatedData.className;
+
+        student.whatsapp =
+            updatedData.whatsapp;
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        alert(
+            "⚠️ Firebase کې Update نشو، خو په موبایل کې Update شو."
+        );
+
+
+        showStudents();
+
+    }
+
+};
+
+
+/* =========================
+   حذف
+========================= */
+
+window.deleteStudent = async function(id) {
+
+    const student =
+        students.find(function(item) {
+
+            return String(item.id) === String(id);
+
+        });
+
+
+    if (!student) {
+
+        alert("❌ شاګرد پیدا نشو.");
+        return;
+
+    }
+
+
+    const confirmDelete =
+        confirm(
+            "⚠️ آیا غواړئ دا شاګرد حذف کړئ؟\n\n" +
+            student.name
+        );
+
+
+    if (!confirmDelete) {
+        return;
+    }
+
+
+    try {
+
+        /*
+         Firebase څخه حذف
+        */
+
+        await deleteDoc(
+            doc(db, "students", String(id))
+        );
+
+
+        /*
+         Array څخه حذف
+        */
+
+        students =
+            students.filter(function(item) {
+
+                return String(item.id) !== String(id);
+
+            });
+
+
+        /*
+         LocalStorage
+        */
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        alert(
+            "✅ شاګرد له Firebase څخه حذف شو."
+        );
+
+
+        showStudents();
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+
+        /*
+         LocalStorage fallback
+        */
+
+        students =
+            students.filter(function(item) {
+
+                return String(item.id) !== String(id);
+
+            });
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        alert(
+            "⚠️ Firebase کې حذف نشو، خو له موبایل څخه حذف شو."
+        );
+
+
+        showStudents();
+
+    }
+
+};
+
+
+/* =========================
+   Profile
+========================= */
+
+window.openProfile = function(id) {
+
+    window.location.href =
+        "student-profile.html?id=" +
+        encodeURIComponent(id);
+
+};
+
+
+/* =========================
+   WhatsApp
+========================= */
+
+window.sendWhatsApp = function(id) {
+
+    const student =
+        students.find(function(item) {
+
+            return String(item.id) === String(id);
+
+        });
+
+
+    if (!student) {
+
+        alert("❌ شاګرد پیدا نشو.");
+        return;
+
+    }
+
+
+    let number =
+        String(student.whatsapp || "")
+        .replace(/\D/g, "");
+
+
+    if (number.startsWith("0")) {
+
+        number =
+            "93" + number.substring(1);
+
+    }
+
+    else if (!number.startsWith("93")) {
+
+        number =
+            "93" + number;
+
+    }
+
+
+    if (number.length !== 11) {
+
+        alert(
+            "❌ د WhatsApp نمبر سم نه دی.\n\n" +
+            "مثال: 0701234567"
+        );
+
+        return;
+
+    }
+
+
+    const schoolName =
+        localStorage.getItem("schoolName") ||
+        "د مکتب اداره";
+
+
+    const message =
+        "السلام علیکم\n\n" +
+
+        "محترم د " +
+        student.father +
+        " صاحب!\n\n" +
+
+        "ستاسو زوی/لور " +
+        student.name +
+        " د " +
+        schoolName +
+        " د " +
+        student.className +
+        " ټولګي شاګرد دی.\n\n" +
+
+        "دا پیغام د مکتب د ادارې له خوا دی.";
+
+
+    const url =
+        "https://wa.me/" +
+        number +
+        "?text=" +
+        encodeURIComponent(message);
+
+
+    window.open(url, "_blank");
+
+};
+
+
+/* =========================
+   CSV Export
+========================= */
+
+window.exportStudents = function() {
+
+    if (students.length === 0) {
+
+        alert(
+            "❌ تر اوسه هېڅ شاګرد ثبت شوی نه دی."
+        );
+
+        return;
+
+    }
+
+
+    let csv = "\uFEFF";
+
+    csv +=
+        "د شاګرد نوم,د پلار نوم,ټولګی,WhatsApp نمبر\n";
+
+
+    students.forEach(function(student) {
+
+        csv +=
+
+            '"' +
+            String(student.name || "")
+                .replace(/"/g, '""') +
+            '",' +
+
+            '"' +
+            String(student.father || "")
+                .replace(/"/g, '""') +
+            '",' +
+
+            '"' +
+            String(student.className || "")
+                .replace(/"/g, '""') +
+            '",' +
+
+            '"' +
+            String(student.whatsapp || "")
+                .replace(/"/g, '""') +
+            '"' +
+
+            "\n";
+
+    });
+
+
+    const blob =
+        new Blob(
+            [csv],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "د_شاګردانو_معلومات.csv";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+};
+
+
+/* =========================
+   Dashboard
+========================= */
+
+window.goBack = function() {
+
+    window.location.href =
+        "dashboard.html";
+
+};
+
+
+/* =========================
+   School Name
+========================= */
+
+function loadSchoolName() {
+
+    const schoolName =
+        localStorage.getItem("schoolName");
+
+
+    if (schoolName) {
+
+        document.getElementById(
+            "schoolName"
+        ).textContent = schoolName;
+
+    }
+
+}
+
+
+/* =========================
+   شروع
+========================= */
+
+loadSchoolName();
+
+loadStudents();
+
+</script>
+
+</body>
+</html>

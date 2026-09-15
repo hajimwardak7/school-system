@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>د شاګرد کارت</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    direction:rtl;
+    font-family:Arial,sans-serif;
+    background:#f2f6fc;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+select{
+    width:100%;
+    box-sizing:border-box;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:17px;
+    margin-bottom:15px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    color:white;
+    background:#0d6efd;
+    margin-bottom:15px;
+}
+
+.back{
+    background:#6c757d;
+}
+
+.print{
+    background:#198754;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+}
+
+.card-area{
+    display:flex;
+    justify-content:center;
+    margin-top:20px;
+}
+
+.student-card{
+    width:340px;
+    min-height:210px;
+    background:white;
+    border:3px solid #0d6efd;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+.card-header{
+    background:linear-gradient(
+        135deg,
+        #0d6efd,
+        #084298
+    );
+    color:white;
+    text-align:center;
+    padding:14px;
+}
+
+.card-header h2{
+    margin:0;
+    font-size:21px;
+}
+
+.card-header p{
+    margin:5px 0 0;
+    font-size:13px;
+}
+
+.card-body{
+    padding:18px;
+}
+
+.card-row{
+    padding:7px 0;
+    border-bottom:1px solid #eee;
+    font-size:15px;
+}
+
+.card-row:last-child{
+    border-bottom:none;
+}
+
+.card-label{
+    font-weight:bold;
+    color:#555;
+}
+
+.card-footer{
+    background:#f1f5ff;
+    padding:10px;
+    text-align:center;
+    font-size:12px;
+}
+
+.error{
+    color:red;
+    text-align:center;
+    padding:20px;
+}
+
+@media print{
+
+    body{
+        background:white;
+        padding:0;
+    }
+
+    .header,
+    .box,
+    button{
+        display:none;
+    }
+
+    .card-area{
+        margin:0;
+    }
+
+    .student-card{
+        box-shadow:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<h1>🪪 د شاګرد کارت</h1>
+
+<p>د مکتب د شاګرد رسمي کارت</p>
+
+</div>
+
+
+<button
+class="back"
+onclick="goBack()">
+
+⬅️ بېرته
+
+</button>
+
+
+<div class="box">
+
+<h2>👨‍🎓 شاګرد انتخاب کړه</h2>
+
+
+<select id="studentSelect">
+
+<option value="">
+
+⏳ شاګردان لوډ کېږي...
+
+</option>
+
+</select>
+
+
+<button onclick="showCard()">
+
+🪪 کارت ښکاره کړه
+
+</button>
+
+</div>
+
+
+<div id="loading"
+class="loading">
+
+⏳ معلومات لوډ کېږي...
+
+</div>
+
+
+<div id="cardContainer"
+style="display:none;">
+
+
+<div class="card-area">
+
+
+<div class="student-card">
+
+
+<div class="card-header">
+
+<h2 id="schoolName">
+
+د مکتب نوم
+
+</h2>
+
+<p>
+د شاګرد پېژندپاڼه
+</p>
+
+</div>
+
+
+<div class="card-body">
+
+
+<div class="card-row">
+
+<span class="card-label">
+👨‍🎓 نوم:
+</span>
+
+<span id="studentName">
+-
+</span>
+
+</div>
+
+
+<div class="card-row">
+
+<span class="card-label">
+👨‍👦 د پلار نوم:
+</span>
+
+<span id="fatherName">
+-
+</span>
+
+</div>
+
+
+<div class="card-row">
+
+<span class="card-label">
+🏫 ټولګی:
+</span>
+
+<span id="className">
+-
+</span>
+
+</div>
+
+
+<div class="card-row">
+
+<span class="card-label">
+📱 WhatsApp:
+</span>
+
+<span id="whatsapp">
+-
+</span>
+
+</div>
+
+
+</div>
+
+
+<div class="card-footer">
+
+د مکتب رسمي پېژندپاڼه
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<button
+class="print"
+onclick="window.print()">
+
+🖨️ 🖨️ کارت چاپ کړه
+
+</button>
+
+
+</div>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// =========================
+// Firebase Students
+// =========================
+
+async function loadStudents(){
+
+    const select =
+        document.getElementById(
+            "studentSelect"
+        );
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "students"
+                )
+            );
+
+        const students = [];
+
+
+        snapshot.forEach(function(doc){
+
+            students.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        // LocalStorage تازه کړه
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        fillStudents(students);
+
+
+    }catch(error){
+
+        console.log(
+            "Firebase error:",
+            error
+        );
+
+
+        // Fallback
+
+        const data =
+            localStorage.getItem(
+                "students"
+            );
+
+
+        const students =
+            data
+            ? JSON.parse(data)
+            : [];
+
+
+        fillStudents(students);
+
+    }
+
+}
+
+
+// =========================
+// Dropdown
+// =========================
+
+function fillStudents(students){
+
+    const select =
+        document.getElementById(
+            "studentSelect"
+        );
+
+
+    select.innerHTML =
+
+        '<option value="">' +
+
+        "👨‍🎓 شاګرد انتخاب کړه" +
+
+        "</option>";
+
+
+    students.forEach(
+        function(student){
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                student.id;
+
+
+            option.textContent =
+
+                (student.name || "-") +
+
+                " - " +
+
+                (student.className || "-");
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+}
+
+
+// =========================
+// کارت ښکاره کول
+// =========================
+
+window.showCard = function(){
+
+    const id =
+        document.getElementById(
+            "studentSelect"
+        ).value;
+
+
+    if(!id){
+
+        alert(
+            "⚠️ لومړی یو شاګرد انتخاب کړه."
+        );
+
+        return;
+
+    }
+
+
+    const data =
+        localStorage.getItem(
+            "students"
+        );
+
+
+    const students =
+        data
+        ? JSON.parse(data)
+        : [];
+
+
+    const student =
+        students.find(
+            function(item){
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if(!student){
+
+        alert(
+            "❌ شاګرد پیدا نه شو."
+        );
+
+        return;
+
+    }
+
+
+    // =========================
+    // School Name
+    // =========================
+
+    const settingsData =
+        localStorage.getItem(
+            "schoolSettings"
+        );
+
+
+    let schoolName =
+        localStorage.getItem(
+            "schoolName"
+        ) ||
+        "د مکتب نوم";
+
+
+    if(settingsData){
+
+        try{
+
+            const settings =
+                JSON.parse(
+                    settingsData
+                );
+
+
+            schoolName =
+                settings.schoolName ||
+                schoolName;
+
+        }catch(error){
+
+            console.log(error);
+
+        }
+
+    }
+
+
+    document.getElementById(
+        "schoolName"
+    ).textContent =
+        schoolName;
+
+
+    // =========================
+    // Student Info
+    // =========================
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        student.name || "-";
+
+
+    document.getElementById(
+        "fatherName"
+    ).textContent =
+        student.father || "-";
+
+
+    document.getElementById(
+        "className"
+    ).textContent =
+        student.className || "-";
+
+
+    document.getElementById(
+        "whatsapp"
+    ).textContent =
+        student.whatsapp || "-";
+
+
+    document.getElementById(
+        "cardContainer"
+    ).style.display =
+        "block";
+
+};
+
+
+// =========================
+// Back
+// =========================
+
+window.goBack = function(){
+
+    window.location.href =
+        "students.html";
+
+};
+
+
+// =========================
+// Start
+// =========================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadStudents();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

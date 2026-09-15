@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>د فیس رسید</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+    font-family: Arial, Tahoma, sans-serif;
+    background: #f2f6fc;
+}
+
+.receipt {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 3px 15px rgba(0,0,0,.12);
+}
+
+.school {
+    text-align: center;
+    border-bottom: 2px solid #222;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.school h1 {
+    margin: 0 0 8px;
+    font-size: 25px;
+}
+
+.school p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.info {
+    line-height: 2;
+    font-size: 17px;
+}
+
+.info span {
+    font-weight: normal;
+}
+
+.amount {
+    background: #f1f8ff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    line-height: 2;
+}
+
+.remaining {
+    color: red;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    border-top: 1px dashed #777;
+    padding-top: 15px;
+}
+
+.footer p {
+    margin: 8px 0;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.print {
+    background: #198754;
+    color: white;
+}
+
+.back {
+    background: #6c757d;
+    color: white;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error {
+    text-align: center;
+    color: red;
+    padding: 20px;
+}
+
+@media print {
+
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .receipt {
+        box-shadow: none;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    button {
+        display: none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="receipt">
+
+
+    <!-- SCHOOL -->
+
+    <div class="school">
+
+        <h1 id="schoolName">
+            د مکتب اداره
+        </h1>
+
+        <p>
+            🧾 د فیس رسمي رسید
+        </p>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+        id="loading"
+        class="loading">
+
+        ⏳ د رسید معلومات لوډ کېږي...
+
+    </div>
+
+
+    <!-- RECEIPT CONTENT -->
+
+    <div
+        id="receiptContent"
+        style="display:none;">
+
+
+        <!-- STUDENT INFORMATION -->
+
+        <div class="info">
+
+            <b>🧾 رسید نمبر:</b>
+            <span id="receiptNo">—</span>
+
+            <br>
+
+            <b>👨‍🎓 د شاګرد نوم:</b>
+            <span id="studentName">—</span>
+
+            <br>
+
+            <b>👨‍👦 د پلار نوم:</b>
+            <span id="fatherName">—</span>
+
+            <br>
+
+            <b>🏫 ټولګی:</b>
+            <span id="className">—</span>
+
+            <br>
+
+            <b>📅 میاشت:</b>
+            <span id="month">—</span>
+
+            <br>
+
+            <b>📆 د ثبت نېټه:</b>
+            <span id="date">—</span>
+
+            <br>
+
+            <b>💳 د تادیې طریقه:</b>
+            <span id="paymentMethod">—</span>
+
+            <br>
+
+            <b>👤 د پیسې ورکوونکي نوم:</b>
+            <span id="payerName">—</span>
+
+        </div>
+
+
+        <!-- FEE INFORMATION -->
+
+        <div class="amount">
+
+            <b>💰 ټول فیس:</b>
+            <span id="total">0 افغانۍ</span>
+
+            <br>
+
+            <b>💵 ورکړل شوی:</b>
+            <span id="paid">0 افغانۍ</span>
+
+            <br>
+
+            <b class="remaining">
+
+                ⚠️ پاتې فیس:
+
+                <span id="remaining">
+                    0 افغانۍ
+                </span>
+
+            </b>
+
+        </div>
+
+
+        <!-- FOOTER -->
+
+        <div class="footer">
+
+            <p>
+                مننه چې زموږ مکتب مو انتخاب کړی.
+            </p>
+
+            <p id="adminInfo"></p>
+
+        </div>
+
+
+        <!-- PRINT -->
+
+        <button
+            class="print"
+            onclick="window.print()">
+
+            🖨️ رسید چاپ کړه
+
+        </button>
+
+
+        <!-- BACK -->
+
+        <button
+            class="back"
+            onclick="goBack()">
+
+            ⬅️ بېرته فیس ته
+
+        </button>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorBox"
+        class="error"
+        style="display:none;">
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import {
+    db
+} from "./firebase.js";
+
+
+// =====================================
+// LOGIN CHECK
+// =====================================
+
+if (
+    localStorage.getItem("adminLoggedIn")
+    !== "true"
+) {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+// =====================================
+// GET LOCAL STUDENTS
+// =====================================
+
+function getLocalStudents() {
+
+    try {
+
+        const data =
+            localStorage.getItem("students");
+
+        if (!data) {
+            return [];
+        }
+
+        const students =
+            JSON.parse(data);
+
+        return Array.isArray(students)
+            ? students
+            : [];
+
+    }
+
+    catch(error) {
+
+        return [];
+
+    }
+
+}
+
+
+// =====================================
+// GET LOCAL FEES
+// =====================================
+
+function getLocalFees() {
+
+    try {
+
+        const data =
+            localStorage.getItem("fees");
+
+        if (!data) {
+            return [];
+        }
+
+        const fees =
+            JSON.parse(data);
+
+        return Array.isArray(fees)
+            ? fees
+            : [];
+
+    }
+
+    catch(error) {
+
+        return [];
+
+    }
+
+}
+
+
+// =====================================
+// LOAD SCHOOL NAME
+// =====================================
+
+function loadSchoolName() {
+
+    const schoolName =
+        localStorage.getItem(
+            "schoolName"
+        );
+
+    document.getElementById(
+        "schoolName"
+    ).textContent =
+        schoolName ||
+        "د مکتب اداره";
+
+}
+
+
+// =====================================
+// SHOW ERROR
+// =====================================
+
+function showError(message) {
+
+    document.getElementById(
+        "loading"
+    ).style.display = "none";
+
+    document.getElementById(
+        "receiptContent"
+    ).style.display = "none";
+
+    const errorBox =
+        document.getElementById(
+            "errorBox"
+        );
+
+    errorBox.style.display = "block";
+
+    errorBox.textContent =
+        message;
+
+}
+
+
+// =====================================
+// LOAD RECEIPT
+// =====================================
+
+async function loadReceipt() {
+
+    const feeId =
+        new URLSearchParams(
+            window.location.search
+        ).get("id");
+
+
+    if (!feeId) {
+
+        showError(
+            "❌ د رسید نمبر/ID پیدا نشو."
+        );
+
+        return;
+
+    }
+
+
+    let fees = [];
+
+
+    // =================================
+    // FIREBASE FEES
+    // =================================
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "fees"
+                )
+            );
+
+
+        fees =
+            snapshot.docs.map(
+                function(doc) {
+
+                    return {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+
+                }
+            );
+
+
+        // Save local copy
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Firebase fees error:",
+            error
+        );
+
+
+        // LocalStorage fallback
+
+        fees =
+            getLocalFees();
+
+    }
+
+
+    // =================================
+    // FIND FEE
+    // =================================
+
+    const fee =
+        fees.find(
+            function(item) {
+
+                return String(item.id)
+                ===
+                String(feeId);
+
+            }
+        );
+
+
+    if (!fee) {
+
+        showError(
+            "❌ فیس پیدا نشو."
+        );
+
+        return;
+
+    }
+
+
+    // =================================
+    // GET STUDENTS
+    // =================================
+
+    let students = [];
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "students"
+                )
+            );
+
+
+        students =
+            snapshot.docs.map(
+                function(doc) {
+
+                    return {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+
+                }
+            );
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Firebase students error:",
+            error
+        );
+
+        students =
+            getLocalStudents();
+
+    }
+
+
+    // =================================
+    // FIND STUDENT
+    // =================================
+
+    const student =
+        students.find(
+            function(item) {
+
+                return String(item.id)
+                ===
+                String(fee.studentId);
+
+            }
+        );
+
+
+    // =================================
+    // RECEIPT NUMBER
+    // =================================
+
+    document.getElementById(
+        "receiptNo"
+    ).textContent =
+        fee.receiptNo ||
+        "—";
+
+
+    // =================================
+    // STUDENT NAME
+    // =================================
+
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        fee.studentName ||
+        (
+            student
+            ? student.name
+            : "—"
+        );
+
+
+    // =================================
+    // FATHER
+    // =================================
+
+    document.getElementById(
+        "fatherName"
+    ).textContent =
+        fee.father ||
+        (
+            student
+            ? student.father
+            : "—"
+        ) ||
+        "—";
+
+
+    // =================================
+    // CLASS
+    // =================================
+
+    document.getElementById(
+        "className"
+    ).textContent =
+        fee.className ||
+        (
+            student
+            ? student.className
+            : "—"
+        ) ||
+        "—";
+
+
+    // =================================
+    // MONTH
+    // =================================
+
+    document.getElementById(
+        "month"
+    ).textContent =
+        fee.month ||
+        "—";
+
+
+    // =================================
+    // DATE
+    // =================================
+
+    document.getElementById(
+        "date"
+    ).textContent =
+        fee.date ||
+        "—";
+
+
+    // =================================
+    // PAYMENT METHOD
+    // =================================
+
+    let paymentMethod =
+        fee.paymentMethod ||
+        "—";
+
+
+    if (
+        paymentMethod === "cash"
+    ) {
+
+        paymentMethod =
+            "💵 نغدې";
+
+    }
+
+    else if (
+        paymentMethod === "bank"
+    ) {
+
+        paymentMethod =
+            "🏦 بانک";
+
+    }
+
+
+    document.getElementById(
+        "paymentMethod"
+    ).textContent =
+        paymentMethod;
+
+
+    // =================================
+    // PAYER NAME
+    // =================================
+
+    document.getElementById(
+        "payerName"
+    ).textContent =
+        fee.payerName ||
+        fee.father ||
+        (
+            student
+            ? student.father
+            : "—"
+        ) ||
+        "—";
+
+
+    // =================================
+    // TOTAL
+    // =================================
+
+    const total =
+        Number(fee.total) || 0;
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        total.toLocaleString()
+        +
+        " افغانۍ";
+
+
+    // =================================
+    // PAID
+    // =================================
+
+    const paid =
+        Number(fee.paid) || 0;
+
+
+    document.getElementById(
+        "paid"
+    ).textContent =
+        paid.toLocaleString()
+        +
+        " افغانۍ";
+
+
+    // =================================
+    // REMAINING
+    // =================================
+
+    const remaining =
+        Number(
+            fee.remaining
+        ) ||
+        (
+            total -
+            paid
+        );
+
+
+    document.getElementById(
+        "remaining"
+    ).textContent =
+        remaining.toLocaleString()
+        +
+        " افغانۍ";
+
+
+    // =================================
+    // ADMIN INFO
+    // =================================
+
+    const settingsData =
+        localStorage.getItem(
+            "schoolSettings"
+        );
+
+
+    if (settingsData) {
+
+        try {
+
+            const settings =
+                JSON.parse(
+                    settingsData
+                );
+
+
+            if (
+                settings.adminName
+            ) {
+
+                document.getElementById(
+                    "adminInfo"
+                ).textContent =
+                    "👨‍💼 مدیر: "
+                    +
+                    settings.adminName;
+
+            }
+
+        }
+
+        catch(error) {
+
+            console.log(
+                "Settings error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // =================================
+    // SHOW
+    // =================================
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "receiptContent"
+    ).style.display =
+        "block";
+
+}
+
+
+// =====================================
+// BACK
+// =====================================
+
+window.goBack =
+function() {
+
+    window.location.href =
+        "fees.html";
+
+};
+
+
+// =====================================
+// START
+// =====================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadSchoolName();
+
+        loadReceipt();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

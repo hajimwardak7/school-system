@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>میاشتنی فیس راپور</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    direction:rtl;
+    font-family:Arial,sans-serif;
+    background:#f2f6fc;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+select{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:17px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    color:white;
+    background:#0d6efd;
+    margin-bottom:15px;
+}
+
+.back{
+    background:#6c757d;
+}
+
+.print{
+    background:#198754;
+}
+
+.student{
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:12px;
+    background:#fafafa;
+}
+
+.green{
+    color:green;
+    font-weight:bold;
+}
+
+.red{
+    color:red;
+    font-weight:bold;
+}
+
+.summary{
+    padding:18px;
+    border-radius:12px;
+    background:#f8f9fa;
+    margin-bottom:15px;
+    font-size:18px;
+}
+
+.loading{
+    text-align:center;
+    padding:20px;
+    font-size:18px;
+}
+
+.empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+@media print{
+
+    button,
+    select{
+        display:none;
+    }
+
+    body{
+        background:white;
+    }
+
+    .box{
+        box-shadow:none;
+        border:1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<h1>📅 میاشتنی فیس راپور</h1>
+
+<p>د میاشتې او ټولګي له مخې د فیس راپور</p>
+
+</div>
+
+
+<button
+class="back"
+onclick="goBack()">
+
+⬅️ بېرته
+
+</button>
+
+
+<div class="box">
+
+<h2>🔎 راپور انتخاب کړه</h2>
+
+
+<label>
+📅 میاشت
+</label>
+
+<select id="month">
+
+<option value="حمل">حمل</option>
+<option value="ثور">ثور</option>
+<option value="جوزا">جوزا</option>
+<option value="سرطان">سرطان</option>
+<option value="اسد">اسد</option>
+<option value="سنبله">سنبله</option>
+<option value="میزان">میزان</option>
+<option value="عقرب">عقرب</option>
+<option value="قوس">قوس</option>
+<option value="جدي">جدي</option>
+<option value="دلو">دلو</option>
+<option value="حوت">حوت</option>
+
+</select>
+
+
+<label>
+🏫 ټولګی
+</label>
+
+<select id="className">
+
+<option value="ټول">ټول ټولګي</option>
+
+<option value="اول">اول</option>
+<option value="دوهم">دوهم</option>
+<option value="دریم">دریم</option>
+<option value="څلورم">څلورم</option>
+<option value="پنځم">پنځم</option>
+<option value="شپږم">شپږم</option>
+<option value="اووم">اووم</option>
+<option value="اتم">اتم</option>
+<option value="نهم">نهم</option>
+<option value="لسم">لسم</option>
+<option value="یوولسم">یوولسم</option>
+<option value="دولسم">دولسم</option>
+
+</select>
+
+
+<button onclick="loadReport()">
+
+🔍 راپور ښکاره کړه
+
+</button>
+
+</div>
+
+
+<div id="loading"
+class="loading">
+
+⏳ معلومات لوډ کېږي...
+
+</div>
+
+
+<div id="report"
+style="display:none;">
+
+
+<div class="box">
+
+<h2>📊 عمومي حساب</h2>
+
+<div class="summary">
+
+👨‍🎓 د شاګردانو شمېر:
+
+<b id="studentCount">0</b>
+
+</div>
+
+
+<div class="summary">
+
+💰 ټول فیس:
+
+<b id="totalFee">0</b>
+افغانۍ
+
+</div>
+
+
+<div class="summary">
+
+<span class="green">
+
+💵 ټول ورکړل شوی:
+
+</span>
+
+<b id="totalPaid">0</b>
+افغانۍ
+
+</div>
+
+
+<div class="summary">
+
+<span class="red">
+
+🔴 ټول پاتې:
+
+</span>
+
+<b id="totalRemaining">0</b>
+افغانۍ
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>👨‍🎓 د شاګردانو راپور</h2>
+
+<div id="studentReport"></div>
+
+</div>
+
+
+</div>
+
+
+<button
+class="print"
+onclick="window.print()">
+
+🖨️ راپور چاپ کړه
+
+</button>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// =========================
+// Firebase Students
+// =========================
+
+async function getStudentsFromFirebase(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"students")
+            );
+
+        const students = [];
+
+        snapshot.forEach(function(doc){
+
+            students.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        return students;
+
+    }catch(error){
+
+        console.log(
+            "Students error:",
+            error
+        );
+
+
+        const data =
+            localStorage.getItem("students");
+
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// =========================
+// Firebase Fees
+// =========================
+
+async function getFeesFromFirebase(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"fees")
+            );
+
+        const fees = [];
+
+
+        snapshot.forEach(function(doc){
+
+            fees.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
+
+
+        return fees;
+
+    }catch(error){
+
+        console.log(
+            "Fees error:",
+            error
+        );
+
+
+        const data =
+            localStorage.getItem("fees");
+
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// =========================
+// راپور
+// =========================
+
+window.loadReport = async function(){
+
+    const loading =
+        document.getElementById("loading");
+
+    const report =
+        document.getElementById("report");
+
+
+    loading.style.display =
+        "block";
+
+
+    report.style.display =
+        "none";
+
+
+    try{
+
+        const students =
+            await getStudentsFromFirebase();
+
+
+        const fees =
+            await getFeesFromFirebase();
+
+
+        const selectedMonth =
+            document.getElementById(
+                "month"
+            ).value;
+
+
+        const selectedClass =
+            document.getElementById(
+                "className"
+            ).value;
+
+
+        // =========================
+        // د انتخاب مطابق شاګردان
+        // =========================
+
+        let filteredStudents =
+            students;
+
+
+        if(selectedClass !== "ټول"){
+
+            filteredStudents =
+                students.filter(function(student){
+
+                    return String(
+                        student.className || ""
+                    ) === selectedClass;
+
+                });
+
+        }
+
+
+        // =========================
+        // حساب
+        // =========================
+
+        let totalFee = 0;
+
+        let totalPaid = 0;
+
+        let totalRemaining = 0;
+
+        let studentCount = 0;
+
+
+        const studentReport =
+            document.getElementById(
+                "studentReport"
+            );
+
+
+        studentReport.innerHTML = "";
+
+
+        filteredStudents.forEach(function(student){
+
+            // د همدې شاګرد فیس پیدا کړه
+
+            const studentFees =
+                fees.filter(function(fee){
+
+                    return (
+
+                        String(
+                            fee.studentId || ""
+                        ) === String(student.id)
+
+                        &&
+
+                        String(
+                            fee.month || ""
+                        ) === selectedMonth
+
+                    );
+
+                });
+
+
+            // که د دې میاشتې فیس نه لري
+
+            if(studentFees.length === 0){
+
+                return;
+
+            }
+
+
+            let studentTotal = 0;
+
+            let studentPaid = 0;
+
+            let studentRemaining = 0;
+
+
+            studentFees.forEach(function(fee){
+
+                studentTotal +=
+                    Number(fee.total) || 0;
+
+                studentPaid +=
+                    Number(fee.paid) || 0;
+
+                studentRemaining +=
+                    Number(fee.remaining) || 0;
+
+            });
+
+
+            studentCount++;
+
+
+            totalFee +=
+                studentTotal;
+
+
+            totalPaid +=
+                studentPaid;
+
+
+            totalRemaining +=
+                studentRemaining;
+
+
+            // =========================
+            // کارت
+            // =========================
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "student";
+
+
+            div.innerHTML =
+
+                "<b>👨‍🎓 " +
+                escapeHtml(
+                    student.name || ""
+                ) +
+                "</b>" +
+
+                "<br>" +
+
+                "👨‍👦 پلار: " +
+                escapeHtml(
+                    student.father || "-"
+                ) +
+
+                "<br>" +
+
+                "🏫 ټولګی: " +
+                escapeHtml(
+                    student.className || "-"
+                ) +
+
+                "<br><br>" +
+
+                "💰 ټول فیس: " +
+
+                studentTotal.toLocaleString() +
+
+                " افغانۍ" +
+
+                "<br>" +
+
+                '<span class="green">' +
+
+                "💵 ورکړل شوی: " +
+
+                studentPaid.toLocaleString() +
+
+                " افغانۍ" +
+
+                "</span>" +
+
+                "<br>" +
+
+                '<span class="red">' +
+
+                "🔴 پاتې: " +
+
+                studentRemaining.toLocaleString() +
+
+                " افغانۍ" +
+
+                "</span>";
+
+
+            studentReport.appendChild(
+                div
+            );
+
+        });
+
+
+        // =========================
+        // که نتیجه نه وي
+        // =========================
+
+        if(studentCount === 0){
+
+            studentReport.innerHTML =
+
+                '<div class="empty">' +
+
+                "📭 د دې میاشتې لپاره فیس ثبت شوی نه دی." +
+
+                "</div>";
+
+        }
+
+
+        // =========================
+        // عمومي معلومات
+        // =========================
+
+        document.getElementById(
+            "studentCount"
+        ).textContent =
+            studentCount;
+
+
+        document.getElementById(
+            "totalFee"
+        ).textContent =
+            totalFee.toLocaleString();
+
+
+        document.getElementById(
+            "totalPaid"
+        ).textContent =
+            totalPaid.toLocaleString();
+
+
+        document.getElementById(
+            "totalRemaining"
+        ).textContent =
+            totalRemaining.toLocaleString();
+
+
+        loading.style.display =
+            "none";
+
+
+        report.style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        loading.innerHTML =
+
+            '<div style="color:red;">' +
+
+            "❌ راپور لوډ نه شو." +
+
+            "<br><br>" +
+
+            error.message +
+
+            "</div>";
+
+    }
+
+};
+
+
+// =========================
+// HTML Escape
+// =========================
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+// =========================
+// Back
+// =========================
+
+window.goBack = function(){
+
+    window.location.href =
+        "fees.html";
+
+};
+
+
+// =========================
+// شروع
+// =========================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        loadReport();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

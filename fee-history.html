@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>د فیس تاریخچه</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+    font-family: Arial, sans-serif;
+    background: #f2f6fc;
+}
+
+.header {
+    background: linear-gradient(135deg,#0d6efd,#084298);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 17px;
+}
+
+.history {
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    line-height: 2;
+}
+
+.paid {
+    color: green;
+    font-weight: bold;
+}
+
+.remaining {
+    color: red;
+    font-weight: bold;
+}
+
+.summary {
+    background: #e9f2ff;
+    padding: 15px;
+    border-radius: 12px;
+    line-height: 2;
+    font-size: 18px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #6c757d;
+    color: white;
+    font-size: 18px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+.print {
+    background: #198754;
+}
+
+.receipt {
+    background: #0d6efd;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+}
+
+.loading {
+    text-align: center;
+    color: #777;
+    padding: 15px;
+}
+
+@media print {
+
+    body {
+        background: white;
+        padding: 0;
+    }
+
+    .header {
+        box-shadow: none;
+    }
+
+    button,
+    .select-box {
+        display: none !important;
+    }
+
+    .box {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <h1>
+        📜 د فیس تاریخچه
+    </h1>
+
+    <p>
+        د شاګرد د فیس ټول تادیات
+    </p>
+
+</div>
+
+
+<!-- =========================
+     BACK
+========================= -->
+
+<button onclick="goBack()">
+
+    ⬅️ بېرته
+
+</button>
+
+
+<!-- =========================
+     STUDENT SELECT
+========================= -->
+
+<div class="box select-box">
+
+    <h2>
+        👨‍🎓 شاګرد انتخاب کړئ
+    </h2>
+
+    <select
+        id="studentSelect"
+        onchange="showHistory()">
+
+        <option value="">
+            -- شاګرد انتخاب کړئ --
+        </option>
+
+    </select>
+
+    <div
+        id="loading"
+        class="loading">
+
+        ⏳ معلومات لوډ کېږي...
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     HISTORY
+========================= -->
+
+<div
+    id="historyBox"
+    class="box"
+    style="display:none;">
+
+    <h2 id="studentTitle"></h2>
+
+    <div id="historyList"></div>
+
+    <div
+        id="summary"
+        class="summary">
+    </div>
+
+    <br>
+
+
+    <!-- PRINT -->
+
+    <button
+        class="print"
+        onclick="window.print()">
+
+        🖨️ تاریخچه چاپ کړه
+
+    </button>
+
+</div>
+
+
+<script type="module">
+
+
+// ======================================
+// FIREBASE
+// ======================================
+
+import {
+    collection,
+    getDocs,
+    deleteDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import {
+    db
+} from "./firebase.js";
+
+
+// ======================================
+// LOGIN
+// ======================================
+
+if (
+    localStorage.getItem(
+        "adminLoggedIn"
+    ) !== "true"
+) {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+// ======================================
+// LOCAL STUDENTS
+// ======================================
+
+function getLocalStudents() {
+
+    try {
+
+        const data =
+            localStorage.getItem(
+                "students"
+            );
+
+        if (!data) {
+            return [];
+        }
+
+        const students =
+            JSON.parse(data);
+
+        return Array.isArray(students)
+            ? students
+            : [];
+
+    }
+
+    catch(error) {
+
+        return [];
+
+    }
+
+}
+
+
+// ======================================
+// LOCAL FEES
+// ======================================
+
+function getLocalFees() {
+
+    try {
+
+        const data =
+            localStorage.getItem(
+                "fees"
+            );
+
+        if (!data) {
+            return [];
+        }
+
+        const fees =
+            JSON.parse(data);
+
+        return Array.isArray(fees)
+            ? fees
+            : [];
+
+    }
+
+    catch(error) {
+
+        return [];
+
+    }
+
+}
+
+
+// ======================================
+// LOAD STUDENTS
+// ======================================
+
+async function loadStudents() {
+
+    const select =
+        document.getElementById(
+            "studentSelect"
+        );
+
+    let students = [];
+
+
+    // ==================================
+    // FIREBASE
+    // ==================================
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "students"
+                )
+            );
+
+
+        students =
+            snapshot.docs.map(
+                function(item) {
+
+                    return {
+                        id: item.id,
+                        ...item.data()
+                    };
+
+                }
+            );
+
+
+        // LOCAL COPY
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(
+                students
+            )
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Firebase students error:",
+            error
+        );
+
+
+        // FALLBACK
+
+        students =
+            getLocalStudents();
+
+    }
+
+
+    // ==================================
+    // CLEAR OPTIONS
+    // ==================================
+
+    select.innerHTML =
+
+        '<option value="">' +
+        '-- شاګرد انتخاب کړئ --' +
+        '</option>';
+
+
+    // ==================================
+    // ADD STUDENTS
+    // ==================================
+
+    students.forEach(
+        function(student) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                student.id;
+
+            option.textContent =
+                (
+                    student.name ||
+                    "بې نومه"
+                )
+                +
+                " - "
+                +
+                (
+                    student.className ||
+                    ""
+                );
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    // ==================================
+    // LOADING HIDE
+    // ==================================
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+}
+
+
+// ======================================
+// SHOW HISTORY
+// ======================================
+
+async function showHistory() {
+
+    const studentId =
+        document.getElementById(
+            "studentSelect"
+        ).value;
+
+
+    const historyBox =
+        document.getElementById(
+            "historyBox"
+        );
+
+
+    if (!studentId) {
+
+        historyBox.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    // ==================================
+    // GET STUDENTS
+    // ==================================
+
+    let students =
+        getLocalStudents();
+
+
+    // ==================================
+    // FIND STUDENT
+    // ==================================
+
+    let student =
+        students.find(
+            function(item) {
+
+                return String(item.id)
+                ===
+                String(studentId);
+
+            }
+        );
+
+
+    // ==================================
+    // IF STUDENT NOT LOCAL
+    // ==================================
+
+    if (!student) {
+
+        try {
+
+            const snapshot =
+                await getDocs(
+                    collection(
+                        db,
+                        "students"
+                    )
+                );
+
+
+            students =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return {
+                            id: item.id,
+                            ...item.data()
+                        };
+
+                    }
+                );
+
+
+            student =
+                students.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        )
+                        ===
+                        String(
+                            studentId
+                        );
+
+                    }
+                );
+
+        }
+
+        catch(error) {
+
+            console.log(error);
+
+        }
+
+    }
+
+
+    if (!student) {
+
+        alert(
+            "❌ شاګرد پیدا نشو."
+        );
+
+        return;
+
+    }
+
+
+    // ==================================
+    // GET FEES
+    // ==================================
+
+    let fees = [];
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "fees"
+                )
+            );
+
+
+        fees =
+            snapshot.docs.map(
+                function(item) {
+
+                    return {
+                        id: item.id,
+                        ...item.data()
+                    };
+
+                }
+            );
+
+
+        // SAVE LOCAL
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(
+                fees
+            )
+        );
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Firebase fees error:",
+            error
+        );
+
+
+        fees =
+            getLocalFees();
+
+    }
+
+
+    // ==================================
+    // STUDENT TITLE
+    // ==================================
+
+    document.getElementById(
+        "studentTitle"
+    ).innerHTML =
+
+        "👨‍🎓 " +
+        escapeHTML(
+            student.name ||
+            "—"
+        )
+
+        +
+
+        "<br>"
+
+        +
+
+        "<small>" +
+        "🏫 ټولګی: " +
+        escapeHTML(
+            student.className ||
+            "—"
+        )
+        +
+        "</small>";
+
+
+    // ==================================
+    // FILTER FEES
+    // ==================================
+
+    const studentFees =
+        fees.filter(
+            function(fee) {
+
+                return String(
+                    fee.studentId
+                )
+                ===
+                String(
+                    student.id
+                );
+
+            }
+        );
+
+
+    // ==================================
+    // HISTORY LIST
+    // ==================================
+
+    const historyList =
+        document.getElementById(
+            "historyList"
+        );
+
+    historyList.innerHTML = "";
+
+
+    // ==================================
+    // TOTALS
+    // ==================================
+
+    let totalFee = 0;
+
+    let totalPaid = 0;
+
+    let totalRemaining = 0;
+
+
+    // ==================================
+    // NO FEES
+    // ==================================
+
+    if (
+        studentFees.length === 0
+    ) {
+
+        historyList.innerHTML =
+
+            '<div class="empty">' +
+
+            "❌ د دې شاګرد هېڅ فیس ثبت شوی نه دی."
+
+            +
+
+            "</div>";
+
+    }
+
+
+    // ==================================
+    // SORT
+    // ==================================
+
+    studentFees
+        .slice()
+        .reverse()
+        .forEach(
+            function(fee) {
+
+
+                // --------------------------
+                // NUMBERS
+                // --------------------------
+
+                const total =
+                    Number(
+                        fee.total
+                    ) || 0;
+
+
+                const paid =
+                    Number(
+                        fee.paid
+                    ) || 0;
+
+
+                const remaining =
+                    Number(
+                        fee.remaining
+                    )
+                    ||
+                    (
+                        total -
+                        paid
+                    );
+
+
+                // --------------------------
+                // TOTALS
+                // --------------------------
+
+                totalFee +=
+                    total;
+
+                totalPaid +=
+                    paid;
+
+                totalRemaining +=
+                    remaining;
+
+
+                // --------------------------
+                // CARD
+                // --------------------------
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "history";
+
+
+                // --------------------------
+                // STATUS
+                // --------------------------
+
+                let status = "";
+
+
+                if (
+                    remaining <= 0
+                ) {
+
+                    status =
+
+                        '<span class="paid">' +
+
+                        "✅ فیس مکمل ورکړل شوی"
+
+                        +
+
+                        "</span>";
+
+                }
+
+                else {
+
+                    status =
+
+                        '<span class="remaining">' +
+
+                        "⚠️ پاتې: " +
+
+                        remaining.toLocaleString()
+
+                        +
+
+                        " افغانۍ"
+
+                        +
+
+                        "</span>";
+
+                }
+
+
+                // --------------------------
+                // RECEIPT BUTTON
+                // --------------------------
+
+                let receiptButton = "";
+
+
+                if (fee.id) {
+
+                    receiptButton =
+
+                        '<button class="receipt" ' +
+
+                        'onclick="openReceipt(\'' +
+
+                        escapeAttribute(
+                            fee.id
+                        )
+
+                        +
+
+                        '\')">' +
+
+                        "🧾 رسید وګورئ" +
+
+                        "</button>";
+
+                }
+
+
+                // --------------------------
+                // CONTENT
+                // --------------------------
+
+                div.innerHTML =
+
+                    "<b>📅 میاشت: " +
+
+                    escapeHTML(
+                        fee.month ||
+                        "—"
+                    )
+
+                    +
+
+                    "</b>"
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    "🧾 رسید نمبر: "
+
+                    +
+
+                    escapeHTML(
+                        fee.receiptNo ||
+                        "—"
+                    )
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    "💰 ټول فیس: "
+
+                    +
+
+                    total.toLocaleString()
+
+                    +
+
+                    " افغانۍ"
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    "💵 ورکړل شوی: "
+
+                    +
+
+                    paid.toLocaleString()
+
+                    +
+
+                    " افغانۍ"
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    status
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    "📆 د ثبت نېټه: "
+
+                    +
+
+                    escapeHTML(
+                        fee.date ||
+                        "—"
+                    )
+
+                    +
+
+                    "<br>"
+
+                    +
+
+                    receiptButton;
+
+
+                historyList.appendChild(
+                    div
+                );
+
+            }
+        );
+
+
+    // ==================================
+    // SUMMARY
+    // ==================================
+
+    document.getElementById(
+        "summary"
+    ).innerHTML =
+
+        "<b>📊 ټولیز حساب</b>"
+
+        +
+
+        "<br>"
+
+        +
+
+        "🧾 ټول ریکارډونه: "
+
+        +
+
+        studentFees.length
+
+        +
+
+        "<br>"
+
+        +
+
+        "💰 ټول فیس: "
+
+        +
+
+        totalFee.toLocaleString()
+
+        +
+
+        " افغانۍ"
+
+        +
+
+        "<br>"
+
+        +
+
+        "💵 ټول ورکړل شوی: "
+
+        +
+
+        totalPaid.toLocaleString()
+
+        +
+
+        " افغانۍ"
+
+        +
+
+        "<br>"
+
+        +
+
+        '<span class="remaining">' +
+
+        "🔴 ټول پاتې: "
+
+        +
+
+        totalRemaining.toLocaleString()
+
+        +
+
+        " افغانۍ"
+
+        +
+
+        "</span>";
+
+
+    // ==================================
+    // SHOW
+    // ==================================
+
+    historyBox.style.display =
+        "block";
+
+}
+
+
+// ======================================
+// OPEN RECEIPT
+// ======================================
+
+window.openReceipt =
+function(id) {
+
+    window.location.href =
+        "fee-receipt.html?id="
+        +
+        encodeURIComponent(id);
+
+};
+
+
+// ======================================
+// BACK
+// ======================================
+
+window.goBack =
+function() {
+
+    window.location.href =
+        "fees.html";
+
+};
+
+
+// ======================================
+// ESCAPE HTML
+// ======================================
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+// ======================================
+// ESCAPE ATTRIBUTE
+// ======================================
+
+function escapeAttribute(value) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /\\/g,
+        "\\\\"
+    )
+    .replace(
+        /'/g,
+        "\\'"
+    );
+
+}
+
+
+// ======================================
+// MAKE GLOBAL
+// ======================================
+
+window.showHistory =
+    showHistory;
+
+
+// ======================================
+// START
+// ======================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadStudents();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

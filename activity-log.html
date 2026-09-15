@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>Activity Log - School System</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f6f9;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    text-align:center;
+    padding:22px;
+}
+
+.container{
+    max-width:750px;
+    margin:auto;
+    padding:15px;
+}
+
+.box{
+    background:white;
+    padding:18px;
+    border-radius:15px;
+    margin-bottom:15px;
+    box-shadow:0 3px 10px #0002;
+}
+
+.log{
+    border-right:5px solid #0d6efd;
+    background:#f8f9fa;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.log-title{
+    font-weight:bold;
+    font-size:17px;
+}
+
+.log-date{
+    color:#777;
+    font-size:13px;
+    margin-top:8px;
+}
+
+.empty{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+
+button{
+    width:100%;
+    padding:13px;
+    border:0;
+    border-radius:10px;
+    margin-top:8px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.clear{
+    background:#dc3545;
+    color:white;
+}
+
+.back{
+    background:#6c757d;
+    color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+<h2>📋 د سیستم فعالیتونه</h2>
+
+<p>Activity Log</p>
+
+</div>
+
+
+<div class="container">
+
+
+<div class="box">
+
+<h3>📊 د فعالیتونو شمېر</h3>
+
+<p id="totalLogs">
+0 فعالیتونه
+</p>
+
+</div>
+
+
+<div class="box">
+
+<div id="logs"></div>
+
+</div>
+
+
+<div class="box">
+
+<button
+class="clear"
+onclick="clearLogs()">
+
+🗑️ ټول Logs پاک کړئ
+
+</button>
+
+
+<button
+class="back"
+onclick="window.location.href='dashboard.html'">
+
+⬅️ Dashboard ته بېرته
+
+</button>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+
+function getLogs(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem("activityLogs")
+            || "[]"
+        );
+
+    }catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+function showLogs(){
+
+    const logs =
+        getLogs();
+
+
+    document.getElementById("totalLogs")
+        .textContent =
+        logs.length +
+        " فعالیتونه";
+
+
+    const container =
+        document.getElementById("logs");
+
+
+    if(logs.length === 0){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                📋 تر اوسه کوم Activity Log نشته.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    logs
+        .slice()
+        .reverse()
+        .forEach(function(log){
+
+            html += `
+
+                <div class="log">
+
+                    <div class="log-title">
+
+                        ${escapeHTML(
+                            log.icon || "📌"
+                        )}
+
+                        ${escapeHTML(
+                            log.action || ""
+                        )}
+
+                    </div>
+
+                    <div>
+
+                        ${escapeHTML(
+                            log.details || ""
+                        )}
+
+                    </div>
+
+                    <div class="log-date">
+
+                        👤
+                        ${escapeHTML(
+                            log.user || "نامعلوم"
+                        )}
+
+                        <br>
+
+                        🕒
+                        ${escapeHTML(
+                            log.date || ""
+                        )}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+function clearLogs(){
+
+    const confirmDelete =
+        confirm(
+            "⚠️ ایا ټول Activity Logs پاک کړئ؟"
+        );
+
+
+    if(!confirmDelete){
+
+        return;
+
+    }
+
+
+    localStorage.removeItem(
+        "activityLogs"
+    );
+
+
+    showLogs();
+
+
+    alert(
+        "✅ Activity Logs پاک شول."
+    );
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value || "")
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+showLogs();
+
+</script>
+
+</body>
+
+</html>

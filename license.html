@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>د سیستم فعالول</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    direction:rtl;
+    font-family:Arial,sans-serif;
+    background:#f2f6fc;
+}
+
+.container{
+    max-width:500px;
+    margin:40px auto;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 5px 20px rgba(0,0,0,.10);
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:25px;
+    border-radius:15px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.header h1{
+    margin:0 0 10px;
+}
+
+label{
+    display:block;
+    margin-bottom:7px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:17px;
+    margin-bottom:15px;
+    direction:ltr;
+    text-align:left;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:10px;
+    background:#0d6efd;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+button:disabled{
+    opacity:.6;
+}
+
+.message{
+    margin-top:15px;
+    padding:15px;
+    border-radius:10px;
+    display:none;
+    line-height:1.8;
+}
+
+.success{
+    display:block;
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    display:block;
+    background:#f8d7da;
+    color:#842029;
+}
+
+.info{
+    display:block;
+    background:#cff4fc;
+    color:#055160;
+}
+
+.school{
+    margin-top:20px;
+    padding:15px;
+    background:#f8f9fa;
+    border-radius:10px;
+    line-height:2;
+}
+
+.small{
+    color:#777;
+    font-size:14px;
+    margin-top:15px;
+    text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+
+<div class="header">
+
+<h1>🔐 د سیستم فعالول</h1>
+
+<p>School Management System</p>
+
+</div>
+
+
+<div class="card">
+
+
+<label>
+🔑 License Key
+</label>
+
+<input
+type="text"
+id="licenseKey"
+placeholder="SCHOOL-2026-001"
+autocomplete="off">
+
+
+<label>
+🏫 School ID
+</label>
+
+<input
+type="text"
+id="schoolId"
+placeholder="GHAZNI-001"
+autocomplete="off">
+
+
+<button
+id="activateBtn"
+onclick="activateLicense()">
+
+🔓 سیستم فعال کړه
+
+</button>
+
+
+<div
+id="message"
+class="message">
+</div>
+
+
+<div
+id="schoolInfo"
+class="school"
+style="display:none;">
+
+</div>
+
+
+<div class="small">
+
+ستاسې License باید د سیستم له مالک څخه ترلاسه شي.
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script type="module">
+
+// ==================================================
+// Firebase
+// ==================================================
+
+import {
+    doc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// ==================================================
+// Device ID
+// ==================================================
+
+function getDeviceId(){
+
+    let deviceId =
+        localStorage.getItem(
+            "schoolDeviceId"
+        );
+
+
+    if(!deviceId){
+
+        const randomPart =
+            Math.random()
+            .toString(36)
+            .substring(2,12);
+
+
+        const timePart =
+            Date.now()
+            .toString(36);
+
+
+        deviceId =
+            "DEVICE-" +
+            timePart +
+            "-" +
+            randomPart;
+
+
+        localStorage.setItem(
+            "schoolDeviceId",
+            deviceId
+        );
+
+    }
+
+
+    return deviceId;
+
+}
+
+
+// ==================================================
+// Message
+// ==================================================
+
+function showMessage(
+    text,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.className =
+        "message " +
+        type;
+
+
+    box.innerHTML =
+        text;
+
+}
+
+
+// ==================================================
+// License Date
+// ==================================================
+
+function getToday(){
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2,"0");
+
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2,"0");
+
+
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day
+    );
+
+}
+
+
+// ==================================================
+// License فعالول
+// ==================================================
+
+window.activateLicense =
+async function(){
+
+    const button =
+        document.getElementById(
+            "activateBtn"
+        );
+
+
+    const key =
+        document.getElementById(
+            "licenseKey"
+        )
+        .value
+        .trim();
+
+
+    const schoolId =
+        document.getElementById(
+            "schoolId"
+        )
+        .value
+        .trim();
+
+
+    // ==============================================
+    // Validation
+    // ==============================================
+
+    if(!key){
+
+        showMessage(
+            "⚠️ License Key ولیکه.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!schoolId){
+
+        showMessage(
+            "⚠️ School ID ولیکه.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "⏳ License تاییدېږي...";
+
+
+    try{
+
+        // ==========================================
+        // Firebase Document
+        // ==========================================
+
+        const licenseRef =
+            doc(
+                db,
+                "licenses",
+                key
+            );
+
+
+        const licenseSnap =
+            await getDoc(
+                licenseRef
+            );
+
+
+        // ==========================================
+        // License پیدا نه شو
+        // ==========================================
+
+        if(
+            !licenseSnap.exists()
+        ){
+
+            showMessage(
+                "❌ دا License Key ناسم دی یا په Firebase کې موجود نه دی.",
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        const license =
+            licenseSnap.data();
+
+
+        // ==========================================
+        // Active Check
+        // ==========================================
+
+        if(
+            license.active !== true
+        ){
+
+            showMessage(
+                "🚫 دا License اوس غیر فعال شوی دی.",
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // School ID Check
+        // ==========================================
+
+        if(
+            String(
+                license.schoolId || ""
+            ).trim() !==
+            schoolId
+        ){
+
+            showMessage(
+                "❌ School ID د دې License سره برابر نه دی.",
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // Expiry Check
+        // ==========================================
+
+        const today =
+            getToday();
+
+
+        const expiresAt =
+            String(
+                license.expiresAt || ""
+            );
+
+
+        if(!expiresAt){
+
+            showMessage(
+                "❌ د License د ختمېدو نېټه نشته.",
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        if(
+            expiresAt < today
+        ){
+
+            showMessage(
+                "❌ ستاسې License ختم شوی دی.<br>" +
+                "د ختمېدو نېټه: " +
+                expiresAt,
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // Device
+        // ==========================================
+
+        const deviceId =
+            getDeviceId();
+
+
+        const registeredDevice =
+            String(
+                license.deviceId || ""
+            ).trim();
+
+
+        // ==========================================
+        // که License مخکې بل Device ته تړلی وي
+        // ==========================================
+
+        if(
+            registeredDevice &&
+            registeredDevice !== deviceId
+        ){
+
+            showMessage(
+                "🚫 دا License مخکې په بل Device کې فعال شوی دی.",
+                "error"
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "🔓 سیستم فعال کړه";
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // Device ثبتول
+        // ==========================================
+
+        if(
+            !registeredDevice
+        ){
+
+            await updateDoc(
+                licenseRef,
+                {
+                    deviceId:deviceId,
+                    lastActivatedAt:new Date()
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // Local Storage
+        // ==========================================
+
+        localStorage.setItem(
+            "licenseActive",
+            "true"
+        );
+
+
+        localStorage.setItem(
+            "licenseKey",
+            key
+        );
+
+
+        localStorage.setItem(
+            "schoolId",
+            schoolId
+        );
+
+
+        localStorage.setItem(
+            "schoolName",
+            license.schoolName ||
+            ""
+        );
+
+
+        localStorage.setItem(
+            "licenseExpiresAt",
+            expiresAt
+        );
+
+
+        localStorage.setItem(
+            "licenseDeviceId",
+            deviceId
+        );
+
+
+        // ==========================================
+        // School Info
+        // ==========================================
+
+        const schoolInfo =
+            document.getElementById(
+                "schoolInfo"
+            );
+
+
+        schoolInfo.style.display =
+            "block";
+
+
+        schoolInfo.innerHTML =
+
+            "🏫 <b>مکتب:</b> " +
+
+            escapeHtml(
+                license.schoolName ||
+                "-"
+            ) +
+
+            "<br>" +
+
+            "🆔 <b>School ID:</b> " +
+
+            escapeHtml(
+                license.schoolId ||
+                "-"
+            ) +
+
+            "<br>" +
+
+            "📅 <b>ختمېدو نېټه:</b> " +
+
+            escapeHtml(
+                expiresAt
+            );
+
+
+        // ==========================================
+        // Success
+        // ==========================================
+
+        showMessage(
+
+            "✅ License په بریالیتوب فعال شو.<br>" +
+
+            "⏳ څو شېبې وروسته سیستم ته ځې...",
+
+            "success"
+
+        );
+
+
+        button.textContent =
+            "✅ فعال شو";
+
+
+        // ==========================================
+        // Dashboard
+        // ==========================================
+
+        setTimeout(
+            function(){
+
+                window.location.href =
+                    "index.html";
+
+            },
+            1500
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "LICENSE ERROR:",
+            error
+        );
+
+
+        showMessage(
+
+            "❌ د License د تایید پر مهال ستونزه راغله.<br><br>" +
+
+            escapeHtml(
+                error.message
+            ),
+
+            "error"
+
+        );
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "🔓 سیستم فعال کړه";
+
+    }
+
+};
+
+
+// ==================================================
+// HTML Escape
+// ==================================================
+
+function escapeHtml(value){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ==================================================
+// که مخکې فعال وي
+// ==================================================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const active =
+            localStorage.getItem(
+                "licenseActive"
+            );
+
+
+        const key =
+            localStorage.getItem(
+                "licenseKey"
+            );
+
+
+        const schoolId =
+            localStorage.getItem(
+                "schoolId"
+            );
+
+
+        if(
+            active === "true" &&
+            key &&
+            schoolId
+        ){
+
+            document.getElementById(
+                "licenseKey"
+            ).value =
+                key;
+
+
+            document.getElementById(
+                "schoolId"
+            ).value =
+                schoolId;
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

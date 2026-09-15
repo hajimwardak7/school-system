@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>د حاضري راپور</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            direction: rtl;
+        }
+
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #0d6efd,
+                #084298
+            );
+
+            color: white;
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+
+        .search {
+            width: 100%;
+
+            padding: 15px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 12px;
+
+            font-size: 18px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .student-card {
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 20px;
+
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 3px 12px
+                rgba(0,0,0,0.08);
+        }
+
+
+        .student-name {
+            font-size: 23px;
+
+            font-weight: bold;
+
+            color: #0d6efd;
+
+            margin-bottom: 10px;
+        }
+
+
+        .info {
+            color: #555;
+
+            margin: 7px 0;
+
+            font-size: 17px;
+        }
+
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 10px;
+
+            margin-top: 15px;
+        }
+
+
+        .stat {
+            padding: 15px 5px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            background: #f8fafc;
+        }
+
+
+        .stat strong {
+            display: block;
+
+            font-size: 22px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .present {
+            color: green;
+        }
+
+
+        .absent {
+            color: red;
+        }
+
+
+        .percent {
+            color: #0d6efd;
+        }
+
+
+        .dates {
+            margin-top: 18px;
+
+            padding-top: 15px;
+
+            border-top:
+                1px solid #ddd;
+        }
+
+
+        .dates-title {
+            font-weight: bold;
+
+            font-size: 18px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .date-item {
+            display: inline-block;
+
+            background: #fee2e2;
+
+            color: #b91c1c;
+
+            padding: 8px 12px;
+
+            margin: 4px;
+
+            border-radius: 8px;
+        }
+
+
+        /* =========================
+           چاپ بټن
+        ========================= */
+
+        .print-btn {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-top: 15px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: white;
+
+            color: #0d6efd;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .print-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        .back-btn {
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: #334155;
+
+            color: white;
+
+            font-size: 18px;
+
+            margin-top: 10px;
+
+            cursor: pointer;
+        }
+
+
+        .empty {
+            background: white;
+
+            padding: 30px;
+
+            text-align: center;
+
+            border-radius: 15px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           د چاپ حالت
+        ========================= */
+
+        @media print {
+
+            body {
+                background: white;
+
+                padding: 0;
+            }
+
+
+            .header {
+                background: white;
+
+                color: black;
+
+                border: 1px solid #ddd;
+            }
+
+
+            .search,
+            .back-btn,
+            .print-btn {
+                display: none;
+            }
+
+
+            .student-card {
+                box-shadow: none;
+
+                border: 1px solid #ddd;
+
+                page-break-inside:
+                    avoid;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="header">
+
+    <h1>
+        📊 د حاضري تفصیلي راپور
+    </h1>
+
+    <div>
+        د شاګردانو د حاضري معلومات
+    </div>
+
+</div>
+
+
+<!-- =========================
+     SEARCH
+========================= -->
+
+<input
+    type="text"
+    id="search"
+    class="search"
+    placeholder="🔍 د شاګرد نوم ولیکئ..."
+>
+
+
+<!-- =========================
+     REPORT
+========================= -->
+
+<div id="reportList"></div>
+
+
+<!-- =========================
+     PRINT BUTTON
+========================= -->
+
+<button
+    class="print-btn"
+    onclick="printReport()"
+>
+    🖨️ راپور چاپول
+</button>
+
+
+<!-- =========================
+     BACK BUTTON
+========================= -->
+
+<button
+    class="back-btn"
+    onclick="goBack()"
+>
+    ⬅️ Dashboard ته بېرته تلل
+</button>
+
+
+
+<script>
+
+
+/* =========================
+   LOGIN CHECK
+========================= */
+
+if (
+    localStorage.getItem(
+        "adminLoggedIn"
+    ) !== "true"
+) {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* =========================
+   شاګردان اخلو
+========================= */
+
+function getStudents() {
+
+    const data =
+        localStorage.getItem(
+            "students"
+        );
+
+
+    return data
+        ? JSON.parse(data)
+        : [];
+
+}
+
+
+/* =========================
+   د حاضري ټولې ورځې
+========================= */
+
+function getAttendanceData() {
+
+    const allData = [];
+
+
+    for (
+        let i = 0;
+        i < localStorage.length;
+        i++
+    ) {
+
+        const key =
+            localStorage.key(i);
+
+
+        if (
+            key &&
+            key.startsWith(
+                "attendance_"
+            )
+        ) {
+
+            const date =
+                key.replace(
+                    "attendance_",
+                    ""
+                );
+
+
+            try {
+
+                const records =
+                    JSON.parse(
+                        localStorage.getItem(
+                            key
+                        )
+                    );
+
+
+                allData.push({
+
+                    date: date,
+
+                    records: Array.isArray(
+                        records
+                    )
+                    ? records
+                    : []
+
+                });
+
+            }
+
+            catch (error) {
+
+                console.log(
+                    "د حاضري معلومات خراب دي:",
+                    key
+                );
+
+            }
+
+        }
+
+    }
+
+
+    return allData;
+
+}
+
+
+/* =========================
+   راپور جوړول
+========================= */
+
+function showReports(
+    searchText = ""
+) {
+
+    const students =
+        getStudents();
+
+
+    const attendanceData =
+        getAttendanceData();
+
+
+    const reportList =
+        document.getElementById(
+            "reportList"
+        );
+
+
+    reportList.innerHTML =
+        "";
+
+
+    /* که شاګردان نه وي */
+
+    if (
+        students.length === 0
+    ) {
+
+        reportList.innerHTML =
+            `
+            <div class="empty">
+                تر اوسه هېڅ شاګرد ثبت شوی نه دی.
+            </div>
+            `;
+
+        return;
+    }
+
+
+    /* Search */
+
+    const filteredStudents =
+        students.filter(
+            function(student) {
+
+                const name =
+                    String(
+                        student.name || ""
+                    ).toLowerCase();
+
+
+                return name.includes(
+                    String(
+                        searchText
+                    ).toLowerCase()
+                );
+
+            }
+        );
+
+
+    /* که شاګرد پیدا نشي */
+
+    if (
+        filteredStudents.length === 0
+    ) {
+
+        reportList.innerHTML =
+            `
+            <div class="empty">
+                شاګرد پیدا نشو.
+            </div>
+            `;
+
+        return;
+    }
+
+
+    /* هر شاګرد */
+
+    filteredStudents.forEach(
+        function(student) {
+
+
+            let presentCount = 0;
+
+            let absentCount = 0;
+
+            let absentDates = [];
+
+
+            /* د حاضري ورځې */
+
+            attendanceData.forEach(
+                function(day) {
+
+
+                    day.records.forEach(
+                        function(record) {
+
+
+                            if (
+                                Number(
+                                    record.studentId
+                                )
+                                ===
+                                Number(
+                                    student.id
+                                )
+                            ) {
+
+
+                                /* حاضر */
+
+                                if (
+                                    record.status
+                                    ===
+                                    "حاضر"
+                                    ||
+                                    record.status
+                                    ===
+                                    "present"
+                                ) {
+
+                                    presentCount++;
+
+                                }
+
+
+                                /* غیر حاضر */
+
+                                if (
+                                    record.status
+                                    ===
+                                    "غیر حاضر"
+                                    ||
+                                    record.status
+                                    ===
+                                    "absent"
+                                ) {
+
+                                    absentCount++;
+
+
+                                    absentDates.push(
+                                        day.date
+                                    );
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /* ټولې ثبت شوې ورځې */
+
+            const total =
+                presentCount +
+                absentCount;
+
+
+            /* حاضري فیصدي */
+
+            let percentage = 0;
+
+
+            if (
+                total > 0
+            ) {
+
+                percentage =
+                    Math.round(
+                        (
+                            presentCount /
+                            total
+                        ) * 100
+                    );
+
+            }
+
+
+            /* =====================
+               غیر حاضرۍ نېټې
+            ===================== */
+
+            let datesHTML = "";
+
+
+            if (
+                absentDates.length > 0
+            ) {
+
+
+                datesHTML =
+
+                    '<div class="dates">' +
+
+                    '<div class="dates-title">' +
+
+                    '❌ د غیر حاضرۍ نېټې:' +
+
+                    '</div>';
+
+
+                absentDates.forEach(
+                    function(date) {
+
+                        datesHTML +=
+
+                            '<span class="date-item">' +
+
+                            date +
+
+                            '</span>';
+
+                    }
+                );
+
+
+                datesHTML +=
+                    '</div>';
+
+
+            }
+
+            else {
+
+                datesHTML =
+
+                    '<div class="dates">' +
+
+                    '🎉 تر اوسه غیر حاضر نه دی.' +
+
+                    '</div>';
+
+            }
+
+
+            /* =====================
+               Card
+            ===================== */
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "student-card";
+
+
+            card.innerHTML =
+
+
+                '<div class="student-name">' +
+
+                '👨‍🎓 ' +
+
+                (student.name || "") +
+
+                '</div>' +
+
+
+                '<div class="info">' +
+
+                '👨‍👦 پلار: ' +
+
+                (student.father || "") +
+
+                '</div>' +
+
+
+                '<div class="info">' +
+
+                '🏫 ټولګی: ' +
+
+                (student.className || "") +
+
+                '</div>' +
+
+
+                '<div class="stats">' +
+
+
+                '<div class="stat present">' +
+
+                '<strong>' +
+
+                presentCount +
+
+                '</strong>' +
+
+                'حاضر' +
+
+                '</div>' +
+
+
+                '<div class="stat absent">' +
+
+                '<strong>' +
+
+                absentCount +
+
+                '</strong>' +
+
+                'غیر حاضر' +
+
+                '</div>' +
+
+
+                '<div class="stat percent">' +
+
+                '<strong>' +
+
+                percentage +
+
+                '%</strong>' +
+
+                'حاضري' +
+
+                '</div>' +
+
+
+                '</div>' +
+
+
+                datesHTML;
+
+
+            reportList.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+document
+    .getElementById("search")
+    .addEventListener(
+        "input",
+        function() {
+
+            showReports(
+                this.value.trim()
+            );
+
+        }
+    );
+
+
+/* =========================
+   PRINT REPORT
+========================= */
+
+function printReport() {
+
+    window.print();
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function goBack() {
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =========================
+   لومړی راپور
+========================= */
+
+showReports();
+
+
+</script>
+
+
+</body>
+
+</html>

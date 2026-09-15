@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>حاضري - School System</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    direction:rtl;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.header h1{
+    margin:0 0 8px;
+    font-size:26px;
+}
+
+.header p{
+    margin:0;
+    font-size:16px;
+}
+
+.container{
+    padding:20px;
+    max-width:900px;
+    margin:auto;
+}
+
+.box{
+    background:white;
+    padding:18px;
+    border-radius:15px;
+    margin-bottom:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.back{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:8px;
+    background:#6c757d;
+    color:white;
+    font-size:16px;
+    margin-bottom:15px;
+    cursor:pointer;
+}
+
+input[type="date"],
+select{
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:16px;
+    margin-bottom:12px;
+    background:white;
+}
+
+.teacher-info{
+    background:#eef6ff;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    color:#334155;
+    font-weight:bold;
+}
+
+.school-name-box{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:15px;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    color:#0d6efd;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.student{
+    background:white;
+    border:2px solid #ddd;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:12px;
+    box-shadow:0 2px 7px rgba(0,0,0,0.05);
+}
+
+.student h3{
+    margin:0 0 8px;
+    color:#0d6efd;
+    font-size:20px;
+}
+
+.student p{
+    margin:5px 0;
+    color:#334155;
+}
+
+.attendance-title{
+    font-weight:bold;
+    margin-top:15px;
+    margin-bottom:10px;
+    font-size:17px;
+    color:#334155;
+}
+
+.attendance-options{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.attendance-option{
+    flex:1;
+    position:relative;
+    cursor:pointer;
+}
+
+.attendance-option input{
+    position:absolute;
+    opacity:0;
+    pointer-events:none;
+}
+
+.attendance-option span{
+    display:block;
+    text-align:center;
+    padding:14px 8px;
+    border:2px solid #ddd;
+    border-radius:10px;
+    background:#f8fafc;
+    font-size:17px;
+    font-weight:bold;
+    transition:0.2s;
+}
+
+.attendance-option.present-option input:checked + span{
+    background:#198754;
+    border-color:#198754;
+    color:white;
+}
+
+.attendance-option.absent-option input:checked + span{
+    background:#dc3545;
+    border-color:#dc3545;
+    color:white;
+}
+
+.status{
+    margin-top:12px;
+    padding:10px;
+    border-radius:8px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.status-present{
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.status-absent{
+    background:#f8d7da;
+    color:#842029;
+}
+
+.whatsapp{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#25D366;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.whatsapp:hover{
+    background:#1ebe5d;
+}
+
+.save-button{
+    width:100%;
+    padding:17px;
+    margin:15px 0 20px;
+    border:none;
+    border-radius:12px;
+    background:#198754;
+    color:white;
+    font-size:19px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 4px 10px rgba(25,135,84,0.20);
+}
+
+.save-button:active{
+    transform:scale(0.98);
+}
+
+#summary{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin:15px 0;
+    text-align:center;
+    font-size:17px;
+    font-weight:bold;
+    color:#334155;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.message{
+    text-align:center;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.no-students{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    color:#777;
+    margin-bottom:15px;
+}
+
+.firebase-status{
+    background:#e7f1ff;
+    color:#084298;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.class-info{
+    background:#fff3cd;
+    color:#664d03;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+@media(max-width:500px){
+
+    .container{
+        padding:12px;
+    }
+
+    .attendance-options{
+        gap:8px;
+    }
+
+    .attendance-option span{
+        font-size:15px;
+        padding:13px 5px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>
+        📋 د شاګردانو حاضري
+    </h1>
+
+    <p>
+        د حاضري مدیریت سیستم
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+    <div
+        class="school-name-box"
+        id="schoolNameDisplay">
+
+        🏫 د مکتب اداره
+
+    </div>
+
+
+    <button
+        class="back"
+        onclick="goBack()">
+
+        ← Dashboard ته بېرته تلل
+
+    </button>
+
+
+    <div
+        class="teacher-info"
+        id="teacherInfo">
+    </div>
+
+
+    <div
+        id="classInfo"
+        class="class-info"
+        style="display:none;">
+    </div>
+
+
+    <div
+        id="firebaseStatus"
+        class="firebase-status">
+
+        ⏳ Firebase سره نښلول کېږي...
+
+    </div>
+
+
+    <div class="box">
+
+        <h2>
+            📅 نېټه
+        </h2>
+
+        <input
+            type="date"
+            id="date">
+
+
+        <h2>
+            🏫 ټولګی
+        </h2>
+
+        <select id="classSelect">
+
+            <option value="">
+                ټولګی انتخاب کړئ
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div
+        id="message"
+        class="message">
+    </div>
+
+
+    <div id="summary">
+
+        👨‍🎓 ټول: 0 |
+        ✅ حاضر: 0 |
+        ❌ غیر حاضر: 0
+
+    </div>
+
+
+    <div id="studentList"></div>
+
+
+    <button
+        class="save-button"
+        onclick="saveAttendance()">
+
+        💾 حاضري خوندي کړئ
+
+    </button>
+
+
+</div>
+
+
+<script src="script.js"></script>
+
+
+<script type="module">
+
+
+import {
+    db
+} from "./firebase.js";
+
+
+import {
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    deleteDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+if(
+    localStorage.getItem("adminLoggedIn")
+    !==
+    "true"
+){
+
+    window.location.href="index.html";
+
+}
+
+
+
+/* =========================================
+   USER
+========================================= */
+
+const userRole =
+    localStorage.getItem("userRole")
+    || "admin";
+
+
+const userName =
+    localStorage.getItem("userName")
+    || "مدیر";
+
+
+const teacherId =
+    localStorage.getItem("teacherId")
+    || "admin";
+
+
+let teacherClasses=[];
+
+
+try{
+
+    teacherClasses =
+        JSON.parse(
+            localStorage.getItem("teacherClasses")
+            || "[]"
+        );
+
+    if(!Array.isArray(teacherClasses)){
+        teacherClasses=[];
+    }
+
+}catch(error){
+
+    teacherClasses=[];
+
+}
+
+
+
+/* =========================================
+   FIREBASE COLLECTION
+========================================= */
+
+const attendanceCollection =
+    collection(
+        db,
+        "attendance"
+    );
+
+
+
+/* =========================================
+   SCHOOL NAME
+========================================= */
+
+function loadSchoolName(){
+
+    const schoolName =
+        localStorage.getItem("schoolName")
+        ||
+        "د مکتب اداره";
+
+
+    document.getElementById(
+        "schoolNameDisplay"
+    ).textContent =
+        "🏫 " + schoolName;
+
+}
+
+
+
+/* =========================================
+   TEACHER INFO
+========================================= */
+
+const teacherInfo =
+    document.getElementById(
+        "teacherInfo"
+    );
+
+
+if(userRole==="teacher"){
+
+    teacherInfo.innerHTML =
+        "👨‍🏫 ښوونکی: " +
+        escapeHTML(userName);
+
+}
+else{
+
+    teacherInfo.innerHTML =
+        "👨‍💼 حساب: مدیر";
+
+}
+
+
+
+/* =========================================
+   STUDENTS
+========================================= */
+
+function getStudents(){
+
+    try{
+
+        const data =
+            JSON.parse(
+                localStorage.getItem("students")
+                ||
+                "[]"
+            );
+
+        return Array.isArray(data)
+            ? data
+            : [];
+
+    }
+    catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================
+   TEACHERS
+========================================= */
+
+function getTeachers(){
+
+    try{
+
+        const data =
+            JSON.parse(
+                localStorage.getItem("teachers")
+                ||
+                "[]"
+            );
+
+        return Array.isArray(data)
+            ? data
+            : [];
+
+    }
+    catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================
+   ATTENDANCE
+========================================= */
+
+function getAttendanceRecords(){
+
+    try{
+
+        const data =
+            JSON.parse(
+                localStorage.getItem(
+                    "attendanceRecords"
+                )
+                ||
+                "[]"
+            );
+
+        return Array.isArray(data)
+            ? data
+            : [];
+
+    }
+    catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================
+   OLD ATTENDANCE
+========================================= */
+
+function getOldAttendance(date){
+
+    try{
+
+        const data =
+            JSON.parse(
+                localStorage.getItem(
+                    "attendance_" + date
+                )
+                ||
+                "[]"
+            );
+
+        return Array.isArray(data)
+            ? data
+            : [];
+
+    }
+    catch(error){
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================
+   FIREBASE ATTENDANCE
+========================================= */
+
+async function getFirebaseAttendance(
+    date,
+    className
+){
+
+    try{
+
+        const q =
+            query(
+                attendanceCollection,
+
+                where(
+                    "date",
+                    "==",
+                    date
+                ),
+
+                where(
+                    "className",
+                    "==",
+                    className
+                )
+            );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        const records=[];
+
+
+        snapshot.forEach(
+            function(docSnapshot){
+
+                const data =
+                    docSnapshot.data();
+
+
+                records.push({
+
+                    ...data,
+
+                    firestoreId:
+                        docSnapshot.id
+
+                });
+
+            }
+        );
+
+
+        return records;
+
+    }
+    catch(error){
+
+        console.error(
+            "Firebase attendance:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+
+/* =========================================
+   TODAY ATTENDANCE
+========================================= */
+
+function getTodayAttendance(){
+
+    const date =
+        document.getElementById(
+            "date"
+        ).value;
+
+
+    const className =
+        document.getElementById(
+            "classSelect"
+        ).value;
+
+
+    if(!date || !className){
+
+        return [];
+
+    }
+
+
+    const records =
+        getAttendanceRecords().filter(
+            function(record){
+
+                return(
+                    String(record.date)
+                    ===
+                    String(date)
+
+                    &&
+
+                    String(record.className)
+                    ===
+                    String(className)
+                );
+
+            }
+        );
+
+
+    if(records.length>0){
+
+        return records;
+
+    }
+
+
+    return getOldAttendance(date).filter(
+        function(record){
+
+            return(
+                String(record.className)
+                ===
+                String(className)
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =========================================
+   LOAD CLASSES
+========================================= */
+
+function loadClasses(){
+
+    const select =
+        document.getElementById(
+            "classSelect"
+        );
+
+
+    select.innerHTML =
+        '<option value="">ټولګی انتخاب کړئ</option>';
+
+
+    let classes=[];
+
+
+    if(userRole==="admin"){
+
+        classes=[
+
+            "اول",
+            "دوهم",
+            "درېیم",
+            "څلورم",
+            "پنځم",
+            "شپږم",
+            "اووم",
+            "اتم",
+            "نهم",
+            "لسم",
+            "یوولسم",
+            "دولسم"
+
+        ];
+
+    }
+
+
+    else if(userRole==="teacher"){
+
+        classes =
+            Array.isArray(teacherClasses)
+            ? teacherClasses
+            : [];
+
+
+        if(classes.length===0){
+
+            const teachers =
+                getTeachers();
+
+
+            const teacher =
+                teachers.find(
+                    function(item){
+
+                        return String(item.id)
+                        ===
+                        String(teacherId);
+
+                    }
+                );
+
+
+            if(
+                teacher &&
+                Array.isArray(teacher.classes)
+            ){
+
+                classes =
+                    teacher.classes;
+
+            }
+
+        }
+
+    }
+
+
+    classes =
+        [...new Set(
+            classes.map(
+                function(item){
+                    return String(item).trim();
+                }
+            ).filter(Boolean)
+        )];
+
+
+    classes.forEach(
+        function(className){
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                className;
+
+
+            option.textContent =
+                className +
+                " ټولګی";
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    const classInfo =
+        document.getElementById(
+            "classInfo"
+        );
+
+
+    if(userRole==="teacher"){
+
+        classInfo.style.display="block";
+
+
+        if(classes.length>0){
+
+            classInfo.innerHTML =
+                "📚 ستاسو ټاکل شوې ټولګۍ: " +
+                escapeHTML(
+                    classes.join("، ")
+                );
+
+        }
+        else{
+
+            classInfo.innerHTML =
+                "⚠️ تاسو ته هېڅ ټولګی نه دی ټاکل شوی.";
+
+        }
+
+    }
+
+}
+
+
+
+/* =========================================
+   TEACHER CLASS ACCESS
+========================================= */
+
+function teacherCanUseClass(className){
+
+    if(userRole==="admin"){
+
+        return true;
+
+    }
+
+
+    if(userRole!=="teacher"){
+
+        return false;
+
+    }
+
+
+    return teacherClasses.includes(
+        className
+    );
+
+}
+
+
+
+/* =========================================
+   SHOW STUDENTS
+========================================= */
+
+async function showStudents(){
+
+    const className =
+        document.getElementById(
+            "classSelect"
+        ).value;
+
+
+    const date =
+        document.getElementById(
+            "date"
+        ).value;
+
+
+    const list =
+        document.getElementById(
+            "studentList"
+        );
+
+
+    list.innerHTML="";
+
+
+    if(!className || !date){
+
+        document.getElementById(
+            "summary"
+        ).innerHTML =
+            "👨‍🎓 ټول: 0 | ✅ حاضر: 0 | ❌ غیر حاضر: 0";
+
+        return;
+
+    }
+
+
+    if(
+        userRole==="teacher"
+        &&
+        !teacherCanUseClass(className)
+    ){
+
+        list.innerHTML =
+            '<div class="no-students">' +
+            '❌ تاسو دې ټولګي ته اجازه نه لرئ.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    const students =
+        getStudents().filter(
+            function(student){
+
+                return String(
+                    student.className
+                )
+                ===
+                String(className);
+
+            }
+        );
+
+
+    if(students.length===0){
+
+        list.innerHTML =
+            '<div class="no-students">' +
+            '❌ په دې ټولګي کې شاګرد نشته.' +
+            '</div>';
+
+        attendanceSummary();
+
+        return;
+
+    }
+
+
+    const firebaseRecords =
+        await getFirebaseAttendance(
+            date,
+            className
+        );
+
+
+    const localRecords =
+        getTodayAttendance();
+
+
+    students.forEach(
+        function(student){
+
+            let record =
+                firebaseRecords.find(
+                    function(item){
+
+                        return String(
+                            item.studentId
+                        )
+                        ===
+                        String(
+                            student.id
+                        );
+
+                    }
+                );
+
+
+            if(!record){
+
+                record =
+                    localRecords.find(
+                        function(item){
+
+                            return String(
+                                item.studentId
+                            )
+                            ===
+                            String(
+                                student.id
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            const oldStatus =
+                record
+                ? record.status
+                : "";
+
+
+            let presentChecked="";
+
+            let absentChecked="";
+
+            let statusHTML="";
+
+            let whatsappDisplay="none";
+
+
+            if(
+                oldStatus==="حاضر"
+                ||
+                oldStatus==="present"
+            ){
+
+                presentChecked="checked";
+
+
+                statusHTML =
+                    '<div class="status status-present">' +
+                    '✅ حاضر ثبت شوی' +
+                    '</div>';
+
+            }
+
+
+            if(
+                oldStatus==="غیر حاضر"
+                ||
+                oldStatus==="absent"
+            ){
+
+                absentChecked="checked";
+
+
+                statusHTML =
+                    '<div class="status status-absent">' +
+                    '❌ غیر حاضر ثبت شوی' +
+                    '</div>';
+
+
+                /*
+                   یوازې د WhatsApp تڼۍ ښکاره کېږي.
+                   WhatsApp پخپله نه خلاصیږي.
+                */
+
+                whatsappDisplay="block";
+
+            }
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className="student";
+
+
+            div.innerHTML=`
+
+                <h3>
+                    👨‍🎓
+                    ${escapeHTML(
+                        student.name || ""
+                    )}
+                </h3>
+
+                <p>
+                    <b>👨‍👦 د پلار نوم:</b>
+                    ${escapeHTML(
+                        student.father || ""
+                    )}
+                </p>
+
+                <p>
+                    <b>🏫 ټولګی:</b>
+                    ${escapeHTML(
+                        student.className || ""
+                    )}
+                </p>
+
+                <p>
+                    <b>📱 د پلار WhatsApp:</b>
+                    ${escapeHTML(
+                        student.whatsapp || "ثبت نه دی"
+                    )}
+                </p>
+
+                <div class="attendance-title">
+                    📋 حاضري انتخاب کړئ:
+                </div>
+
+                <div class="attendance-options">
+
+                    <label
+                        class="attendance-option present-option"
+                    >
+
+                        <input
+                            type="radio"
+                            name="status-${student.id}"
+                            value="حاضر"
+                            ${presentChecked}
+                            onchange="
+                                updateStudentStatus(
+                                    '${student.id}',
+                                    'حاضر'
+                                )
+                            "
+                        >
+
+                        <span>
+                            ✅ حاضر
+                        </span>
+
+                    </label>
+
+
+                    <label
+                        class="attendance-option absent-option"
+                    >
+
+                        <input
+                            type="radio"
+                            name="status-${student.id}"
+                            value="غیر حاضر"
+                            ${absentChecked}
+                            onchange="
+                                updateStudentStatus(
+                                    '${student.id}',
+                                    'غیر حاضر'
+                                )
+                            "
+                        >
+
+                        <span>
+                            ❌ غیر حاضر
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <div id="status-${student.id}">
+                    ${statusHTML}
+                </div>
+
+
+                <button
+                    class="whatsapp"
+                    id="whatsapp-${student.id}"
+                    style="display:${whatsappDisplay};"
+                    onclick="
+                        sendWhatsApp(
+                            '${student.id}'
+                        )
+                    "
+                >
+
+                    📱 پلار ته WhatsApp پیغام
+
+                </button>
+
+            `;
+
+
+            list.appendChild(div);
+
+        }
+    );
+
+
+    attendanceSummary();
+
+}
+
+
+
+/* =========================================
+   UPDATE STATUS
+   مهم:
+   دلته WhatsApp سمدستي نه خلاصیږي
+========================================= */
+
+window.updateStudentStatus =
+function(
+    studentId,
+    status
+){
+
+    const statusBox =
+        document.getElementById(
+            "status-" + studentId
+        );
+
+
+    const whatsapp =
+        document.getElementById(
+            "whatsapp-" + studentId
+        );
+
+
+    if(status==="حاضر"){
+
+        statusBox.innerHTML =
+            '<div class="status status-present">' +
+            '✅ حاضر انتخاب شو' +
+            '</div>';
+
+
+        whatsapp.style.display="none";
+
+    }
+
+    else{
+
+        statusBox.innerHTML =
+            '<div class="status status-absent">' +
+            '❌ غیر حاضر انتخاب شو' +
+            '</div>';
+
+
+        /*
+           یوازې تڼۍ ښکاره کېږي.
+           WhatsApp نه خلاصیږي.
+        */
+
+        whatsapp.style.display="block";
+
+    }
+
+
+    attendanceSummary();
+
+};
+
+
+
+/* =========================================
+   SUMMARY
+========================================= */
+
+function attendanceSummary(){
+
+    const className =
+        document.getElementById(
+            "classSelect"
+        ).value;
+
+
+    const students =
+        getStudents().filter(
+            function(student){
+
+                return String(
+                    student.className
+                )
+                ===
+                String(className);
+
+            }
+        );
+
+
+    let present=0;
+
+    let absent=0;
+
+
+    students.forEach(
+        function(student){
+
+            const radio =
+                document.querySelector(
+                    'input[name="status-' +
+                    student.id +
+                    '"]:checked'
+                );
+
+
+            if(!radio){
+
+                return;
+
+            }
+
+
+            if(
+                radio.value==="حاضر"
+            ){
+
+                present++;
+
+            }
+
+
+            if(
+                radio.value==="غیر حاضر"
+            ){
+
+                absent++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "summary"
+    ).innerHTML =
+
+        "👨‍🎓 ټول: " +
+        students.length +
+
+        " | ✅ حاضر: " +
+        present +
+
+        " | ❌ غیر حاضر: " +
+        absent;
+
+}
+
+
+
+/* =========================================
+   SAVE ATTENDANCE
+========================================= */
+
+window.saveAttendance =
+async function(){
+
+    const date =
+        document.getElementById(
+            "date"
+        ).value;
+
+
+    const className =
+        document.getElementById(
+            "classSelect"
+        ).value;
+
+
+    if(!date){
+
+        alert(
+            "مهرباني وکړئ نېټه انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    if(!className){
+
+        alert(
+            "مهرباني وکړئ ټولګی انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        userRole==="teacher"
+        &&
+        !teacherCanUseClass(className)
+    ){
+
+        alert(
+            "❌ تاسو دې ټولګي ته اجازه نه لرئ."
+        );
+
+        return;
+
+    }
+
+
+    const students =
+        getStudents().filter(
+            function(student){
+
+                return String(
+                    student.className
+                )
+                ===
+                String(className);
+
+            }
+        );
+
+
+    if(students.length===0){
+
+        alert(
+            "په دې ټولګي کې شاګرد نشته."
+        );
+
+        return;
+
+    }
+
+
+    const records=[];
+
+
+    for(
+        const student
+        of students
+    ){
+
+        const radio =
+            document.querySelector(
+                'input[name="status-' +
+                student.id +
+                '"]:checked'
+            );
+
+
+        if(!radio){
+
+            alert(
+                "❌ د ټولو شاګردانو حاضري وټاکئ."
+            );
+
+            return;
+
+        }
+
+
+        records.push({
+
+            id:
+                Date.now() +
+                Math.floor(
+                    Math.random()*100000
+                ),
+
+            studentId:
+                String(
+                    student.id
+                ),
+
+            studentName:
+                student.name || "",
+
+            father:
+                student.father || "",
+
+            whatsapp:
+                student.whatsapp || "",
+
+            status:
+                radio.value,
+
+            teacherId:
+                teacherId,
+
+            teacherName:
+                userName,
+
+            className:
+                className,
+
+            date:
+                date
+
+        });
+
+    }
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.style.color="#0d6efd";
+
+
+    message.textContent =
+        "⏳ حاضري Firebase ته ثبتېږي...";
+
+
+    try{
+
+        const oldQuery =
+            query(
+                attendanceCollection,
+
+                where(
+                    "date",
+                    "==",
+                    date
+                ),
+
+                where(
+                    "className",
+                    "==",
+                    className
+                )
+            );
+
+
+        const oldSnapshot =
+            await getDocs(
+                oldQuery
+            );
+
+
+        for(
+            const oldDoc
+            of oldSnapshot.docs
+        ){
+
+            await deleteDoc(
+                doc(
+                    db,
+                    "attendance",
+                    oldDoc.id
+                )
+            );
+
+        }
+
+
+        for(
+            const record
+            of records
+        ){
+
+            await addDoc(
+                attendanceCollection,
+                {
+
+                    id:
+                        record.id,
+
+                    studentId:
+                        record.studentId,
+
+                    studentName:
+                        record.studentName,
+
+                    father:
+                        record.father,
+
+                    whatsapp:
+                        record.whatsapp,
+
+                    status:
+                        record.status,
+
+                    teacherId:
+                        record.teacherId,
+
+                    teacherName:
+                        record.teacherName,
+
+                    className:
+                        record.className,
+
+                    date:
+                        record.date
+
+                }
+            );
+
+        }
+
+
+        let allRecords =
+            getAttendanceRecords();
+
+
+        allRecords =
+            allRecords.filter(
+                function(record){
+
+                    return !(
+                        String(record.date)
+                        ===
+                        String(date)
+
+                        &&
+
+                        String(record.className)
+                        ===
+                        String(className)
+                    );
+
+                }
+            );
+
+
+        allRecords =
+            allRecords.concat(records);
+
+
+        localStorage.setItem(
+            "attendanceRecords",
+            JSON.stringify(
+                allRecords
+            )
+        );
+
+
+        let oldDateRecords =
+            getOldAttendance(date);
+
+
+        oldDateRecords =
+            oldDateRecords.filter(
+                function(record){
+
+                    return String(
+                        record.className
+                    )
+                    !==
+                    String(className);
+
+                }
+            );
+
+
+        oldDateRecords =
+            oldDateRecords.concat(records);
+
+
+        localStorage.setItem(
+            "attendance_" + date,
+            JSON.stringify(
+                oldDateRecords
+            )
+        );
+
+
+        message.style.color="green";
+
+
+        message.textContent =
+            "✅ حاضري په بریالیتوب Firebase ته ثبت شوه.";
+
+
+        alert(
+            "✅ د " +
+            className +
+            " ټولګي حاضري په بریالیتوب ثبت شوه."
+        );
+
+
+        attendanceSummary();
+
+    }
+    catch(error){
+
+        console.error(
+            "Firebase Save Attendance Error:",
+            error
+        );
+
+
+        message.style.color="red";
+
+
+        message.textContent =
+            "❌ حاضري Firebase ته ثبت نشوه.";
+
+
+        alert(
+            "❌ حاضري Firebase ته ثبت نشوه.\n\nInternet او Firestore Rules وګورئ."
+        );
+
+    }
+
+};
+
+
+
+/* =========================================
+   WHATSAPP
+   یوازې د تڼۍ په کلیک کولو سره
+========================================= */
+
+window.sendWhatsApp =
+function(studentId){
+
+    const students =
+        getStudents();
+
+
+    const student =
+        students.find(
+            function(item){
+
+                return String(
+                    item.id
+                )
+                ===
+                String(studentId);
+
+            }
+        );
+
+
+    if(!student){
+
+        alert(
+            "شاګرد پیدا نشو."
+        );
+
+        return;
+
+    }
+
+
+    if(!student.whatsapp){
+
+        alert(
+            "❌ د دې شاګرد د پلار WhatsApp نمبر ثبت شوی نه دی."
+        );
+
+        return;
+
+    }
+
+
+    const schoolName =
+        localStorage.getItem(
+            "schoolName"
+        )
+        ||
+        "د مکتب اداره";
+
+
+    let adminName="";
+
+    let schoolPhone="";
+
+
+    const savedSettings =
+        localStorage.getItem(
+            "schoolSettings"
+        );
+
+
+    if(savedSettings){
+
+        try{
+
+            const settings =
+                JSON.parse(
+                    savedSettings
+                );
+
+
+            adminName =
+                settings.adminName
+                ||
+                "";
+
+
+            schoolPhone =
+                settings.schoolPhone
+                ||
+                "";
+
+        }
+        catch(error){
+
+        }
+
+    }
+
+
+    /*
+       نمبر پاکول
+    */
+
+    let number =
+        String(
+            student.whatsapp
+        )
+        .trim();
+
+
+    number =
+        number.replace(
+            /\D/g,
+            ""
+        );
+
+
+    /*
+       0701234567
+       ->
+       93701234567
+    */
+
+    if(
+        number.startsWith("0")
+    ){
+
+        number =
+            "93" +
+            number.substring(1);
+
+    }
+
+
+    /*
+       که 93 نه وي
+    */
+
+    if(
+        !number.startsWith("93")
+    ){
+
+        number =
+            "93" +
+            number;
+
+    }
+
+
+    if(
+        number.length!==11
+    ){
+
+        alert(
+            "❌ د WhatsApp نمبر سم نه دی.\n\n" +
+            "مثال:\n" +
+            "0701234567"
+        );
+
+        return;
+
+    }
+
+
+    const date =
+        document.getElementById(
+            "date"
+        ).value;
+
+
+    if(!date){
+
+        alert(
+            "مهرباني وکړئ نېټه انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Message
+    */
+
+    let message =
+
+        "محترم والد صاحب،\n\n" +
+
+        "ستاسو زوی " +
+        student.name +
+        " د " +
+        student.className +
+        " ټولګي شاګرد دی.\n\n" +
+
+        "نوموړی نن د " +
+        date +
+        " په ورځ په مکتب کې غیر حاضر دی.\n\n" +
+
+        "مهرباني وکړئ د غیر حاضرۍ په اړه له مکتب سره اړیکه ونیسئ.\n\n" +
+
+        "🏫 " +
+        schoolName +
+        "\n";
+
+
+    if(adminName){
+
+        message +=
+            "👨‍💼 مدیر: " +
+            adminName +
+            "\n";
+
+    }
+
+
+    if(schoolPhone){
+
+        message +=
+            "📞 د مکتب شمېره: " +
+            schoolPhone +
+            "\n";
+
+    }
+
+
+    message +=
+        "\nمننه";
+
+
+    /*
+       WhatsApp لینک
+    */
+
+    const whatsappURL =
+
+        "https://wa.me/" +
+        number +
+        "?text=" +
+        encodeURIComponent(
+            message
+        );
+
+
+    /*
+       یوازې دلته WhatsApp خلاصیږي.
+    */
+
+    window.location.href =
+        whatsappURL;
+
+};
+
+
+
+/* =========================================
+   BACK
+========================================= */
+
+window.goBack =
+function(){
+
+    window.location.href =
+        "dashboard.html";
+
+};
+
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(text){
+
+    return String(
+        text || ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+
+/* =========================================
+   TODAY
+========================================= */
+
+function today(){
+
+    const d =
+        new Date();
+
+
+    return(
+
+        d.getFullYear() +
+
+        "-" +
+
+        String(
+            d.getMonth()+1
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        "-" +
+
+        String(
+            d.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+
+    );
+
+}
+
+
+
+/* =========================================
+   EVENTS
+========================================= */
+
+const dateInput =
+    document.getElementById(
+        "date"
+    );
+
+
+const classSelect =
+    document.getElementById(
+        "classSelect"
+    );
+
+
+dateInput.value =
+    today();
+
+
+dateInput.addEventListener(
+    "change",
+    function(){
+
+        showStudents();
+
+    }
+);
+
+
+classSelect.addEventListener(
+    "change",
+    function(){
+
+        showStudents();
+
+    }
+);
+
+
+
+/* =========================================
+   START
+========================================= */
+
+loadSchoolName();
+
+loadClasses();
+
+showStudents();
+
+
+document.getElementById(
+    "firebaseStatus"
+).textContent =
+    "☁️ Firebase حاضري Database تیار دی.";
+
+</script>
+
+
+</body>
+
+</html>

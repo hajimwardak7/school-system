@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>د شاګرد پروفایل</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    direction:rtl;
+    font-family:Arial,sans-serif;
+    background:#f2f6fc;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.box{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08);
+}
+
+.info{
+    padding:15px;
+    background:#f8f9fa;
+    border-radius:12px;
+    margin-bottom:10px;
+    font-size:17px;
+}
+
+.stat{
+    padding:18px;
+    border-radius:12px;
+    background:#f8f9fa;
+    margin-bottom:12px;
+    font-size:18px;
+}
+
+.green{
+    color:green;
+    font-weight:bold;
+}
+
+.red{
+    color:red;
+    font-weight:bold;
+}
+
+.blue{
+    color:#0d6efd;
+    font-weight:bold;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    color:white;
+    background:#6c757d;
+    margin-bottom:15px;
+}
+
+.print{
+    background:#198754;
+}
+
+.whatsapp{
+    background:#25D366;
+}
+
+.loading{
+    text-align:center;
+    padding:25px;
+    font-size:18px;
+}
+
+.error{
+    color:red;
+    text-align:center;
+    padding:20px;
+}
+
+.record{
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:10px;
+    background:#fafafa;
+}
+
+@media print{
+
+    button{
+        display:none;
+    }
+
+    body{
+        background:white;
+    }
+
+    .box{
+        box-shadow:none;
+        border:1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<h1>👨‍🎓 د شاګرد پروفایل</h1>
+
+<p>د شاګرد مکمل معلومات</p>
+
+</div>
+
+
+<button onclick="goBack()">
+
+⬅️ بېرته
+
+</button>
+
+
+<div id="loading"
+class="loading">
+
+⏳ د شاګرد معلومات لوډ کېږي...
+
+</div>
+
+
+<div id="profile"
+style="display:none;">
+
+
+<div class="box">
+
+<h2>👨‍🎓 شخصي معلومات</h2>
+
+<div class="info">
+
+👨‍🎓 نوم:
+
+<b id="studentName">
+-
+</b>
+
+</div>
+
+
+<div class="info">
+
+👨‍👦 د پلار نوم:
+
+<b id="fatherName">
+-
+</b>
+
+</div>
+
+
+<div class="info">
+
+🏫 ټولګی:
+
+<b id="className">
+-
+</b>
+
+</div>
+
+
+<div class="info">
+
+📱 WhatsApp:
+
+<b id="whatsapp">
+-
+</b>
+
+</div>
+
+
+<button
+id="whatsappButton"
+class="whatsapp"
+style="display:none;">
+
+📱 پلار ته WhatsApp پیغام
+
+</button>
+
+</div>
+
+
+<div class="box">
+
+<h2>💰 د فیس معلومات</h2>
+
+
+<div class="stat">
+
+💰 ټول ټاکل شوی فیس:
+
+<b id="totalFee">
+0
+</b>
+افغانۍ
+
+</div>
+
+
+<div class="stat">
+
+<span class="green">
+
+💵 ټول ورکړل شوی:
+
+</span>
+
+<b id="totalPaid">
+0
+</b>
+افغانۍ
+
+</div>
+
+
+<div class="stat">
+
+<span class="red">
+
+🔴 ټول پاتې:
+
+</span>
+
+<b id="totalRemaining">
+0
+</b>
+افغانۍ
+
+</div>
+
+
+<div class="stat">
+
+📋 د فیس ریکارډونه:
+
+<b id="feeRecords">
+0
+</b>
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>📊 د حاضري معلومات</h2>
+
+
+<div class="stat">
+
+📋 ټولې حاضري:
+
+<b id="attendanceTotal">
+0
+</b>
+
+</div>
+
+
+<div class="stat">
+
+<span class="green">
+
+✅ حاضر:
+
+</span>
+
+<b id="present">
+0
+</b>
+
+</div>
+
+
+<div class="stat">
+
+<span class="red">
+
+❌ غیر حاضر:
+
+</span>
+
+<b id="absent">
+0
+</b>
+
+</div>
+
+
+<div class="stat">
+
+📈 حاضري سلنه:
+
+<b id="attendancePercentage">
+0%
+</b>
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>💳 د فیس تاریخ</h2>
+
+<div id="feeHistory"></div>
+
+</div>
+
+
+<div class="box">
+
+<h2>📅 د حاضري تاریخ</h2>
+
+<div id="attendanceHistory"></div>
+
+</div>
+
+
+</div>
+
+
+<button
+class="print"
+onclick="window.print()">
+
+🖨️ پروفایل چاپ کړه
+
+</button>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// =========================
+// URL څخه Student ID
+// =========================
+
+function getStudentId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return params.get("id");
+
+}
+
+
+// =========================
+// Students
+// =========================
+
+async function getStudents(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"students")
+            );
+
+        const students = [];
+
+        snapshot.forEach(function(doc){
+
+            students.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        return students;
+
+    }catch(error){
+
+        const data =
+            localStorage.getItem("students");
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// =========================
+// Fees
+// =========================
+
+async function getFees(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"fees")
+            );
+
+        const fees = [];
+
+        snapshot.forEach(function(doc){
+
+            fees.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
+
+
+        return fees;
+
+    }catch(error){
+
+        const data =
+            localStorage.getItem("fees");
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// =========================
+// Attendance
+// =========================
+
+async function getAttendance(){
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "attendanceRecords"
+                )
+            );
+
+        const records = [];
+
+        snapshot.forEach(function(doc){
+
+            records.push({
+
+                id:doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "attendanceRecords",
+            JSON.stringify(records)
+        );
+
+
+        return records;
+
+    }catch(error){
+
+        const data =
+            localStorage.getItem(
+                "attendanceRecords"
+            );
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// =========================
+// WhatsApp نمبر
+// =========================
+
+function normalizeWhatsApp(number){
+
+    let phone =
+        String(number || "")
+        .replace(/\D/g,"");
+
+
+    if(!phone){
+
+        return "";
+
+    }
+
+
+    if(phone.startsWith("0")){
+
+        phone =
+            "93" +
+            phone.substring(1);
+
+    }
+
+
+    if(
+        phone.length === 9 &&
+        !phone.startsWith("0")
+    ){
+
+        phone =
+            "93" +
+            phone;
+
+    }
+
+
+    if(
+        phone.startsWith("0093")
+    ){
+
+        phone =
+            phone.substring(2);
+
+    }
+
+
+    return phone;
+
+}
+
+
+// =========================
+// WhatsApp
+// =========================
+
+function openWhatsApp(
+    name,
+    father,
+    className,
+    phone
+){
+
+    const number =
+        normalizeWhatsApp(phone);
+
+
+    if(!number){
+
+        alert(
+            "⚠️ د پلار WhatsApp نمبر نشته."
+        );
+
+        return;
+
+    }
+
+
+    const message =
+
+        "السلام علیکم\n\n" +
+
+        "محترم " +
+        father +
+        " صاحب!\n\n" +
+
+        "ستاسو د شاګرد " +
+        name +
+        " د " +
+        className +
+        " ټولګي معلومات د مکتب په سیستم کې موجود دي.\n\n" +
+
+        "د مکتب اداره";
+
+
+    const url =
+        "https://wa.me/" +
+        number +
+        "?text=" +
+        encodeURIComponent(
+            message
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+// =========================
+// اصلي پروفایل
+// =========================
+
+async function loadProfile(){
+
+    try{
+
+        const studentId =
+            getStudentId();
+
+
+        if(!studentId){
+
+            throw new Error(
+                "Student ID موجود نه دی."
+            );
+
+        }
+
+
+        const students =
+            await getStudents();
+
+
+        const fees =
+            await getFees();
+
+
+        const attendance =
+            await getAttendance();
+
+
+        // =========================
+        // شاګرد پیدا کړه
+        // =========================
+
+        const student =
+            students.find(
+                function(item){
+
+                    return String(
+                        item.id
+                    ) === String(
+                        studentId
+                    );
+
+                }
+            );
+
+
+        if(!student){
+
+            throw new Error(
+                "شاګرد پیدا نه شو."
+            );
+
+        }
+
+
+        // =========================
+        // معلومات
+        // =========================
+
+        const name =
+            student.name || "-";
+
+
+        const father =
+            student.father || "-";
+
+
+        const className =
+            student.className || "-";
+
+
+        const whatsapp =
+            student.whatsapp || "";
+
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            name;
+
+
+        document.getElementById(
+            "fatherName"
+        ).textContent =
+            father;
+
+
+        document.getElementById(
+            "className"
+        ).textContent =
+            className;
+
+
+        document.getElementById(
+            "whatsapp"
+        ).textContent =
+            whatsapp || "-";
+
+
+        // =========================
+        // WhatsApp Button
+        // =========================
+
+        const whatsappButton =
+            document.getElementById(
+                "whatsappButton"
+            );
+
+
+        if(whatsapp){
+
+            whatsappButton.style.display =
+                "block";
+
+
+            whatsappButton.onclick =
+                function(){
+
+                    openWhatsApp(
+                        name,
+                        father,
+                        className,
+                        whatsapp
+                    );
+
+                };
+
+        }
+
+
+        // =========================
+        // Student Fees
+        // =========================
+
+        const studentFees =
+            fees.filter(
+                function(fee){
+
+                    return String(
+                        fee.studentId
+                    ) === String(
+                        studentId
+                    );
+
+                }
+            );
+
+
+        let totalFee = 0;
+
+        let totalPaid = 0;
+
+        let totalRemaining = 0;
+
+
+        studentFees.forEach(
+            function(fee){
+
+                totalFee +=
+                    Number(
+                        fee.total
+                    ) || 0;
+
+
+                totalPaid +=
+                    Number(
+                        fee.paid
+                    ) || 0;
+
+
+                totalRemaining +=
+                    Number(
+                        fee.remaining
+                    ) || 0;
+
+            }
+        );
+
+
+        document.getElementById(
+            "totalFee"
+        ).textContent =
+            totalFee.toLocaleString();
+
+
+        document.getElementById(
+            "totalPaid"
+        ).textContent =
+            totalPaid.toLocaleString();
+
+
+        document.getElementById(
+            "totalRemaining"
+        ).textContent =
+            totalRemaining.toLocaleString();
+
+
+        document.getElementById(
+            "feeRecords"
+        ).textContent =
+            studentFees.length;
+
+
+        // =========================
+        // Fee History
+        // =========================
+
+        const feeHistory =
+            document.getElementById(
+                "feeHistory"
+            );
+
+
+        feeHistory.innerHTML = "";
+
+
+        if(studentFees.length === 0){
+
+            feeHistory.innerHTML =
+                "📭 د فیس ریکارډ نشته.";
+
+        }else{
+
+            studentFees.forEach(
+                function(fee){
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "record";
+
+
+                    div.innerHTML =
+
+                        "📅 میاشت: " +
+                        escapeHtml(
+                            fee.month || "-"
+                        ) +
+
+                        "<br>" +
+
+                        "🧾 رسید: " +
+                        escapeHtml(
+                            fee.receiptNo || "-"
+                        ) +
+
+                        "<br>" +
+
+                        "💰 فیس: " +
+                        Number(
+                            fee.total || 0
+                        ).toLocaleString() +
+
+                        " افغانۍ" +
+
+                        "<br>" +
+
+                        '<span class="green">' +
+
+                        "💵 ورکړل شوی: " +
+                        Number(
+                            fee.paid || 0
+                        ).toLocaleString() +
+
+                        " افغانۍ" +
+
+                        "</span>" +
+
+                        "<br>" +
+
+                        '<span class="red">' +
+
+                        "🔴 پاتې: " +
+                        Number(
+                            fee.remaining || 0
+                        ).toLocaleString() +
+
+                        " افغانۍ" +
+
+                        "</span>" +
+
+                        "<br>" +
+
+                        "📅 نېټه: " +
+                        escapeHtml(
+                            fee.date || "-"
+                        );
+
+
+                    feeHistory.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =========================
+        // Attendance
+        // =========================
+
+        const studentAttendance =
+            attendance.filter(
+                function(record){
+
+                    return String(
+                        record.studentId
+                    ) === String(
+                        studentId
+                    );
+
+                }
+            );
+
+
+        let present = 0;
+
+        let absent = 0;
+
+
+        studentAttendance.forEach(
+            function(record){
+
+                if(
+                    record.status ===
+                    "حاضر"
+                ){
+
+                    present++;
+
+                }
+
+
+                if(
+                    record.status ===
+                    "غیر حاضر"
+                ){
+
+                    absent++;
+
+                }
+
+            }
+        );
+
+
+        const attendanceTotal =
+            studentAttendance.length;
+
+
+        let attendancePercentage =
+            0;
+
+
+        if(attendanceTotal > 0){
+
+            attendancePercentage =
+                (
+                    present /
+                    attendanceTotal
+                ) * 100;
+
+        }
+
+
+        document.getElementById(
+            "attendanceTotal"
+        ).textContent =
+            attendanceTotal;
+
+
+        document.getElementById(
+            "present"
+        ).textContent =
+            present;
+
+
+        document.getElementById(
+            "absent"
+        ).textContent =
+            absent;
+
+
+        document.getElementById(
+            "attendancePercentage"
+        ).textContent =
+            attendancePercentage.toFixed(1) +
+            "%";
+
+
+        // =========================
+        // Attendance History
+        // =========================
+
+        const attendanceHistory =
+            document.getElementById(
+                "attendanceHistory"
+            );
+
+
+        attendanceHistory.innerHTML = "";
+
+
+        if(
+            studentAttendance.length === 0
+        ){
+
+            attendanceHistory.innerHTML =
+                "📭 د حاضري ریکارډ نشته.";
+
+        }else{
+
+            studentAttendance
+                .sort(function(a,b){
+
+                    return String(
+                        b.date || ""
+                    ).localeCompare(
+                        String(
+                            a.date || ""
+                        )
+                    );
+
+                })
+                .forEach(
+                    function(record){
+
+                        const div =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        div.className =
+                            "record";
+
+
+                        const status =
+                            record.status || "";
+
+
+                        if(
+                            status ===
+                            "حاضر"
+                        ){
+
+                            div.innerHTML =
+
+                                "📅 نېټه: " +
+
+                                escapeHtml(
+                                    record.date || "-"
+                                ) +
+
+                                "<br>" +
+
+                                '<span class="green">' +
+
+                                "✅ حاضر" +
+
+                                "</span>";
+
+                        }else{
+
+                            div.innerHTML =
+
+                                "📅 نېټه: " +
+
+                                escapeHtml(
+                                    record.date || "-"
+                                ) +
+
+                                "<br>" +
+
+                                '<span class="red">' +
+
+                                "❌ غیر حاضر" +
+
+                                "</span>";
+
+                        }
+
+
+                        attendanceHistory
+                            .appendChild(
+                                div
+                            );
+
+                    }
+                );
+
+        }
+
+
+        // =========================
+        // ښکاره کول
+        // =========================
+
+        document.getElementById(
+            "loading"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "profile"
+        ).style.display =
+            "block";
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        document.getElementById(
+            "loading"
+        ).innerHTML =
+
+            '<div class="error">' +
+
+            "❌ " +
+            error.message +
+
+            "</div>";
+
+    }
+
+}
+
+
+// =========================
+// HTML Escape
+// =========================
+
+function escapeHtml(value){
+
+    return String(value)
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+// =========================
+// Back
+// =========================
+
+window.goBack = function(){
+
+    window.location.href =
+        "students.html";
+
+};
+
+
+// =========================
+// Start
+// =========================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    loadProfile
+);
+
+</script>
+
+</body>
+
+</html>

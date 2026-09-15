@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <script src="script.js"></script>
+
+    <title>د میاشتني فیس مدیریت</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background: #f2f6fc;
+        }
+
+        .header {
+            background: linear-gradient(
+                135deg,
+                #0d6efd,
+                #084298
+            );
+
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 17px;
+            background: white;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #0d6efd;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #0d6efd;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .back-btn {
+            background: #6c757d;
+        }
+
+        .report-btn {
+            background: #198754;
+        }
+
+        .fee-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .fee-card h3 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        .fee-card p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .paid {
+            color: green !important;
+            font-weight: bold;
+        }
+
+        .remaining {
+            color: red !important;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .edit-btn {
+            background: #198754;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .summary {
+            background: #e9f5ff;
+            border: 1px solid #b6d9ff;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary p {
+            margin: 7px 0;
+            font-weight: bold;
+        }
+
+        @media (max-width: 400px) {
+
+            body {
+                padding: 12px;
+            }
+
+            .box {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            💰 د فیس مدیریت
+        </h1>
+
+        <p>
+            د شاګردانو میاشتنی فیس
+        </p>
+
+    </div>
+
+
+    <!-- BACK BUTTON -->
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ⬅️ بېرته Dashboard ته
+
+    </button>
+
+
+    <!-- YEARLY REPORT -->
+
+    <button
+        class="report-btn"
+        onclick="openStudentFeesReport()">
+
+        📊 د شاګرد کلنی فیس راپور
+
+    </button>
+
+
+    <!-- MONTHLY FEES -->
+
+    <button
+        onclick="window.location.href='monthly-fees.html'">
+
+        📊 د میاشتني فیس جدول
+
+    </button>
+
+
+    <!-- FINANCIAL REPORT -->
+
+    <button
+        onclick="window.location.href='financial-report.html'">
+
+        💰 عمومي مالي راپور
+
+    </button>
+
+
+    <!-- FEE HISTORY -->
+
+    <button
+        onclick="window.location.href='fee-history.html'">
+
+        📜 د فیس تاریخچه
+
+    </button>
+
+
+    <!-- ADD FEE -->
+
+    <div class="box">
+
+        <h2>
+            ➕ د فیس ثبتول
+        </h2>
+
+
+        <label>
+            شاګرد انتخاب کړئ
+        </label>
+
+        <select id="studentSelect">
+
+            <option value="">
+                -- شاګرد انتخاب کړئ --
+            </option>
+
+        </select>
+
+
+        <label>
+            میاشت انتخاب کړئ
+        </label>
+
+        <select id="monthSelect">
+
+            <option value="">
+                -- میاشت انتخاب کړئ --
+            </option>
+
+            <option value="حمل">حمل</option>
+            <option value="ثور">ثور</option>
+            <option value="جوزا">جوزا</option>
+            <option value="سرطان">سرطان</option>
+            <option value="اسد">اسد</option>
+            <option value="سنبله">سنبله</option>
+            <option value="میزان">میزان</option>
+            <option value="عقرب">عقرب</option>
+            <option value="قوس">قوس</option>
+            <option value="جدي">جدي</option>
+            <option value="دلو">دلو</option>
+            <option value="حوت">حوت</option>
+
+        </select>
+
+
+        <label>
+            💰 ټول فیس
+        </label>
+
+        <input
+            type="number"
+            id="totalFee"
+            placeholder="مثلاً 2000"
+            min="0">
+
+
+        <label>
+            💵 د ورکړې اندازه
+        </label>
+
+        <input
+            type="number"
+            id="paid"
+            placeholder="مثلاً 1500"
+            min="0">
+
+
+        <label>
+            💳 د پیسو طریقه
+        </label>
+
+        <select id="paymentMethod">
+
+            <option value="cash">
+                💵 نغدې
+            </option>
+
+            <option value="bank">
+                🏦 بانک
+            </option>
+
+        </select>
+
+
+        <label>
+            👤 پیسې چا ورکړې؟
+        </label>
+
+        <input
+            type="text"
+            id="payerName"
+            placeholder="مثلاً د پلار نوم">
+
+
+        <button
+            onclick="saveFee()">
+
+            💾 فیس ثبت کړه
+
+        </button>
+
+    </div>
+
+
+    <!-- FEE LIST -->
+
+    <div class="box">
+
+        <h2>
+            📋 د فیسونو لیست
+        </h2>
+
+
+        <div id="summary"
+             class="summary"
+             style="display:none;">
+
+        </div>
+
+
+        <div id="feeList">
+
+        </div>
+
+    </div>
+
+
+<script type="module">
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+import {
+    collection,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import {
+    db
+} from "./firebase.js";
+
+
+/* =========================================
+   LOGIN CHECK
+========================================= */
+
+if (
+    localStorage.getItem("adminLoggedIn") !== "true"
+) {
+
+    window.location.href = "index.html";
+
+}
+
+
+/* =========================================
+   ADMIN CHECK
+========================================= */
+
+if (
+    localStorage.getItem("userRole") !== "admin"
+) {
+
+    alert(
+        "❌ د فیس مدیریت یوازې مدیر ته اجازه لري."
+    );
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =========================================
+   GET STUDENTS FROM LOCAL STORAGE
+========================================= */
+
+function getStudents() {
+
+    try {
+
+        const data =
+            localStorage.getItem("students");
+
+        if (!data) {
+            return [];
+        }
+
+        const students =
+            JSON.parse(data);
+
+        return Array.isArray(students)
+            ? students
+            : [];
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD STUDENTS FROM FIREBASE
+========================================= */
+
+async function loadStudentsFromFirebase() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "students")
+            );
+
+        const students = [];
+
+        snapshot.forEach(function(item) {
+
+            students.push({
+
+                id: item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+
+        return students;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Firebase students error:",
+            error
+        );
+
+        return getStudents();
+
+    }
+
+}
+
+
+/* =========================================
+   GET FEES
+========================================= */
+
+function getFees() {
+
+    try {
+
+        const data =
+            localStorage.getItem("fees");
+
+        if (!data) {
+            return [];
+        }
+
+        const fees =
+            JSON.parse(data);
+
+        return Array.isArray(fees)
+            ? fees
+            : [];
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================
+   SAVE LOCAL FEES
+========================================= */
+
+function saveFees(fees) {
+
+    localStorage.setItem(
+        "fees",
+        JSON.stringify(fees)
+    );
+
+}
+
+
+/* =========================================
+   LOAD FEES FROM FIREBASE
+========================================= */
+
+async function loadFeesFromFirebase() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "fees")
+            );
+
+        const fees = [];
+
+        snapshot.forEach(function(item) {
+
+            fees.push({
+
+                id: item.id,
+
+                ...item.data()
+
+            });
+
+        });
+
+
+        saveFees(fees);
+
+        return fees;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Firebase fees error:",
+            error
+        );
+
+        return getFees();
+
+    }
+
+}
+
+
+/* =========================================
+   CREATE RECEIPT NUMBER
+========================================= */
+
+function createReceiptNumber() {
+
+    let lastNumber =
+        Number(
+            localStorage.getItem(
+                "lastReceiptNumber"
+            )
+        ) || 0;
+
+
+    lastNumber++;
+
+
+    localStorage.setItem(
+        "lastReceiptNumber",
+        lastNumber
+    );
+
+
+    return "REC-" +
+        String(lastNumber).padStart(
+            4,
+            "0"
+        );
+
+}
+
+
+/* =========================================
+   LOAD STUDENTS
+========================================= */
+
+async function loadStudents() {
+
+    const studentSelect =
+        document.getElementById(
+            "studentSelect"
+        );
+
+
+    const students =
+        await loadStudentsFromFirebase();
+
+
+    studentSelect.innerHTML =
+        '<option value="">-- شاګرد انتخاب کړئ --</option>';
+
+
+    if (students.length === 0) {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value = "";
+
+        option.textContent =
+            "تر اوسه شاګرد نه دی ثبت شوی";
+
+        studentSelect.appendChild(
+            option
+        );
+
+        return;
+
+    }
+
+
+    students.forEach(
+        function(student) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                student.id;
+
+
+            option.textContent =
+                String(
+                    student.name ||
+                    "بې نومه"
+                ) +
+                " - " +
+                String(
+                    student.className ||
+                    ""
+                );
+
+
+            studentSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SAVE FEE
+========================================= */
+
+window.saveFee = async function() {
+
+
+    const studentId =
+        document.getElementById(
+            "studentSelect"
+        ).value;
+
+
+    const month =
+        document.getElementById(
+            "monthSelect"
+        ).value;
+
+
+    const totalInput =
+        document.getElementById(
+            "totalFee"
+        ).value;
+
+
+    const paid =
+        Number(
+            document.getElementById(
+                "paid"
+            ).value
+        );
+
+
+    const paymentMethod =
+        document.getElementById(
+            "paymentMethod"
+        ).value;
+
+
+    const payerName =
+        document.getElementById(
+            "payerName"
+        ).value.trim();
+
+
+    const total =
+        Number(totalInput);
+
+
+    /* =====================================
+       VALIDATION
+    ===================================== */
+
+    if (!studentId) {
+
+        alert(
+            "❌ مهرباني وکړئ شاګرد انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    if (!month) {
+
+        alert(
+            "❌ مهرباني وکړئ میاشت انتخاب کړئ."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        totalInput === "" ||
+        !Number.isFinite(total) ||
+        total <= 0
+    ) {
+
+        alert(
+            "❌ د ټول فیس سمه اندازه ولیکئ."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(paid) ||
+        paid < 0
+    ) {
+
+        alert(
+            "❌ د ورکړې اندازه سمه نه ده."
+        );
+
+        return;
+
+    }
+
+
+    if (paid > total) {
+
+        alert(
+            "❌ ورکړل شوی فیس د ټول فیس څخه زیات نه شي کېدای."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       FIND STUDENT
+    ===================================== */
+
+    const students =
+        getStudents();
+
+
+    const student =
+        students.find(
+            function(item) {
+
+                return (
+                    String(item.id) ===
+                    String(studentId)
+                );
+
+            }
+        );
+
+
+    if (!student) {
+
+        alert(
+            "❌ شاګرد پیدا نشو."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       GET OLD FEES
+    ===================================== */
+
+    let fees =
+        getFees();
+
+
+    /* =====================================
+       FIND OLD FEE
+    ===================================== */
+
+    const existingIndex =
+        fees.findIndex(
+            function(item) {
+
+                return (
+                    String(
+                        item.studentId
+                    ) ===
+                    String(studentId)
+                    &&
+                    item.month ===
+                    month
+                );
+
+            }
+        );
+
+
+    /* =====================================
+       RECEIPT NUMBER
+    ===================================== */
+
+    let receiptNo;
+
+
+    if (
+        existingIndex >= 0 &&
+        fees[existingIndex].receiptNo
+    ) {
+
+        receiptNo =
+            fees[existingIndex].receiptNo;
+
+    }
+
+    else {
+
+        receiptNo =
+            createReceiptNumber();
+
+    }
+
+
+    /* =====================================
+       FEE DATA
+    ===================================== */
+
+    const feeData = {
+
+        studentId:
+            student.id,
+
+        studentName:
+            student.name || "",
+
+        father:
+            student.father || "",
+
+        className:
+            student.className || "",
+
+        month:
+            month,
+
+        total:
+            total,
+
+        paid:
+            paid,
+
+        remaining:
+            total - paid,
+
+        paymentMethod:
+            paymentMethod,
+
+        payerName:
+            payerName,
+
+        receiptNo:
+            receiptNo,
+
+        date:
+            new Date()
+                .toISOString()
+                .split("T")[0]
+
+    };
+
+
+    /* =====================================
+       UPDATE EXISTING FEE
+    ===================================== */
+
+    if (existingIndex >= 0) {
+
+        const oldFee =
+            fees[existingIndex];
+
+
+        try {
+
+            /*
+             * که ID د Firebase document ID وي
+             * نو Firebase کې update کوو.
+             */
+
+            if (
+                oldFee.id &&
+                typeof oldFee.id === "string"
+            ) {
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "fees",
+                        oldFee.id
+                    ),
+                    feeData
+                );
+
+            }
+
+            /*
+             * LocalStorage هم update
+             */
+
+            fees[existingIndex] = {
+
+                id:
+                    oldFee.id,
+
+                ...feeData
+
+            };
+
+
+            saveFees(fees);
+
+
+            alert(
+                "✅ د دې شاګرد د دې میاشتې فیس تازه شو.\n\n" +
+                "🧾 رسید نمبر: " +
+                receiptNo
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            /*
+             * که Firebase کار ونکړي،
+             * LocalStorage کې یې ساتو.
+             */
+
+            fees[existingIndex] = {
+
+                id:
+                    oldFee.id,
+
+                ...feeData
+
+            };
+
+
+            saveFees(fees);
+
+
+            alert(
+                "⚠️ Firebase ته فیس تازه نه شو، خو په موبایل کې ذخیره شو.\n\n" +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    /* =====================================
+       ADD NEW FEE
+    ===================================== */
+
+    else {
+
+        try {
+
+            /*
+             * دلته fees Collection
+             * په اتومات ډول جوړېږي.
+             */
+
+            const newDoc =
+                await addDoc(
+                    collection(
+                        db,
+                        "fees"
+                    ),
+                    feeData
+                );
+
+
+            /*
+             * Firebase Document ID
+             */
+
+            const newFee = {
+
+                id:
+                    newDoc.id,
+
+                ...feeData
+
+            };
+
+
+            fees.push(
+                newFee
+            );
+
+
+            saveFees(fees);
+
+
+            alert(
+                "✅ فیس په بریالیتوب ثبت شو.\n\n" +
+                "🧾 رسید نمبر: " +
+                receiptNo +
+                "\n\n" +
+                "🔥 Firebase کې هم ذخیره شو."
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Firebase save error:",
+                error
+            );
+
+
+            /*
+             * Firebase کار ونکړي،
+             * LocalStorage کې ذخیره کېږي.
+             */
+
+            const localFee = {
+
+                id:
+                    Date.now(),
+
+                ...feeData
+
+            };
+
+
+            fees.push(
+                localFee
+            );
+
+
+            saveFees(fees);
+
+
+            alert(
+                "⚠️ Firebase ته فیس ثبت نه شو.\n\n" +
+                "فیس یوازې په موبایل کې ذخیره شو.\n\n" +
+                "خطا: " +
+                error.message
+            );
+
+        }
+
+    }
+
+
+    /* =====================================
+       CLEAR FORM
+    ===================================== */
+
+    document.getElementById(
+        "studentSelect"
+    ).value = "";
+
+
+    document.getElementById(
+        "monthSelect"
+    ).value = "";
+
+
+    document.getElementById(
+        "totalFee"
+    ).value = "";
+
+
+    document.getElementById(
+        "paid"
+    ).value = "";
+
+
+    document.getElementById(
+        "paymentMethod"
+    ).value = "cash";
+
+
+    document.getElementById(
+        "payerName"
+    ).value = "";
+
+
+    /* =====================================
+       SHOW FEES
+    ===================================== */
+
+    showFees();
+
+};
+
+
+/* =========================================
+   SHOW FEES
+========================================= */
+
+function showFees() {
+
+
+    const feeList =
+        document.getElementById(
+            "feeList"
+        );
+
+
+    const summary =
+        document.getElementById(
+            "summary"
+        );
+
+
+    const fees =
+        getFees();
+
+
+    feeList.innerHTML =
+        "";
+
+
+    if (
+        fees.length === 0
+    ) {
+
+        summary.style.display =
+            "none";
+
+
+        feeList.innerHTML =
+            '<div class="empty">' +
+            '📭 تر اوسه فیس نه دی ثبت شوی.' +
+            '</div>';
+
+
+        return;
+
+    }
+
+
+    /* =====================================
+       SUMMARY
+    ===================================== */
+
+    let totalAmount = 0;
+
+    let paidAmount = 0;
+
+    let remainingAmount = 0;
+
+
+    fees.forEach(
+        function(fee) {
+
+            totalAmount +=
+                Number(
+                    fee.total
+                ) || 0;
+
+
+            paidAmount +=
+                Number(
+                    fee.paid
+                ) || 0;
+
+
+            remainingAmount +=
+                Number(
+                    fee.remaining
+                ) || 0;
+
+        }
+    );
+
+
+    summary.style.display =
+        "block";
+
+
+    summary.innerHTML =
+
+        "<p>💰 ټول فیس: " +
+        totalAmount +
+        " افغانۍ</p>" +
+
+        "<p>💵 ورکړل شوی: " +
+        paidAmount +
+        " افغانۍ</p>" +
+
+        "<p>⚠️ پاتې فیس: " +
+        remainingAmount +
+        " افغانۍ</p>" +
+
+        "<p>📋 ټول ثبتونه: " +
+        fees.length +
+        "</p>";
+
+
+    /* =====================================
+       SHOW CARDS
+    ===================================== */
+
+    fees
+        .slice()
+        .reverse()
+        .forEach(
+            function(fee) {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "fee-card";
+
+
+                let status = "";
+
+
+                if (
+                    Number(
+                        fee.remaining
+                    ) === 0
+                ) {
+
+                    status =
+                        '<p class="paid">' +
+                        '✅ فیس مکمل ورکړل شوی' +
+                        '</p>';
+
+                }
+
+                else {
+
+                    status =
+                        '<p class="remaining">' +
+                        '⚠️ پاتې فیس: ' +
+                        (
+                            Number(
+                                fee.remaining
+                            ) || 0
+                        ) +
+                        ' افغانۍ' +
+                        '</p>';
+
+                }
+
+
+                let paymentMethodText =
+                    "—";
+
+
+                if (
+                    fee.paymentMethod ===
+                    "cash"
+                ) {
+
+                    paymentMethodText =
+                        "💵 نغدې";
+
+                }
+
+                else if (
+                    fee.paymentMethod ===
+                    "bank"
+                ) {
+
+                    paymentMethodText =
+                        "🏦 بانک";
+
+                }
+
+
+                card.innerHTML =
+
+                    "<h3>👨‍🎓 " +
+                    escapeHTML(
+                        fee.studentName
+                    ) +
+                    "</h3>" +
+
+                    "<p>🧾 رسید نمبر: " +
+                    escapeHTML(
+                        fee.receiptNo || "-"
+                    ) +
+                    "</p>" +
+
+                    "<p>👨‍👦 د پلار نوم: " +
+                    escapeHTML(
+                        fee.father || "-"
+                    ) +
+                    "</p>" +
+
+                    "<p>🏫 ټولګی: " +
+                    escapeHTML(
+                        fee.className || "-"
+                    ) +
+                    "</p>" +
+
+                    "<p>📅 میاشت: " +
+                    escapeHTML(
+                        fee.month || "-"
+                    ) +
+                    "</p>" +
+
+                    "<p>💰 ټول فیس: " +
+                    (
+                        Number(
+                            fee.total
+                        ) || 0
+                    ) +
+                    " افغانۍ</p>" +
+
+                    "<p>💵 ورکړل شوی: " +
+                    (
+                        Number(
+                            fee.paid
+                        ) || 0
+                    ) +
+                    " افغانۍ</p>" +
+
+                    "<p>💳 د پیسو طریقه: " +
+                    escapeHTML(
+                        paymentMethodText
+                    ) +
+                    "</p>" +
+
+                    "<p>👤 پیسې ورکړي: " +
+                    escapeHTML(
+                        fee.payerName || "-"
+                    ) +
+                    "</p>" +
+
+                    "<p>📆 د ثبت نېټه: " +
+                    escapeHTML(
+                        fee.date || "-"
+                    ) +
+                    "</p>" +
+
+                    status;
+
+
+                /* =====================================
+                   RECEIPT
+                ===================================== */
+
+                const receiptButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                receiptButton.className =
+                    "edit-btn";
+
+
+                receiptButton.textContent =
+                    "🧾 رسید";
+
+
+                receiptButton.onclick =
+                    function() {
+
+                        window.location.href =
+                            "fee-receipt.html?id=" +
+                            encodeURIComponent(
+                                fee.id
+                            );
+
+                    };
+
+
+                card.appendChild(
+                    receiptButton
+                );
+
+
+                /* =====================================
+                   DELETE
+                ===================================== */
+
+                const deleteButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                deleteButton.className =
+                    "delete-btn";
+
+
+                deleteButton.textContent =
+                    "🗑️ حذف کول";
+
+
+                deleteButton.onclick =
+                    function() {
+
+                        deleteFee(
+                            fee.id
+                        );
+
+                    };
+
+
+                card.appendChild(
+                    deleteButton
+                );
+
+
+                feeList.appendChild(
+                    card
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   DELETE FEE
+========================================= */
+
+window.deleteFee = async function(id) {
+
+
+    const confirmDelete =
+        confirm(
+            "ایا غواړئ دا فیس حذف کړئ؟"
+        );
+
+
+    if (!confirmDelete) {
+
+        return;
+
+    }
+
+
+    let fees =
+        getFees();
+
+
+    const fee =
+        fees.find(
+            function(item) {
+
+                return (
+                    String(item.id) ===
+                    String(id)
+                );
+
+            }
+        );
+
+
+    try {
+
+        /*
+         * که Firebase ID وي،
+         * Firebase کې یې حذف کوو.
+         */
+
+        if (
+            fee &&
+            typeof fee.id === "string"
+        ) {
+
+            await deleteDoc(
+                doc(
+                    db,
+                    "fees",
+                    fee.id
+                )
+            );
+
+        }
+
+
+        fees =
+            fees.filter(
+                function(item) {
+
+                    return (
+                        String(
+                            item.id
+                        ) !==
+                        String(id)
+                    );
+
+                }
+            );
+
+
+        saveFees(fees);
+
+
+        showFees();
+
+
+        alert(
+            "✅ فیس حذف شو."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        /*
+         * LocalStorage څخه یې هم حذف کوو.
+         */
+
+        fees =
+            fees.filter(
+                function(item) {
+
+                    return (
+                        String(
+                            item.id
+                        ) !==
+                        String(id)
+                    );
+
+                }
+            );
+
+
+        saveFees(fees);
+
+
+        showFees();
+
+
+        alert(
+            "⚠️ Firebase کې حذف نه شو، خو له موبایل څخه حذف شو.\n\n" +
+            error.message
+        );
+
+    }
+
+};
+
+
+/* =========================================
+   OPEN YEARLY REPORT
+========================================= */
+
+window.openStudentFeesReport =
+function() {
+
+    window.location.href =
+        "student-fees.html";
+
+};
+
+
+/* =========================================
+   BACK
+========================================= */
+
+window.goBack =
+function() {
+
+    window.location.href =
+        "dashboard.html";
+
+};
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        await loadStudents();
+
+        await loadFeesFromFirebase();
+
+        showFees();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

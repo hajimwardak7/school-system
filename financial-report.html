@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ps">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<script src="script.js"></script>
+
+<title>عمومي مالي راپور</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 20px;
+    direction: rtl;
+    font-family: Arial, sans-serif;
+    background: #f2f6fc;
+}
+
+.header {
+    background: linear-gradient(135deg,#0d6efd,#084298);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+.stat {
+    padding: 18px;
+    border-radius: 12px;
+    background: #f8f9fa;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.green {
+    color: green;
+    font-weight: bold;
+}
+
+.red {
+    color: red;
+    font-weight: bold;
+}
+
+.month {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    background: #fafafa;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
+    background: #6c757d;
+    margin-bottom: 15px;
+}
+
+.print {
+    background: #198754;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.error {
+    color: red;
+    text-align: center;
+    padding: 15px;
+}
+
+@media print {
+
+    button {
+        display: none;
+    }
+
+    body {
+        background: white;
+    }
+
+    .box {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<h1>💰 عمومي مالي راپور</h1>
+
+<p>د مکتب د فیسونو مالي وضعیت</p>
+
+</div>
+
+
+<button onclick="goBack()">
+
+⬅️ بېرته
+
+</button>
+
+
+<div id="loading" class="loading">
+
+⏳ مالي راپور لوډ کېږي...
+
+</div>
+
+
+<div id="reportContent" style="display:none;">
+
+
+<div class="box">
+
+<h2>📊 عمومي حساب</h2>
+
+
+<div class="stat">
+
+👨‍🎓 ټول شاګردان:
+
+<b id="studentCount">
+0
+</b>
+
+</div>
+
+
+<div class="stat">
+
+💰 ټول ټاکل شوی فیس:
+
+<b id="totalFee">
+0
+</b>
+افغانۍ
+
+</div>
+
+
+<div class="stat">
+
+<span class="green">
+💵 ټول ورکړل شوی فیس:
+</span>
+
+<b id="totalPaid">
+0
+</b>
+افغانۍ
+
+</div>
+
+
+<div class="stat">
+
+<span class="red">
+🔴 ټول پاتې فیس:
+</span>
+
+<b id="totalRemaining">
+0
+</b>
+افغانۍ
+
+</div>
+
+</div>
+
+
+<div class="box">
+
+<h2>📅 د میاشتو مالي راپور</h2>
+
+<div id="monthlyReport"></div>
+
+</div>
+
+
+<div class="box">
+
+<h2>📈 د پیسو سلنه</h2>
+
+<div id="percentage"></div>
+
+</div>
+
+
+</div>
+
+
+<button
+class="print"
+onclick="window.print()">
+
+🖨️ راپور چاپ کړه
+
+</button>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+// -------------------------
+// میاشتې
+// -------------------------
+
+const months = [
+
+    "حمل",
+    "ثور",
+    "جوزا",
+    "سرطان",
+    "اسد",
+    "سنبله",
+    "میزان",
+    "عقرب",
+    "قوس",
+    "جدي",
+    "دلو",
+    "حوت"
+
+];
+
+
+// -------------------------
+// Firebase Students
+// -------------------------
+
+async function loadStudents() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "students")
+            );
+
+        const students = [];
+
+        snapshot.forEach(function(doc) {
+
+            students.push({
+
+                id: doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+        // LocalStorage هم تازه کړه
+
+        localStorage.setItem(
+            "students",
+            JSON.stringify(students)
+        );
+
+        return students;
+
+    } catch(error) {
+
+        console.log(
+            "Students Firebase Error:",
+            error
+        );
+
+        // که Firebase کار ونه کړي
+        // LocalStorage استعمال کړه
+
+        const data =
+            localStorage.getItem("students");
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// -------------------------
+// Firebase Fees
+// -------------------------
+
+async function loadFees() {
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "fees")
+            );
+
+        const fees = [];
+
+        snapshot.forEach(function(doc) {
+
+            fees.push({
+
+                id: doc.id,
+
+                ...doc.data()
+
+            });
+
+        });
+
+
+        // LocalStorage تازه کړه
+
+        localStorage.setItem(
+            "fees",
+            JSON.stringify(fees)
+        );
+
+
+        return fees;
+
+    } catch(error) {
+
+        console.log(
+            "Fees Firebase Error:",
+            error
+        );
+
+
+        // که Firebase کار ونه کړي
+
+        const data =
+            localStorage.getItem("fees");
+
+        return data
+            ? JSON.parse(data)
+            : [];
+
+    }
+
+}
+
+
+// -------------------------
+// راپور جوړول
+// -------------------------
+
+async function loadReport() {
+
+    try {
+
+        const students =
+            await loadStudents();
+
+
+        const fees =
+            await loadFees();
+
+
+        // -------------------------
+        // ټول شاګردان
+        // -------------------------
+
+        document.getElementById(
+            "studentCount"
+        ).textContent =
+            students.length;
+
+
+        // -------------------------
+        // عمومي حساب
+        // -------------------------
+
+        let totalFee = 0;
+
+        let totalPaid = 0;
+
+        let totalRemaining = 0;
+
+
+        fees.forEach(function(fee) {
+
+            totalFee +=
+                Number(fee.total) || 0;
+
+
+            totalPaid +=
+                Number(fee.paid) || 0;
+
+
+            totalRemaining +=
+                Number(fee.remaining) || 0;
+
+        });
+
+
+        document.getElementById(
+            "totalFee"
+        ).textContent =
+            totalFee.toLocaleString();
+
+
+        document.getElementById(
+            "totalPaid"
+        ).textContent =
+            totalPaid.toLocaleString();
+
+
+        document.getElementById(
+            "totalRemaining"
+        ).textContent =
+            totalRemaining.toLocaleString();
+
+
+        // -------------------------
+        // میاشتنی راپور
+        // -------------------------
+
+        const monthlyReport =
+            document.getElementById(
+                "monthlyReport"
+            );
+
+
+        monthlyReport.innerHTML = "";
+
+
+        months.forEach(function(month) {
+
+
+            let monthTotal = 0;
+
+            let monthPaid = 0;
+
+            let monthRemaining = 0;
+
+            let recordCount = 0;
+
+
+            fees.forEach(function(fee) {
+
+                if (
+                    String(fee.month || "")
+                    === month
+                ) {
+
+                    recordCount++;
+
+
+                    monthTotal +=
+                        Number(fee.total) || 0;
+
+
+                    monthPaid +=
+                        Number(fee.paid) || 0;
+
+
+                    monthRemaining +=
+                        Number(fee.remaining) || 0;
+
+                }
+
+            });
+
+
+            const div =
+                document.createElement("div");
+
+
+            div.className = "month";
+
+
+            div.innerHTML =
+
+                "<b>📅 " +
+                month +
+                "</b>" +
+
+                "<br><br>" +
+
+                "👨‍🎓 د فیسونو شمېر: " +
+                recordCount +
+
+                "<br>" +
+
+                "💰 ټول فیس: " +
+                monthTotal.toLocaleString() +
+                " افغانۍ" +
+
+                "<br>" +
+
+                '<span class="green">' +
+
+                "💵 ورکړل شوی: " +
+
+                monthPaid.toLocaleString() +
+
+                " افغانۍ" +
+
+                "</span>" +
+
+                "<br>" +
+
+                '<span class="red">' +
+
+                "🔴 پاتې: " +
+
+                monthRemaining.toLocaleString() +
+
+                " افغانۍ" +
+
+                "</span>";
+
+
+            monthlyReport.appendChild(div);
+
+        });
+
+
+        // -------------------------
+        // سلنه
+        // -------------------------
+
+        let percentage = 0;
+
+
+        if (totalFee > 0) {
+
+            percentage =
+                (totalPaid / totalFee) * 100;
+
+        }
+
+
+        let remainingPercentage =
+            100 - percentage;
+
+
+        if (remainingPercentage < 0) {
+
+            remainingPercentage = 0;
+
+        }
+
+
+        document.getElementById(
+            "percentage"
+        ).innerHTML =
+
+            "💵 د راټولو شویو پیسو سلنه: " +
+
+            "<b>" +
+
+            percentage.toFixed(1) +
+
+            "%</b>" +
+
+            "<br><br>" +
+
+            "🔴 د پاتې پیسو سلنه: " +
+
+            "<b>" +
+
+            remainingPercentage.toFixed(1) +
+
+            "%</b>";
+
+
+        // -------------------------
+        // Loading ختم
+        // -------------------------
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "reportContent"
+        ).style.display = "block";
+
+
+    } catch(error) {
+
+        console.error(error);
+
+
+        document.getElementById(
+            "loading"
+        ).innerHTML =
+
+            '<div class="error">' +
+
+            "❌ د مالي راپور په لوډ کولو کې ستونزه راغله." +
+
+            "<br><br>" +
+
+            error.message +
+
+            "</div>";
+
+    }
+
+}
+
+
+// -------------------------
+// Back
+// -------------------------
+
+window.goBack = function() {
+
+    window.location.href =
+        "fees.html";
+
+};
+
+
+// -------------------------
+// Start
+// -------------------------
+
+loadReport();
+
+</script>
+
+</body>
+
+</html>

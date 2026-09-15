@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ps" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Backup - School System</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Tahoma,Arial,sans-serif;
+    background:#f4f6f9;
+    color:#222;
+}
+
+.header{
+    background:linear-gradient(135deg,#0d6efd,#084298);
+    color:white;
+    padding:25px 15px;
+    text-align:center;
+}
+
+.header h2{
+    margin:0 0 8px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:15px;
+}
+
+.back{
+    display:block;
+    background:white;
+    color:#0d6efd;
+    text-decoration:none;
+    text-align:center;
+    padding:13px;
+    border-radius:12px;
+    margin-bottom:15px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:15px;
+    box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.card h3{
+    margin-top:0;
+    color:#0d6efd;
+}
+
+.card p{
+    color:#666;
+    line-height:1.8;
+}
+
+.btn{
+    width:100%;
+    border:0;
+    padding:14px;
+    border-radius:11px;
+    font-size:16px;
+    font-family:inherit;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+.backup-btn{
+    background:#198754;
+    color:white;
+}
+
+.restore-btn{
+    background:#0d6efd;
+    color:white;
+}
+
+.danger-btn{
+    background:#dc3545;
+    color:white;
+}
+
+input[type="file"]{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    margin-top:8px;
+}
+
+.status{
+    margin-top:15px;
+    padding:13px;
+    border-radius:10px;
+    display:none;
+    line-height:1.8;
+}
+
+.success{
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    background:#f8d7da;
+    color:#842029;
+}
+
+.info{
+    background:#cff4fc;
+    color:#055160;
+}
+
+.warning{
+    background:#fff3cd;
+    color:#664d03;
+}
+
+.count{
+    background:#f8f9fa;
+    padding:12px;
+    border-radius:10px;
+    line-height:2;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h2>💾 Backup او Restore</h2>
+
+    <p>د مکتب معلومات خوندي او بېرته راګرځول</p>
+
+</div>
+
+
+<div class="container">
+
+
+<a href="dashboard.html" class="back">
+    ⬅️ Dashboard ته بېرته
+</a>
+
+
+<div class="card">
+
+    <h3>💾 Backup جوړول</h3>
+
+    <p>
+        د مکتب مهم معلومات په یوه JSON فایل کې خوندي کړئ.
+        دا فایل په موبایل یا بل خوندي ځای کې وساتئ.
+    </p>
+
+    <div class="count" id="dataCount">
+        ⏳ معلومات شمېرل کېږي...
+    </div>
+
+    <button
+        class="btn backup-btn"
+        onclick="createBackup()">
+
+        💾 Backup فایل جوړول
+
+    </button>
+
+</div>
+
+
+<div class="card">
+
+    <h3>📥 Restore</h3>
+
+    <p>
+        که معلومات مو له منځه تللي وي،
+        خپل Backup فایل انتخاب کړئ او معلومات بېرته Firebase ته واچوئ.
+    </p>
+
+    <input
+        type="file"
+        id="backupFile"
+        accept=".json">
+
+    <button
+        class="btn restore-btn"
+        onclick="restoreBackup()">
+
+        📥 Backup بېرته Restore کول
+
+    </button>
+
+</div>
+
+
+<div class="card">
+
+    <h3>🔐 د License امنیت</h3>
+
+    <div class="status warning"
+         style="display:block">
+
+        ⚠️ License معلومات Backup کې نه شاملېږي.
+        License یوازې د Firebase له لارې اداره کېږي.
+
+    </div>
+
+</div>
+
+
+<div id="status"
+     class="status">
+</div>
+
+
+</div>
+
+
+<script type="module">
+
+import {
+    collection,
+    getDocs,
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+import { db } from "./firebase.js";
+
+
+/*
+================================================
+COLLECTIONS
+================================================
+*/
+
+const collections = [
+
+    "students",
+    "teachers",
+    "fees",
+    "attendance",
+    "attendanceRecords"
+
+];
+
+
+/*
+================================================
+STATUS
+================================================
+*/
+
+function showStatus(message,type){
+
+    const box =
+        document.getElementById("status");
+
+    box.className =
+        "status " + type;
+
+    box.innerHTML =
+        message;
+
+    box.style.display =
+        "block";
+
+}
+
+
+/*
+================================================
+GET COLLECTION DATA
+================================================
+*/
+
+async function getCollectionData(collectionName){
+
+    const result = {};
+
+    const snapshot =
+        await getDocs(
+            collection(
+                db,
+                collectionName
+            )
+        );
+
+
+    snapshot.forEach(docSnap => {
+
+        result[docSnap.id] =
+            docSnap.data();
+
+    });
+
+
+    return result;
+
+}
+
+
+/*
+================================================
+LOAD COUNTS
+================================================
+*/
+
+async function loadCounts(){
+
+    try{
+
+        const counts = [];
+
+        for(
+            const collectionName
+            of collections
+        ){
+
+            try{
+
+                const snapshot =
+                    await getDocs(
+                        collection(
+                            db,
+                            collectionName
+                        )
+                    );
+
+                counts.push(
+                    collectionName +
+                    ": " +
+                    snapshot.size
+                );
+
+            }catch(error){
+
+                counts.push(
+                    collectionName +
+                    ": 0"
+                );
+
+            }
+
+        }
+
+
+        document.getElementById(
+            "dataCount"
+        ).innerHTML =
+            counts.join("<br>");
+
+
+    }catch(error){
+
+        document.getElementById(
+            "dataCount"
+        ).innerHTML =
+            "❌ معلومات لوډ نه شول.";
+
+    }
+
+}
+
+
+loadCounts();
+
+
+/*
+================================================
+CREATE BACKUP
+================================================
+*/
+
+window.createBackup =
+async function(){
+
+    try{
+
+        showStatus(
+            "⏳ Backup جوړېږي، مهرباني وکړئ انتظار وکړئ...",
+            "info"
+        );
+
+
+        const backup = {
+
+            backupVersion:
+                "1.0",
+
+            createdAt:
+                new Date().toISOString(),
+
+            schoolInfo: {
+
+                schoolName:
+                    localStorage.getItem(
+                        "schoolName"
+                    ) || "",
+
+                adminName:
+                    localStorage.getItem(
+                        "adminName"
+                    ) || "",
+
+                schoolPhone:
+                    localStorage.getItem(
+                        "schoolPhone"
+                    ) || "",
+
+                schoolId:
+                    localStorage.getItem(
+                        "schoolId"
+                    ) || ""
+
+            },
+
+            data: {}
+
+        };
+
+
+        /*
+        ========================================
+        FIRESTORE DATA
+        ========================================
+        */
+
+        for(
+            const collectionName
+            of collections
+        ){
+
+            try{
+
+                backup.data[
+                    collectionName
+                ] =
+                    await getCollectionData(
+                        collectionName
+                    );
+
+            }catch(error){
+
+                backup.data[
+                    collectionName
+                ] = {};
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        LOCAL SETTINGS
+        ========================================
+        */
+
+        backup.localSettings = {
+
+            schoolName:
+                localStorage.getItem(
+                    "schoolName"
+                ) || "",
+
+            adminName:
+                localStorage.getItem(
+                    "adminName"
+                ) || "",
+
+            schoolPhone:
+                localStorage.getItem(
+                    "schoolPhone"
+                ) || ""
+
+        };
+
+
+        /*
+        ========================================
+        DOWNLOAD
+        ========================================
+        */
+
+        const json =
+            JSON.stringify(
+                backup,
+                null,
+                2
+            );
+
+
+        const blob =
+            new Blob(
+                [json],
+                {
+                    type:
+                        "application/json"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const a =
+            document.createElement(
+                "a"
+            );
+
+
+        const date =
+            new Date()
+                .toISOString()
+                .slice(
+                    0,
+                    10
+                );
+
+
+        a.href =
+            url;
+
+
+        a.download =
+            "school-backup-" +
+            date +
+            ".json";
+
+
+        document.body.appendChild(
+            a
+        );
+
+
+        a.click();
+
+
+        a.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        showStatus(
+            "✅ Backup په بریالیتوب جوړ شو.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        showStatus(
+            "❌ Backup جوړ نه شو.<br>" +
+            error.message,
+            "error"
+        );
+
+    }
+
+};
+
+
+/*
+================================================
+RESTORE BACKUP
+================================================
+*/
+
+window.restoreBackup =
+async function(){
+
+    const fileInput =
+        document.getElementById(
+            "backupFile"
+        );
+
+
+    const file =
+        fileInput.files[0];
+
+
+    if(!file){
+
+        showStatus(
+            "⚠️ لومړی Backup فایل انتخاب کړه.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            "⚠️ پام!\n\n" +
+            "Backup معلومات به Firebase ته بېرته ولیکل شي.\n\n" +
+            "ایا غواړې دوام ورکړې؟"
+        );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        showStatus(
+            "⏳ Backup لوستل کېږي...",
+            "info"
+        );
+
+
+        const text =
+            await file.text();
+
+
+        const backup =
+            JSON.parse(
+                text
+            );
+
+
+        if(
+            !backup.data
+        ){
+
+            throw new Error(
+                "دا صحیح School Backup فایل نه دی."
+            );
+
+        }
+
+
+        /*
+        ========================================
+        RESTORE FIRESTORE
+        ========================================
+        */
+
+        let totalRestored = 0;
+
+
+        for(
+            const collectionName
+            of collections
+        ){
+
+            const collectionData =
+                backup.data[
+                    collectionName
+                ] || {};
+
+
+            for(
+                const id
+                of Object.keys(
+                    collectionData
+                )
+            ){
+
+                const data =
+                    collectionData[id];
+
+
+                await setDoc(
+                    doc(
+                        db,
+                        collectionName,
+                        id
+                    ),
+                    data
+                );
+
+
+                totalRestored++;
+
+            }
+
+        }
+
+
+        /*
+        ========================================
+        RESTORE SCHOOL INFO
+        ========================================
+        */
+
+        if(
+            backup.localSettings
+        ){
+
+            if(
+                backup.localSettings.schoolName
+            ){
+
+                localStorage.setItem(
+                    "schoolName",
+                    backup.localSettings.schoolName
+                );
+
+            }
+
+
+            if(
+                backup.localSettings.adminName
+            ){
+
+                localStorage.setItem(
+                    "adminName",
+                    backup.localSettings.adminName
+                );
+
+            }
+
+
+            if(
+                backup.localSettings.schoolPhone
+            ){
+
+                localStorage.setItem(
+                    "schoolPhone",
+                    backup.localSettings.schoolPhone
+                );
+
+            }
+
+        }
+
+
+        showStatus(
+            "✅ Restore بشپړ شو.<br>" +
+            "ټول Restore شوي ریکارډونه: " +
+            totalRestored,
+            "success"
+        );
+
+
+        loadCounts();
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        showStatus(
+            "❌ Restore ناکام شو.<br>" +
+            error.message,
+            "error"
+        );
+
+    }
+
+};
+
+
+</script>
+
+</body>
+
+</html>
