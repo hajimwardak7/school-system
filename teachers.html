@@ -21,8 +21,6 @@ body{
     background:#f4f6f9;
 }
 
-/* HEADER */
-
 .header{
     background:linear-gradient(135deg,#0d6efd,#084298);
     color:white;
@@ -34,15 +32,11 @@ body{
     margin:0 0 7px;
 }
 
-/* CONTAINER */
-
 .container{
     max-width:700px;
     margin:auto;
     padding:15px;
 }
-
-/* BACK BUTTON */
 
 .back{
     display:block;
@@ -56,8 +50,6 @@ body{
     font-weight:bold;
 }
 
-/* CARD */
-
 .card{
     background:white;
     padding:18px;
@@ -70,8 +62,6 @@ body{
     margin-top:0;
     color:#0d6efd;
 }
-
-/* INPUT */
 
 label{
     display:block;
@@ -92,8 +82,6 @@ input:focus{
     border-color:#0d6efd;
 }
 
-/* GENERAL BUTTON */
-
 button{
     border:0;
     border-radius:10px;
@@ -102,23 +90,19 @@ button{
     font-size:15px;
 }
 
-/* SAVE */
-
 .save{
     width:100%;
     margin-top:15px;
     background:#0d6efd !important;
     color:white !important;
     font-weight:bold;
-    box-shadow:0 3px 8px rgba(13,110,253,.25);
+    min-height:50px;
 }
 
 .save:disabled{
     background:#777 !important;
     cursor:not-allowed;
 }
-
-/* CLASS BUTTON */
 
 .class-button{
     width:100%;
@@ -128,8 +112,6 @@ button{
     font-weight:bold;
     border:1px solid #c9dcff;
 }
-
-/* CLASSES */
 
 .classes{
     display:none;
@@ -154,8 +136,6 @@ button{
     width:auto;
 }
 
-/* TEACHER CARD */
-
 .teacher{
     background:white;
     padding:17px;
@@ -176,15 +156,11 @@ button{
     word-break:break-word;
 }
 
-/* ACTION BUTTONS */
-
 .actions{
     display:flex;
     gap:10px;
     margin-top:15px;
 }
-
-/* EDIT BUTTON */
 
 .actions .edit{
     flex:1;
@@ -194,23 +170,19 @@ button{
     font-weight:bold;
     min-height:50px;
     font-size:16px;
-    box-shadow:0 3px 8px #rgba(0,0,0,.15);
+    box-shadow:0 3px 8px rgba(0,0,0,.15);
 }
-
-/* DELETE BUTTON */
 
 .actions .delete{
     flex:1;
     background:#dc3545 !important;
-    color: #0d6efd !important;
+    color:#fff !important;
     border:2px solid #b02a37 !important;
     font-weight:bold;
     min-height:50px;
     font-size:16px;
     box-shadow:0 3px 8px rgba(0,0,0,.15);
 }
-
-/* BUTTON PRESS */
 
 .actions .edit:active{
     background:#e0a800 !important;
@@ -221,8 +193,6 @@ button{
     background:#b02a37 !important;
     transform:scale(.98);
 }
-
-/* MESSAGE */
 
 .message{
     display:none;
@@ -247,7 +217,17 @@ button{
     border:1px solid #f1aeb5;
 }
 
-/* FIREBASE ERROR */
+.loading{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+.empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
 
 .firebase-error{
     direction:ltr;
@@ -262,21 +242,15 @@ button{
     overflow-wrap:anywhere;
 }
 
-/* LOADING */
-
-.loading{
+.auth-status{
+    background:#eef4ff;
+    color:#084298;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:15px;
     text-align:center;
-    padding:20px;
-    color:#777;
+    font-size:14px;
 }
-
-.empty{
-    text-align:center;
-    padding:20px;
-    color:#777;
-}
-
-/* MOBILE */
 
 @media(max-width:450px){
 
@@ -297,8 +271,6 @@ button{
 <body>
 
 
-<!-- HEADER -->
-
 <div class="header">
 
     <h2>👨‍🏫 د ښوونکو مدیریت</h2>
@@ -313,19 +285,18 @@ button{
 <div class="container">
 
 
-<!-- BACK -->
-
 <a href="dashboard.html" class="back">
     ⬅️ Dashboard ته بېرته
 </a>
 
 
-<!-- MESSAGE -->
+<div id="authStatus" class="auth-status">
+    ⏳ Firebase Login معلومېږي...
+</div>
+
 
 <div id="message" class="message"></div>
 
-
-<!-- ADD TEACHER -->
 
 <div class="card">
 
@@ -372,8 +343,6 @@ button{
     >
 
 
-    <!-- CLASS BUTTON -->
-
     <button
         type="button"
         class="class-button"
@@ -382,8 +351,6 @@ button{
         📚 ټولګي انتخاب کړئ ▼
     </button>
 
-
-    <!-- CLASS LIST -->
 
     <div id="classBox" class="classes">
 
@@ -463,8 +430,6 @@ button{
     </div>
 
 
-    <!-- SAVE -->
-
     <button
         id="saveTeacherBtn"
         type="button"
@@ -476,8 +441,6 @@ button{
 
 </div>
 
-
-<!-- TEACHERS LIST -->
 
 <div class="card">
 
@@ -524,6 +487,14 @@ import {
 
 import {
 
+    onAuthStateChanged
+
+} from
+"https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+
+import {
+
     db,
     auth
 
@@ -536,6 +507,67 @@ import {
 
 let teachers = [];
 
+let currentFirebaseUser = null;
+
+let authResolved = false;
+
+
+/* =========================================
+   AUTH STATE
+========================================= */
+
+const authReady = new Promise(function(resolve){
+
+    onAuthStateChanged(
+        auth,
+        function(user){
+
+            currentFirebaseUser = user;
+
+            authResolved = true;
+
+            const status =
+                document.getElementById(
+                    "authStatus"
+                );
+
+
+            if(user){
+
+                status.innerHTML =
+                    "✅ Firebase Login فعال دی<br>" +
+                    "📧 " +
+                    escapeHtml(
+                        user.email || ""
+                    );
+
+                status.style.background =
+                    "#d1e7dd";
+
+                status.style.color =
+                    "#0f5132";
+
+            }else{
+
+                status.innerHTML =
+                    "❌ Firebase Login فعال نه دی.";
+
+                status.style.background =
+                    "#f8d7da";
+
+                status.style.color =
+                    "#842029";
+
+            }
+
+
+            resolve(user);
+
+        }
+    );
+
+});
+
 
 /* =========================================
    MESSAGE
@@ -544,23 +576,37 @@ let teachers = [];
 function showMessage(text,type){
 
     const box =
-        document.getElementById("message");
+        document.getElementById(
+            "message"
+        );
+
 
     box.innerHTML = text;
 
+
     box.className =
         "message " + type;
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
 
 }
 
 
 /* =========================================
-   CHECK FIREBASE LOGIN
+   CHECK AUTH
 ========================================= */
 
-function checkFirebaseLogin(){
+async function checkFirebaseLogin(){
 
-    if(!auth.currentUser){
+    const user =
+        await authReady;
+
+
+    if(!user){
 
         showMessage(
 
@@ -575,6 +621,10 @@ function checkFirebaseLogin(){
         return false;
 
     }
+
+
+    currentFirebaseUser = user;
+
 
     return true;
 
@@ -675,18 +725,29 @@ async function loadTeachers(){
     `;
 
 
+    const user =
+        await authReady;
+
+
+    if(!user){
+
+        box.innerHTML = `
+
+            <div class="empty">
+                ❌ Firebase Login موجود نه دی.
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
     try{
 
-        if(!auth.currentUser){
-
-            throw new Error(
-                "Firebase Authentication user not found."
-            );
-
-        }
-
-
         const snapshot =
+
             await getDocs(
 
                 collection(
@@ -739,6 +800,10 @@ async function loadTeachers(){
             error
         );
 
+
+        /*
+           LocalStorage fallback
+        */
 
         try{
 
@@ -936,11 +1001,13 @@ window.addTeacher =
 async function(){
 
 
-    /* LOGIN */
+    /* WAIT FOR FIREBASE AUTH */
 
-    if(
-        !checkFirebaseLogin()
-    ){
+    const loggedIn =
+        await checkFirebaseLogin();
+
+
+    if(!loggedIn){
 
         return;
 
@@ -952,8 +1019,6 @@ async function(){
             "saveTeacherBtn"
         );
 
-
-    /* VALUES */
 
     const name =
 
@@ -985,8 +1050,6 @@ async function(){
         .value
         .trim();
 
-
-    /* CLASSES */
 
     const selectedClasses =
 
@@ -1070,8 +1133,6 @@ async function(){
     }
 
 
-    /* DISABLE BUTTON */
-
     saveButton.disabled = true;
 
     saveButton.innerText =
@@ -1150,7 +1211,7 @@ async function(){
         };
 
 
-        /* SAVE FIREBASE */
+        /* SAVE FIRESTORE */
 
         const result =
 
@@ -1166,7 +1227,7 @@ async function(){
             );
 
 
-        /* LOCAL ARRAY */
+        /* ADD LOCAL */
 
         teachers.push({
 
@@ -1177,8 +1238,6 @@ async function(){
 
         });
 
-
-        /* LOCAL STORAGE */
 
         localStorage.setItem(
 
@@ -1214,14 +1273,14 @@ async function(){
 
             "<br><br>" +
 
-            "⚠️ مهم: د دې ښوونکي د Login لپاره باید همدا Email په Firebase Authentication کې User ولري.",
+            "⚠️ د دې ښوونکي Login لپاره باید همدا Email په Firebase Authentication کې User موجود وي.",
 
             "success"
 
         );
 
 
-        /* CLEAR */
+        /* CLEAR FORM */
 
         document
         .getElementById(
@@ -1293,9 +1352,11 @@ window.editTeacher =
 async function(id){
 
 
-    if(
-        !checkFirebaseLogin()
-    ){
+    const loggedIn =
+        await checkFirebaseLogin();
+
+
+    if(!loggedIn){
 
         return;
 
@@ -1329,8 +1390,6 @@ async function(id){
     }
 
 
-    /* NAME */
-
     const name =
 
         prompt(
@@ -1342,18 +1401,14 @@ async function(id){
         );
 
 
-    if(
-        name === null
-    ){
+    if(name === null){
 
         return;
 
     }
 
 
-    if(
-        !name.trim()
-    ){
+    if(!name.trim()){
 
         showMessage(
             "⚠️ نوم خالي نشي پاتې کېدای.",
@@ -1364,8 +1419,6 @@ async function(id){
 
     }
 
-
-    /* EMAIL */
 
     const email =
 
@@ -1378,9 +1431,7 @@ async function(id){
         );
 
 
-    if(
-        email === null
-    ){
+    if(email === null){
 
         return;
 
@@ -1410,8 +1461,6 @@ async function(id){
     }
 
 
-    /* USERNAME */
-
     const username =
 
         prompt(
@@ -1424,16 +1473,12 @@ async function(id){
         );
 
 
-    if(
-        username === null
-    ){
+    if(username === null){
 
         return;
 
     }
 
-
-    /* CLASSES */
 
     const classesText =
 
@@ -1456,9 +1501,7 @@ async function(id){
         );
 
 
-    if(
-        classesText === null
-    ){
+    if(classesText === null){
 
         return;
 
@@ -1495,7 +1538,7 @@ async function(id){
 
         showMessage(
 
-            "⚠️ لږ تر لږه یو ټولګی باید انتخاب وي.",
+            "⚠️ لږ تر لږه یو ټولګی انتخاب کړئ.",
 
             "error"
 
@@ -1505,8 +1548,6 @@ async function(id){
 
     }
 
-
-    /* NEW DATA */
 
     const newData = {
 
@@ -1615,9 +1656,11 @@ window.deleteTeacher =
 async function(id){
 
 
-    if(
-        !checkFirebaseLogin()
-    ){
+    const loggedIn =
+        await checkFirebaseLogin();
+
+
+    if(!loggedIn){
 
         return;
 
@@ -1641,6 +1684,11 @@ async function(id){
 
     if(!teacher){
 
+        showMessage(
+            "❌ ښوونکی پیدا نه شو.",
+            "error"
+        );
+
         return;
 
     }
@@ -1657,9 +1705,7 @@ async function(id){
         );
 
 
-    if(
-        !confirmDelete
-    ){
+    if(!confirmDelete){
 
         return;
 
@@ -1766,7 +1812,7 @@ function escapeHtml(value){
 
 
 /* =========================================
-   ESCAPE JS
+   ESCAPE JAVASCRIPT
 ========================================= */
 
 function escapeJs(value){
@@ -1797,11 +1843,16 @@ function escapeJs(value){
    START
 ========================================= */
 
-loadTeachers();
+authReady.then(
+    function(){
+
+        loadTeachers();
+
+    }
+);
 
 
 </script>
-
 
 </body>
 
