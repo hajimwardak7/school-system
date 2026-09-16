@@ -49,6 +49,10 @@ body{
     margin:0 0 10px;
 }
 
+.header p{
+    margin:0;
+}
+
 label{
     display:block;
     margin-bottom:7px;
@@ -64,6 +68,12 @@ input{
     margin-bottom:15px;
     direction:ltr;
     text-align:left;
+    outline:none;
+}
+
+input:focus{
+    border-color:#0d6efd;
+    box-shadow:0 0 0 3px rgba(13,110,253,.10);
 }
 
 button{
@@ -79,6 +89,7 @@ button{
 
 button:disabled{
     opacity:.6;
+    cursor:not-allowed;
 }
 
 .message{
@@ -128,7 +139,6 @@ button:disabled{
 
 <body>
 
-
 <div class="container">
 
 <div class="header">
@@ -139,9 +149,7 @@ button:disabled{
 
 </div>
 
-
 <div class="card">
-
 
 <label>
 🔑 License Key
@@ -153,7 +161,6 @@ id="licenseKey"
 placeholder="SCHOOL-2026-001"
 autocomplete="off">
 
-
 <label>
 🏫 School ID
 </label>
@@ -164,36 +171,29 @@ id="schoolId"
 placeholder="GHAZNI-001"
 autocomplete="off">
 
-
 <button
-id="activateBtn"
-onclick="activateLicense()">
+id="activateBtn">
 
 🔓 سیستم فعال کړه
 
 </button>
-
 
 <div
 id="message"
 class="message">
 </div>
 
-
 <div
 id="schoolInfo"
 class="school"
 style="display:none;">
-
 </div>
-
 
 <div class="small">
 
 ستاسې License باید د سیستم له مالک څخه ترلاسه شي.
 
 </div>
-
 
 </div>
 
@@ -216,16 +216,33 @@ import { db } from "./firebase.js";
 
 
 // ==================================================
+// Elements
+// ==================================================
+
+const licenseInput =
+    document.getElementById("licenseKey");
+
+const schoolInput =
+    document.getElementById("schoolId");
+
+const activateBtn =
+    document.getElementById("activateBtn");
+
+const messageBox =
+    document.getElementById("message");
+
+const schoolInfo =
+    document.getElementById("schoolInfo");
+
+
+// ==================================================
 // Device ID
 // ==================================================
 
 function getDeviceId(){
 
     let deviceId =
-        localStorage.getItem(
-            "schoolDeviceId"
-        );
-
+        localStorage.getItem("schoolDeviceId");
 
     if(!deviceId){
 
@@ -234,11 +251,9 @@ function getDeviceId(){
             .toString(36)
             .substring(2,12);
 
-
         const timePart =
             Date.now()
             .toString(36);
-
 
         deviceId =
             "DEVICE-" +
@@ -246,17 +261,13 @@ function getDeviceId(){
             "-" +
             randomPart;
 
-
         localStorage.setItem(
             "schoolDeviceId",
             deviceId
         );
-
     }
 
-
     return deviceId;
-
 }
 
 
@@ -264,30 +275,18 @@ function getDeviceId(){
 // Message
 // ==================================================
 
-function showMessage(
-    text,
-    type
-){
+function showMessage(text,type){
 
-    const box =
-        document.getElementById(
-            "message"
-        );
+    messageBox.className =
+        "message " + type;
 
-
-    box.className =
-        "message " +
-        type;
-
-
-    box.innerHTML =
+    messageBox.innerHTML =
         text;
-
 }
 
 
 // ==================================================
-// License Date
+// Today
 // ==================================================
 
 function getToday(){
@@ -295,22 +294,18 @@ function getToday(){
     const now =
         new Date();
 
-
     const year =
         now.getFullYear();
-
 
     const month =
         String(
             now.getMonth() + 1
         ).padStart(2,"0");
 
-
     const day =
         String(
             now.getDate()
         ).padStart(2,"0");
-
 
     return (
         year +
@@ -319,37 +314,40 @@ function getToday(){
         "-" +
         day
     );
-
 }
 
 
 // ==================================================
-// License فعالول
+// Reset Button
 // ==================================================
 
-window.activateLicense =
-async function(){
+function resetButton(){
 
-    const button =
-        document.getElementById(
-            "activateBtn"
-        );
+    activateBtn.disabled =
+        false;
 
+    activateBtn.textContent =
+        "🔓 سیستم فعال کړه";
+}
+
+
+// ==================================================
+// Activate License
+// ==================================================
+
+activateBtn.addEventListener(
+    "click",
+    activateLicense
+);
+
+
+async function activateLicense(){
 
     const key =
-        document.getElementById(
-            "licenseKey"
-        )
-        .value
-        .trim();
-
+        licenseInput.value.trim();
 
     const schoolId =
-        document.getElementById(
-            "schoolId"
-        )
-        .value
-        .trim();
+        schoolInput.value.trim();
 
 
     // ==============================================
@@ -363,8 +361,9 @@ async function(){
             "error"
         );
 
-        return;
+        licenseInput.focus();
 
+        return;
     }
 
 
@@ -375,23 +374,23 @@ async function(){
             "error"
         );
 
-        return;
+        schoolInput.focus();
 
+        return;
     }
 
 
-    button.disabled =
+    activateBtn.disabled =
         true;
 
-
-    button.textContent =
+    activateBtn.textContent =
         "⏳ License تاییدېږي...";
 
 
     try{
 
         // ==========================================
-        // Firebase Document
+        // License Document
         // ==========================================
 
         const licenseRef =
@@ -409,7 +408,7 @@ async function(){
 
 
         // ==========================================
-        // License پیدا نه شو
+        // Not Found
         // ==========================================
 
         if(
@@ -421,17 +420,9 @@ async function(){
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
@@ -440,7 +431,7 @@ async function(){
 
 
         // ==========================================
-        // Active Check
+        // Active
         // ==========================================
 
         if(
@@ -452,29 +443,24 @@ async function(){
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
         // ==========================================
-        // School ID Check
+        // School ID
         // ==========================================
 
-        if(
+        const firebaseSchoolId =
             String(
                 license.schoolId || ""
-            ).trim() !==
-            schoolId
+            ).trim();
+
+
+        if(
+            firebaseSchoolId !== schoolId
         ){
 
             showMessage(
@@ -482,22 +468,14 @@ async function(){
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
         // ==========================================
-        // Expiry Check
+        // Expiry
         // ==========================================
 
         const today =
@@ -507,7 +485,7 @@ async function(){
         const expiresAt =
             String(
                 license.expiresAt || ""
-            );
+            ).trim();
 
 
         if(!expiresAt){
@@ -517,17 +495,9 @@ async function(){
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
@@ -536,23 +506,15 @@ async function(){
         ){
 
             showMessage(
-                "❌ ستاسې License ختم شوی دی.<br>" +
-                "د ختمېدو نېټه: " +
-                expiresAt,
+                "❌ ستاسې License ختم شوی دی.<br><br>" +
+                "📅 د ختمېدو نېټه: " +
+                escapeHtml(expiresAt),
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
@@ -571,7 +533,7 @@ async function(){
 
 
         // ==========================================
-        // که License مخکې بل Device ته تړلی وي
+        // Already connected to another Device
         // ==========================================
 
         if(
@@ -584,36 +546,31 @@ async function(){
                 "error"
             );
 
-
-            button.disabled =
-                false;
-
-
-            button.textContent =
-                "🔓 سیستم فعال کړه";
-
+            resetButton();
 
             return;
-
         }
 
 
         // ==========================================
-        // Device ثبتول
+        // Register Device
         // ==========================================
 
         if(
             !registeredDevice
         ){
 
+            activateBtn.textContent =
+                "⏳ Device ثبتېږي...";
+
+
             await updateDoc(
                 licenseRef,
                 {
-                    deviceId:deviceId,
-                    lastActivatedAt:new Date()
+                    deviceId: deviceId,
+                    lastActivatedAt: new Date()
                 }
             );
-
         }
 
 
@@ -626,31 +583,25 @@ async function(){
             "true"
         );
 
-
         localStorage.setItem(
             "licenseKey",
             key
         );
-
 
         localStorage.setItem(
             "schoolId",
             schoolId
         );
 
-
         localStorage.setItem(
             "schoolName",
-            license.schoolName ||
-            ""
+            license.schoolName || ""
         );
-
 
         localStorage.setItem(
             "licenseExpiresAt",
             expiresAt
         );
-
 
         localStorage.setItem(
             "licenseDeviceId",
@@ -662,12 +613,6 @@ async function(){
         // School Info
         // ==========================================
 
-        const schoolInfo =
-            document.getElementById(
-                "schoolInfo"
-            );
-
-
         schoolInfo.style.display =
             "block";
 
@@ -675,25 +620,20 @@ async function(){
         schoolInfo.innerHTML =
 
             "🏫 <b>مکتب:</b> " +
-
             escapeHtml(
-                license.schoolName ||
-                "-"
+                license.schoolName || "-"
             ) +
 
             "<br>" +
 
             "🆔 <b>School ID:</b> " +
-
             escapeHtml(
-                license.schoolId ||
-                "-"
+                license.schoolId || "-"
             ) +
 
             "<br>" +
 
             "📅 <b>ختمېدو نېټه:</b> " +
-
             escapeHtml(
                 expiresAt
             );
@@ -706,20 +646,19 @@ async function(){
         showMessage(
 
             "✅ License په بریالیتوب فعال شو.<br>" +
-
-            "⏳ څو شېبې وروسته سیستم ته ځې...",
+            "🏫 مکتب ثبت شو.<br>" +
+            "⏳ سیستم ته داخلېږې...",
 
             "success"
-
         );
 
 
-        button.textContent =
+        activateBtn.textContent =
             "✅ فعال شو";
 
 
         // ==========================================
-        // Dashboard
+        // Go Login
         // ==========================================
 
         setTimeout(
@@ -741,29 +680,26 @@ async function(){
         );
 
 
+        let errorText =
+            error.message || "Unknown error";
+
+
         showMessage(
 
             "❌ د License د تایید پر مهال ستونزه راغله.<br><br>" +
 
-            escapeHtml(
-                error.message
-            ),
+            "<small>" +
+            escapeHtml(errorText) +
+            "</small>",
 
             "error"
-
         );
 
 
-        button.disabled =
-            false;
-
-
-        button.textContent =
-            "🔓 سیستم فعال کړه";
-
+        resetButton();
     }
 
-};
+}
 
 
 // ==================================================
@@ -798,12 +734,11 @@ function escapeHtml(value){
             /'/g,
             "&#039;"
         );
-
 }
 
 
 // ==================================================
-// که مخکې فعال وي
+// Load Existing License
 // ==================================================
 
 window.addEventListener(
@@ -834,17 +769,11 @@ window.addEventListener(
             schoolId
         ){
 
-            document.getElementById(
-                "licenseKey"
-            ).value =
+            licenseInput.value =
                 key;
 
-
-            document.getElementById(
-                "schoolId"
-            ).value =
+            schoolInput.value =
                 schoolId;
-
         }
 
     }
