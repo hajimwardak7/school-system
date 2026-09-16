@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>د ښوونکو مدیریت</title>
 
@@ -22,6 +21,8 @@ body{
     background:#f4f6f9;
 }
 
+/* HEADER */
+
 .header{
     background:linear-gradient(135deg,#0d6efd,#084298);
     color:white;
@@ -33,11 +34,15 @@ body{
     margin:0 0 7px;
 }
 
+/* CONTAINER */
+
 .container{
     max-width:700px;
     margin:auto;
     padding:15px;
 }
+
+/* BACK BUTTON */
 
 .back{
     display:block;
@@ -48,7 +53,10 @@ body{
     text-align:center;
     text-decoration:none;
     margin-bottom:15px;
+    font-weight:bold;
 }
+
+/* CARD */
 
 .card{
     background:white;
@@ -63,6 +71,8 @@ body{
     color:#0d6efd;
 }
 
+/* INPUT */
+
 label{
     display:block;
     font-weight:bold;
@@ -75,7 +85,14 @@ input{
     border:1px solid #ddd;
     border-radius:10px;
     font-size:15px;
+    outline:none;
 }
+
+input:focus{
+    border-color:#0d6efd;
+}
+
+/* GENERAL BUTTON */
 
 button{
     border:0;
@@ -85,48 +102,34 @@ button{
     font-size:15px;
 }
 
+/* SAVE */
+
 .save{
     width:100%;
     margin-top:15px;
-    background:#0d6efd;
-    color:white;
+    background:#0d6efd !important;
+    color:white !important;
+    font-weight:bold;
+    box-shadow:0 3px 8px rgba(13,110,253,.25);
 }
 
-.teacher{
-    background:white;
-    padding:17px;
-    border-radius:15px;
-    margin-bottom:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+.save:disabled{
+    background:#777 !important;
+    cursor:not-allowed;
 }
 
-.teacher h3{
-    margin:0 0 10px;
-    color:#0d6efd;
+/* CLASS BUTTON */
+
+.class-button{
+    width:100%;
+    background:#e7f0ff !important;
+    color:#0d6efd !important;
+    margin-top:8px;
+    font-weight:bold;
+    border:1px solid #c9dcff;
 }
 
-.info{
-    line-height:2;
-    color:#555;
-}
-
-.actions{
-    display:flex;
-    gap:8px;
-    margin-top:12px;
-}
-
-.edit{
-    flex:1;
-    background:#ffc107;
-    color:#222;
-}
-
-.delete{
-    flex:1;
-    background:#dc3545;
-    color:white;
-}
+/* CLASSES */
 
 .classes{
     display:none;
@@ -144,42 +147,147 @@ button{
     padding:8px;
     margin:4px;
     border-radius:8px;
+    border:1px solid #ddd;
 }
 
 .class-item input{
     width:auto;
 }
 
-.class-button{
-    width:100%;
-    background:#eef4ff;
-    color:#0d6efd;
-    margin-top:8px;
+/* TEACHER CARD */
+
+.teacher{
+    background:white;
+    padding:17px;
+    border-radius:15px;
+    margin-bottom:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    border:1px solid #eee;
 }
+
+.teacher h3{
+    margin:0 0 10px;
+    color:#0d6efd;
+}
+
+.info{
+    line-height:2;
+    color:#555;
+    word-break:break-word;
+}
+
+/* ACTION BUTTONS */
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+/* EDIT BUTTON */
+
+.actions .edit{
+    flex:1;
+    background:#ffc107 !important;
+    color:#000 !important;
+    border:2px solid #e0a800 !important;
+    font-weight:bold;
+    min-height:50px;
+    font-size:16px;
+    box-shadow:0 3px 8px #rgba(0,0,0,.15);
+}
+
+/* DELETE BUTTON */
+
+.actions .delete{
+    flex:1;
+    background:#dc3545 !important;
+    color: #0d6efd !important;
+    border:2px solid #b02a37 !important;
+    font-weight:bold;
+    min-height:50px;
+    font-size:16px;
+    box-shadow:0 3px 8px rgba(0,0,0,.15);
+}
+
+/* BUTTON PRESS */
+
+.actions .edit:active{
+    background:#e0a800 !important;
+    transform:scale(.98);
+}
+
+.actions .delete:active{
+    background:#b02a37 !important;
+    transform:scale(.98);
+}
+
+/* MESSAGE */
 
 .message{
     display:none;
-    padding:12px;
+    padding:13px;
     border-radius:10px;
     margin-bottom:12px;
     line-height:1.8;
+    word-break:break-word;
 }
 
 .success{
     display:block;
     background:#d1e7dd;
     color:#0f5132;
+    border:1px solid #a3cfbb;
 }
 
 .error{
     display:block;
     background:#f8d7da;
     color:#842029;
+    border:1px solid #f1aeb5;
 }
+
+/* FIREBASE ERROR */
+
+.firebase-error{
+    direction:ltr;
+    text-align:left;
+    background:#fff;
+    border:1px solid #dc3545;
+    padding:10px;
+    border-radius:8px;
+    margin-top:10px;
+    font-size:13px;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+}
+
+/* LOADING */
 
 .loading{
     text-align:center;
     padding:20px;
+    color:#777;
+}
+
+.empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+/* MOBILE */
+
+@media(max-width:450px){
+
+    .actions{
+        gap:8px;
+    }
+
+    .actions button{
+        font-size:15px;
+    }
+
 }
 
 </style>
@@ -188,6 +296,8 @@ button{
 
 <body>
 
+
+<!-- HEADER -->
 
 <div class="header">
 
@@ -203,13 +313,19 @@ button{
 <div class="container">
 
 
+<!-- BACK -->
+
 <a href="dashboard.html" class="back">
     ⬅️ Dashboard ته بېرته
 </a>
 
 
+<!-- MESSAGE -->
+
 <div id="message" class="message"></div>
 
+
+<!-- ADD TEACHER -->
 
 <div class="card">
 
@@ -226,6 +342,7 @@ button{
         type="text"
         id="teacherName"
         placeholder="مثلاً: احمد"
+        autocomplete="name"
     >
 
 
@@ -238,6 +355,7 @@ button{
         id="teacherEmail"
         placeholder="teacher@gmail.com"
         dir="ltr"
+        autocomplete="email"
     >
 
 
@@ -250,10 +368,14 @@ button{
         id="teacherUsername"
         placeholder="ahmad"
         dir="ltr"
+        autocomplete="username"
     >
 
 
+    <!-- CLASS BUTTON -->
+
     <button
+        type="button"
         class="class-button"
         onclick="toggleClasses()"
     >
@@ -261,75 +383,91 @@ button{
     </button>
 
 
-    <div
-        id="classBox"
-        class="classes"
-    >
+    <!-- CLASS LIST -->
+
+    <div id="classBox" class="classes">
+
 
         <div class="class-item">
             <input type="checkbox" value="اول">
             اول
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="دوهم">
             دوهم
         </div>
+
 
         <div class="class-item">
             <input type="checkbox" value="درېیم">
             درېیم
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="څلورم">
             څلورم
         </div>
+
 
         <div class="class-item">
             <input type="checkbox" value="پنځم">
             پنځم
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="شپږم">
             شپږم
         </div>
+
 
         <div class="class-item">
             <input type="checkbox" value="اووم">
             اووم
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="اتم">
             اتم
         </div>
+
 
         <div class="class-item">
             <input type="checkbox" value="نهم">
             نهم
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="لسم">
             لسم
         </div>
+
 
         <div class="class-item">
             <input type="checkbox" value="یوولسم">
             یوولسم
         </div>
 
+
         <div class="class-item">
             <input type="checkbox" value="دولسم">
             دولسم
         </div>
 
+
     </div>
 
 
+    <!-- SAVE -->
+
     <button
+        id="saveTeacherBtn"
+        type="button"
         class="save"
         onclick="addTeacher()"
     >
@@ -339,11 +477,14 @@ button{
 </div>
 
 
+<!-- TEACHERS LIST -->
+
 <div class="card">
 
     <h3>
         📋 د ښوونکو لست
     </h3>
+
 
     <div id="teachersList">
 
@@ -361,6 +502,11 @@ button{
 
 <script type="module">
 
+
+/* =========================================
+   FIREBASE IMPORT
+========================================= */
+
 import {
 
     collection,
@@ -368,21 +514,32 @@ import {
     addDoc,
     updateDoc,
     deleteDoc,
-    doc
+    doc,
+    query,
+    where
 
 } from
 "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
-import { db } from "./firebase.js";
+import {
 
+    db,
+    auth
+
+} from "./firebase.js";
+
+
+/* =========================================
+   VARIABLES
+========================================= */
 
 let teachers = [];
 
 
-/* =========================
+/* =========================================
    MESSAGE
-========================= */
+========================================= */
 
 function showMessage(text,type){
 
@@ -397,15 +554,90 @@ function showMessage(text,type){
 }
 
 
-/* =========================
-   CLASSES
-========================= */
+/* =========================================
+   CHECK FIREBASE LOGIN
+========================================= */
+
+function checkFirebaseLogin(){
+
+    if(!auth.currentUser){
+
+        showMessage(
+
+            "❌ Firebase Login فعال نه دی.<br><br>" +
+
+            "لومړی خپل حساب ته Login شئ، بیا هڅه وکړئ.",
+
+            "error"
+
+        );
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+
+/* =========================================
+   FIREBASE ERROR
+========================================= */
+
+function showFirebaseError(error){
+
+    console.error(
+        "Firebase Error:",
+        error
+    );
+
+
+    const code =
+        error?.code ||
+        "unknown";
+
+
+    const message =
+        error?.message ||
+        "Unknown Firebase error.";
+
+
+    showMessage(
+
+        `
+        <b>❌ عملیات ترسره نه شول.</b>
+
+        <br><br>
+
+        <b>Firebase Error:</b>
+
+        <div class="firebase-error">
+Code: ${escapeHtml(code)}
+
+${escapeHtml(message)}
+        </div>
+        `,
+
+        "error"
+
+    );
+
+}
+
+
+/* =========================================
+   TOGGLE CLASSES
+========================================= */
 
 window.toggleClasses =
 function(){
 
     const box =
-        document.getElementById("classBox");
+        document.getElementById(
+            "classBox"
+        );
+
 
     if(
         box.style.display === "block"
@@ -422,20 +654,46 @@ function(){
 };
 
 
-/* =========================
+/* =========================================
    LOAD TEACHERS
-========================= */
+========================================= */
 
 async function loadTeachers(){
 
+    const box =
+        document.getElementById(
+            "teachersList"
+        );
+
+
+    box.innerHTML = `
+
+        <div class="loading">
+            ⏳ د ښوونکو معلومات لوډ کېږي...
+        </div>
+
+    `;
+
+
     try{
+
+        if(!auth.currentUser){
+
+            throw new Error(
+                "Firebase Authentication user not found."
+            );
+
+        }
+
 
         const snapshot =
             await getDocs(
+
                 collection(
                     db,
                     "teachers"
                 )
+
             );
 
 
@@ -443,51 +701,80 @@ async function loadTeachers(){
 
 
         snapshot.forEach(
+
             function(docSnap){
 
                 teachers.push({
 
-                    id:docSnap.id,
+                    id:
+                        docSnap.id,
 
                     ...docSnap.data()
 
                 });
 
             }
+
         );
 
 
         localStorage.setItem(
+
             "teachers",
+
             JSON.stringify(
                 teachers
             )
+
         );
+
+
+        displayTeachers();
 
 
     }catch(error){
 
-        console.log(error);
+        console.error(
+            "Load Teachers Error:",
+            error
+        );
 
 
-        teachers =
-            JSON.parse(
-                localStorage.getItem(
-                    "teachers"
-                )
-            ) || [];
+        try{
+
+            teachers =
+                JSON.parse(
+
+                    localStorage.getItem(
+                        "teachers"
+                    )
+
+                ) || [];
+
+        }catch(e){
+
+            teachers = [];
+
+        }
+
+
+        displayTeachers();
+
+
+        if(error?.code){
+
+            showFirebaseError(error);
+
+        }
 
     }
-
-
-    displayTeachers();
 
 }
 
 
-/* =========================
-   DISPLAY
-========================= */
+/* =========================================
+   DISPLAY TEACHERS
+========================================= */
 
 function displayTeachers(){
 
@@ -502,9 +789,13 @@ function displayTeachers(){
     ){
 
         box.innerHTML = `
-            <div class="loading">
+
+            <div class="empty">
+
                 👨‍🏫 تر اوسه ښوونکی ثبت شوی نه دی.
+
             </div>
+
         `;
 
         return;
@@ -513,16 +804,23 @@ function displayTeachers(){
 
 
     box.innerHTML =
+
         teachers.map(
+
             function(teacher){
 
                 const classes =
+
                     Array.isArray(
                         teacher.classes
                     )
+
                     ?
+
                     teacher.classes.join("، ")
+
                     :
+
                     "ټولګی نشته";
 
 
@@ -530,78 +828,135 @@ function displayTeachers(){
 
                 <div class="teacher">
 
+
                     <h3>
+
                         👨‍🏫
+
                         ${escapeHtml(
                             teacher.name || ""
                         )}
+
                     </h3>
 
 
                     <div class="info">
 
+
                         📧
+
                         <b>Email:</b>
+
                         ${escapeHtml(
-                            teacher.email || "ثبت نه دی"
+                            teacher.email ||
+                            "ثبت نه دی"
                         )}
 
+
                         <br>
+
 
                         👤
+
                         <b>Username:</b>
+
                         ${escapeHtml(
-                            teacher.username || ""
+                            teacher.username ||
+                            ""
                         )}
+
 
                         <br>
 
+
                         📚
+
                         <b>ټولګي:</b>
+
                         ${escapeHtml(
                             classes
                         )}
+
 
                     </div>
 
 
                     <div class="actions">
 
+
                         <button
+
+                            type="button"
+
                             class="edit"
-                            onclick="editTeacher('${teacher.id}')"
+
+                            onclick="editTeacher('${escapeJs(teacher.id)}')"
+
                         >
+
                             ✏️ Edit
+
                         </button>
 
 
                         <button
+
+                            type="button"
+
                             class="delete"
-                            onclick="deleteTeacher('${teacher.id}')"
+
+                            onclick="deleteTeacher('${escapeJs(teacher.id)}')"
+
                         >
+
                             🗑️ Delete
+
                         </button>
+
 
                     </div>
+
 
                 </div>
 
                 `;
 
             }
+
         ).join("");
 
 }
 
 
-/* =========================
+/* =========================================
    ADD TEACHER
-========================= */
+========================================= */
 
 window.addTeacher =
 async function(){
 
+
+    /* LOGIN */
+
+    if(
+        !checkFirebaseLogin()
+    ){
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "saveTeacherBtn"
+        );
+
+
+    /* VALUES */
+
     const name =
+
         document
         .getElementById(
             "teacherName"
@@ -611,6 +966,7 @@ async function(){
 
 
     const email =
+
         document
         .getElementById(
             "teacherEmail"
@@ -621,6 +977,7 @@ async function(){
 
 
     const username =
+
         document
         .getElementById(
             "teacherUsername"
@@ -629,16 +986,28 @@ async function(){
         .trim();
 
 
+    /* CLASSES */
+
     const selectedClasses =
+
         Array.from(
+
             document.querySelectorAll(
                 "#classBox input:checked"
             )
+
         ).map(
-            checkbox =>
-                checkbox.value
+
+            function(checkbox){
+
+                return checkbox.value;
+
+            }
+
         );
 
+
+    /* VALIDATION */
 
     if(!name){
 
@@ -648,6 +1017,7 @@ async function(){
         );
 
         return;
+
     }
 
 
@@ -659,17 +1029,27 @@ async function(){
         );
 
         return;
+
     }
 
 
-    if(!email.includes("@")){
+    if(
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            email
+        )
+    ){
 
         showMessage(
-            "⚠️ صحیح Email ولیکئ.",
+
+            "⚠️ صحیح Email ولیکئ.<br>" +
+            "مثال: teacher@gmail.com",
+
             "error"
+
         );
 
         return;
+
     }
 
 
@@ -678,84 +1058,190 @@ async function(){
     ){
 
         showMessage(
+
             "⚠️ لږ تر لږه یو ټولګی انتخاب کړئ.",
+
             "error"
+
         );
 
         return;
+
     }
 
 
-    const teacherData = {
+    /* DISABLE BUTTON */
 
-        name:name,
+    saveButton.disabled = true;
 
-        email:email,
-
-        username:
-            username || email,
-
-        classes:
-            selectedClasses,
-
-        createdAt:
-            new Date().toISOString()
-
-    };
+    saveButton.innerText =
+        "⏳ ښوونکی ثبتېږي...";
 
 
     try{
 
-        const result =
-            await addDoc(
+
+        /* CHECK DUPLICATE EMAIL */
+
+        const emailQuery =
+
+            query(
+
                 collection(
                     db,
                     "teachers"
                 ),
-                teacherData
+
+                where(
+                    "email",
+                    "==",
+                    email
+                )
+
             );
 
 
+        const emailSnapshot =
+
+            await getDocs(
+                emailQuery
+            );
+
+
+        if(
+            !emailSnapshot.empty
+        ){
+
+            showMessage(
+
+                "⚠️ دا Email لا دمخه د ښوونکو په لست کې موجود دی.",
+
+                "error"
+
+            );
+
+            return;
+
+        }
+
+
+        /* TEACHER DATA */
+
+        const teacherData = {
+
+            name:
+                name,
+
+            email:
+                email,
+
+            username:
+                username || email,
+
+            classes:
+                selectedClasses,
+
+            role:
+                "teacher",
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+
+        /* SAVE FIREBASE */
+
+        const result =
+
+            await addDoc(
+
+                collection(
+                    db,
+                    "teachers"
+                ),
+
+                teacherData
+
+            );
+
+
+        /* LOCAL ARRAY */
+
         teachers.push({
 
-            id:result.id,
+            id:
+                result.id,
 
             ...teacherData
 
         });
 
 
+        /* LOCAL STORAGE */
+
         localStorage.setItem(
+
             "teachers",
+
             JSON.stringify(
                 teachers
             )
+
         );
 
+
+        /* SUCCESS */
 
         showMessage(
-            "✅ ښوونکی ثبت شو.<br>" +
-            "⚠️ اوس د همدې Email لپاره Firebase Authentication User هم جوړ کړئ.",
+
+            "✅ ښوونکی په بریالیتوب سره ثبت شو.<br><br>" +
+
+            "👨‍🏫 نوم: " +
+            escapeHtml(name) +
+
+            "<br>" +
+
+            "📧 Email: " +
+            escapeHtml(email) +
+
+            "<br>" +
+
+            "📚 ټولګي: " +
+            escapeHtml(
+                selectedClasses.join("، ")
+            ) +
+
+            "<br><br>" +
+
+            "⚠️ مهم: د دې ښوونکي د Login لپاره باید همدا Email په Firebase Authentication کې User ولري.",
+
             "success"
+
         );
 
+
+        /* CLEAR */
 
         document
         .getElementById(
             "teacherName"
-        ).value = "";
+        )
+        .value = "";
 
 
         document
         .getElementById(
             "teacherEmail"
-        ).value = "";
+        )
+        .value = "";
 
 
         document
         .getElementById(
             "teacherUsername"
-        ).value = "";
+        )
+        .value = "";
 
 
         document
@@ -763,9 +1249,21 @@ async function(){
             "#classBox input"
         )
         .forEach(
-            checkbox =>
-                checkbox.checked = false
+
+            function(checkbox){
+
+                checkbox.checked = false;
+
+            }
+
         );
+
+
+        document
+        .getElementById(
+            "classBox"
+        )
+        .style.display = "none";
 
 
         displayTeachers();
@@ -773,28 +1271,41 @@ async function(){
 
     }catch(error){
 
-        console.error(error);
+        showFirebaseError(error);
 
+    }finally{
 
-        showMessage(
-            "❌ ښوونکی ثبت نه شو. Firebase Rules وګورئ.",
-            "error"
-        );
+        saveButton.disabled = false;
+
+        saveButton.innerText =
+            "💾 ښوونکی ثبت کړه";
 
     }
 
 };
 
 
-/* =========================
-   EDIT
-========================= */
+/* =========================================
+   EDIT TEACHER
+========================================= */
 
 window.editTeacher =
 async function(id){
 
+
+    if(
+        !checkFirebaseLogin()
+    ){
+
+        return;
+
+    }
+
+
     const teacher =
+
         teachers.find(
+
             function(item){
 
                 return String(
@@ -802,58 +1313,152 @@ async function(id){
                 ) === String(id);
 
             }
+
         );
 
 
     if(!teacher){
 
+        showMessage(
+            "❌ ښوونکی پیدا نه شو.",
+            "error"
+        );
+
         return;
 
     }
 
+
+    /* NAME */
 
     const name =
+
         prompt(
+
             "د ښوونکي نوم:",
+
             teacher.name || ""
+
         );
 
 
-    if(name === null){
+    if(
+        name === null
+    ){
 
         return;
 
     }
 
+
+    if(
+        !name.trim()
+    ){
+
+        showMessage(
+            "⚠️ نوم خالي نشي پاتې کېدای.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* EMAIL */
 
     const email =
+
         prompt(
+
             "Email:",
+
             teacher.email || ""
+
         );
 
 
-    if(email === null){
+    if(
+        email === null
+    ){
 
         return;
 
     }
 
 
-    const classesText =
+    const cleanEmail =
+
+        email
+        .trim()
+        .toLowerCase();
+
+
+    if(
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            cleanEmail
+        )
+    ){
+
+        showMessage(
+            "⚠️ صحیح Email ولیکئ.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* USERNAME */
+
+    const username =
+
         prompt(
+
+            "Username:",
+
+            teacher.username ||
+            cleanEmail
+
+        );
+
+
+    if(
+        username === null
+    ){
+
+        return;
+
+    }
+
+
+    /* CLASSES */
+
+    const classesText =
+
+        prompt(
+
             "ټولګي د کامې په وسیله ولیکئ:\nمثال: اول,دوهم,درېیم",
+
             Array.isArray(
                 teacher.classes
             )
+
             ?
+
             teacher.classes.join(",")
+
             :
+
             ""
+
         );
 
 
-    if(classesText === null){
+    if(
+        classesText === null
+    ){
 
         return;
 
@@ -861,55 +1466,103 @@ async function(id){
 
 
     const classes =
+
         classesText
         .split(",")
         .map(
-            item =>
-                item.trim()
+
+            function(item){
+
+                return item.trim();
+
+            }
+
         )
         .filter(
-            item =>
-                item !== ""
+
+            function(item){
+
+                return item !== "";
+
+            }
+
         );
 
 
+    if(
+        classes.length === 0
+    ){
+
+        showMessage(
+
+            "⚠️ لږ تر لږه یو ټولګی باید انتخاب وي.",
+
+            "error"
+
+        );
+
+        return;
+
+    }
+
+
+    /* NEW DATA */
+
     const newData = {
 
-        name:name.trim(),
+        name:
+            name.trim(),
 
         email:
-            email.trim().toLowerCase(),
+            cleanEmail,
 
         username:
-            teacher.username ||
-            email.trim().toLowerCase(),
+            username.trim() ||
+            cleanEmail,
 
-        classes:classes
+        classes:
+            classes,
+
+        role:
+            "teacher"
 
     };
 
 
     try{
 
+
         await updateDoc(
+
             doc(
                 db,
                 "teachers",
                 id
             ),
+
             newData
+
         );
 
 
         const index =
+
             teachers.findIndex(
-                item =>
-                    String(item.id) ===
-                    String(id)
+
+                function(item){
+
+                    return String(
+                        item.id
+                    ) === String(id);
+
+                }
+
             );
 
 
-        if(index !== -1){
+        if(
+            index !== -1
+        ){
 
             teachers[index] = {
 
@@ -923,16 +1576,22 @@ async function(id){
 
 
         localStorage.setItem(
+
             "teachers",
+
             JSON.stringify(
                 teachers
             )
+
         );
 
 
         showMessage(
+
             "✅ د ښوونکي معلومات بدل شول.",
+
             "success"
+
         );
 
 
@@ -941,31 +1600,42 @@ async function(id){
 
     }catch(error){
 
-        console.error(error);
-
-
-        showMessage(
-            "❌ معلومات بدل نه شول.",
-            "error"
-        );
+        showFirebaseError(error);
 
     }
 
 };
 
 
-/* =========================
-   DELETE
-========================= */
+/* =========================================
+   DELETE TEACHER
+========================================= */
 
 window.deleteTeacher =
 async function(id){
 
+
+    if(
+        !checkFirebaseLogin()
+    ){
+
+        return;
+
+    }
+
+
     const teacher =
+
         teachers.find(
-            item =>
-                String(item.id) ===
-                String(id)
+
+            function(item){
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+
         );
 
 
@@ -977,13 +1647,19 @@ async function(id){
 
 
     const confirmDelete =
+
         confirm(
+
             "ایا غواړئ دا ښوونکی حذف کړئ؟\n\n" +
+
             teacher.name
+
         );
 
 
-    if(!confirmDelete){
+    if(
+        !confirmDelete
+    ){
 
         return;
 
@@ -992,34 +1668,50 @@ async function(id){
 
     try{
 
+
         await deleteDoc(
+
             doc(
                 db,
                 "teachers",
                 id
             )
+
         );
 
 
         teachers =
+
             teachers.filter(
-                item =>
-                    String(item.id) !==
-                    String(id)
+
+                function(item){
+
+                    return String(
+                        item.id
+                    ) !== String(id);
+
+                }
+
             );
 
 
         localStorage.setItem(
+
             "teachers",
+
             JSON.stringify(
                 teachers
             )
+
         );
 
 
         showMessage(
+
             "✅ ښوونکی حذف شو.",
+
             "success"
+
         );
 
 
@@ -1028,42 +1720,88 @@ async function(id){
 
     }catch(error){
 
-        console.error(error);
-
-
-        showMessage(
-            "❌ ښوونکی حذف نه شو.",
-            "error"
-        );
+        showFirebaseError(error);
 
     }
 
 };
 
 
-/* =========================
+/* =========================================
    ESCAPE HTML
-========================= */
+========================================= */
 
 function escapeHtml(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
-/* =========================
+/* =========================================
+   ESCAPE JS
+========================================= */
+
+function escapeJs(value){
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /\\/g,
+        "\\\\"
+    )
+
+    .replace(
+        /'/g,
+        "\\'"
+    )
+
+    .replace(
+        /"/g,
+        '\\"'
+    );
+
+}
+
+
+/* =========================================
    START
-========================= */
+========================================= */
 
 loadTeachers();
 
+
 </script>
+
 
 </body>
 
