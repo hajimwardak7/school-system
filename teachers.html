@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>د ښوونکو مدیریت</title>
@@ -162,36 +161,23 @@ button{
     margin-top:15px;
 }
 
-.actions .edit{
+.actions button{
     flex:1;
+    min-height:50px;
+    font-weight:bold;
+    font-size:16px;
+}
+
+.edit{
     background:#ffc107 !important;
     color:#000 !important;
     border:2px solid #e0a800 !important;
-    font-weight:bold;
-    min-height:50px;
-    font-size:16px;
-    box-shadow:0 3px 8px rgba(0,0,0,.15);
 }
 
-.actions .delete{
-    flex:1;
+.delete{
     background:#dc3545 !important;
     color:#fff !important;
     border:2px solid #b02a37 !important;
-    font-weight:bold;
-    min-height:50px;
-    font-size:16px;
-    box-shadow:0 3px 8px rgba(0,0,0,.15);
-}
-
-.actions .edit:active{
-    background:#e0a800 !important;
-    transform:scale(.98);
-}
-
-.actions .delete:active{
-    background:#b02a37 !important;
-    transform:scale(.98);
 }
 
 .message{
@@ -229,6 +215,17 @@ button{
     color:#777;
 }
 
+.auth-status{
+    background:#fff3cd;
+    color:#664d03;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    text-align:center;
+    line-height:1.8;
+    font-size:14px;
+}
+
 .firebase-error{
     direction:ltr;
     text-align:left;
@@ -240,16 +237,6 @@ button{
     font-size:13px;
     white-space:pre-wrap;
     overflow-wrap:anywhere;
-}
-
-.auth-status{
-    background:#eef4ff;
-    color:#084298;
-    padding:10px;
-    border-radius:10px;
-    margin-bottom:15px;
-    text-align:center;
-    font-size:14px;
 }
 
 @media(max-width:450px){
@@ -269,7 +256,6 @@ button{
 </head>
 
 <body>
-
 
 <div class="header">
 
@@ -346,7 +332,7 @@ button{
     <button
         type="button"
         class="class-button"
-        onclick="toggleClasses()"
+        id="classButton"
     >
         📚 ټولګي انتخاب کړئ ▼
     </button>
@@ -354,78 +340,65 @@ button{
 
     <div id="classBox" class="classes">
 
-
         <div class="class-item">
             <input type="checkbox" value="اول">
             اول
         </div>
-
 
         <div class="class-item">
             <input type="checkbox" value="دوهم">
             دوهم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="درېیم">
             درېیم
         </div>
-
 
         <div class="class-item">
             <input type="checkbox" value="څلورم">
             څلورم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="پنځم">
             پنځم
         </div>
-
 
         <div class="class-item">
             <input type="checkbox" value="شپږم">
             شپږم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="اووم">
             اووم
         </div>
-
 
         <div class="class-item">
             <input type="checkbox" value="اتم">
             اتم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="نهم">
             نهم
         </div>
-
 
         <div class="class-item">
             <input type="checkbox" value="لسم">
             لسم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="یوولسم">
             یوولسم
         </div>
 
-
         <div class="class-item">
             <input type="checkbox" value="دولسم">
             دولسم
         </div>
-
 
     </div>
 
@@ -434,7 +407,6 @@ button{
         id="saveTeacherBtn"
         type="button"
         class="save"
-        onclick="addTeacher()"
     >
         💾 ښوونکی ثبت کړه
     </button>
@@ -447,7 +419,6 @@ button{
     <h3>
         📋 د ښوونکو لست
     </h3>
-
 
     <div id="teachersList">
 
@@ -466,12 +437,11 @@ button{
 <script type="module">
 
 
-/* =========================================
-   FIREBASE IMPORT
-========================================= */
+/* =====================================================
+   FIREBASE
+===================================================== */
 
 import {
-
     collection,
     getDocs,
     addDoc,
@@ -480,113 +450,133 @@ import {
     doc,
     query,
     where
-
-} from
+}
+from
 "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
 import {
-
     onAuthStateChanged
-
-} from
+}
+from
 "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
 
 
 import {
-
     db,
     auth
+}
+from "./firebase.js";
 
-} from "./firebase.js";
 
-
-/* =========================================
+/* =====================================================
    VARIABLES
-========================================= */
+===================================================== */
 
 let teachers = [];
 
 let currentFirebaseUser = null;
 
-let authResolved = false;
+let authReadyResolve;
+
+const authReady =
+    new Promise(function(resolve){
+
+        authReadyResolve = resolve;
+
+    });
 
 
-/* =========================================
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const authStatus =
+    document.getElementById("authStatus");
+
+const message =
+    document.getElementById("message");
+
+const teachersList =
+    document.getElementById("teachersList");
+
+const saveTeacherBtn =
+    document.getElementById("saveTeacherBtn");
+
+const classButton =
+    document.getElementById("classButton");
+
+const classBox =
+    document.getElementById("classBox");
+
+
+/* =====================================================
    AUTH STATE
-========================================= */
+===================================================== */
 
-const authReady = new Promise(function(resolve){
+onAuthStateChanged(
+    auth,
+    function(user){
 
-    onAuthStateChanged(
-        auth,
-        function(user){
+        currentFirebaseUser = user;
 
-            currentFirebaseUser = user;
+        console.log(
+            "🔥 Firebase Auth User:",
+            user
+        );
 
-            authResolved = true;
-
-            const status =
-                document.getElementById(
-                    "authStatus"
-                );
-
-
-            if(user){
-
-                status.innerHTML =
-                    "✅ Firebase Login فعال دی<br>" +
-                    "📧 " +
-                    escapeHtml(
-                        user.email || ""
-                    );
-
-                status.style.background =
-                    "#d1e7dd";
-
-                status.style.color =
-                    "#0f5132";
-
-            }else{
-
-                status.innerHTML =
-                    "❌ Firebase Login فعال نه دی.";
-
-                status.style.background =
-                    "#f8d7da";
-
-                status.style.color =
-                    "#842029";
-
-            }
-
-
-            resolve(user);
-
-        }
-    );
-
-});
-
-
-/* =========================================
-   MESSAGE
-========================================= */
-
-function showMessage(text,type){
-
-    const box =
-        document.getElementById(
-            "message"
+        console.log(
+            "📧 Firebase Email:",
+            user ? user.email : "NO USER"
         );
 
 
-    box.innerHTML = text;
+        if(user){
+
+            authStatus.innerHTML =
+                "✅ Firebase Login فعال دی<br>" +
+                "📧 " +
+                escapeHtml(
+                    user.email || ""
+                );
+
+            authStatus.style.background =
+                "#d1e7dd";
+
+            authStatus.style.color =
+                "#0f5132";
+
+        }else{
+
+            authStatus.innerHTML =
+                "❌ Firebase Login فعال نه دی<br>" +
+                "لومړی د سیستم Login صفحه کې Login وکړئ.";
+
+            authStatus.style.background =
+                "#f8d7da";
+
+            authStatus.style.color =
+                "#842029";
+
+        }
 
 
-    box.className =
+        authReadyResolve(user);
+
+    }
+);
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(text,type){
+
+    message.innerHTML = text;
+
+    message.className =
         "message " + type;
-
 
     window.scrollTo({
         top:0,
@@ -596,9 +586,9 @@ function showMessage(text,type){
 }
 
 
-/* =========================================
-   CHECK AUTH
-========================================= */
+/* =====================================================
+   FIREBASE LOGIN CHECK
+===================================================== */
 
 async function checkFirebaseLogin(){
 
@@ -609,13 +599,9 @@ async function checkFirebaseLogin(){
     if(!user){
 
         showMessage(
-
             "❌ Firebase Login فعال نه دی.<br><br>" +
-
-            "لومړی خپل حساب ته Login شئ، بیا هڅه وکړئ.",
-
+            "لومړی د Login صفحه کې خپل Email او Password ولیکئ.",
             "error"
-
         );
 
         return false;
@@ -625,104 +611,54 @@ async function checkFirebaseLogin(){
 
     currentFirebaseUser = user;
 
-
     return true;
 
 }
 
 
-/* =========================================
-   FIREBASE ERROR
-========================================= */
+/* =====================================================
+   CLASS BUTTON
+===================================================== */
 
-function showFirebaseError(error){
+classButton.addEventListener(
+    "click",
+    function(){
 
-    console.error(
-        "Firebase Error:",
-        error
-    );
+        if(
+            classBox.style.display === "block"
+        ){
 
+            classBox.style.display =
+                "none";
 
-    const code =
-        error?.code ||
-        "unknown";
+            classButton.innerText =
+                "📚 ټولګي انتخاب کړئ ▼";
 
+        }else{
 
-    const message =
-        error?.message ||
-        "Unknown Firebase error.";
+            classBox.style.display =
+                "block";
 
+            classButton.innerText =
+                "📚 ټولګي پټ کړئ ▲";
 
-    showMessage(
-
-        `
-        <b>❌ عملیات ترسره نه شول.</b>
-
-        <br><br>
-
-        <b>Firebase Error:</b>
-
-        <div class="firebase-error">
-Code: ${escapeHtml(code)}
-
-${escapeHtml(message)}
-        </div>
-        `,
-
-        "error"
-
-    );
-
-}
-
-
-/* =========================================
-   TOGGLE CLASSES
-========================================= */
-
-window.toggleClasses =
-function(){
-
-    const box =
-        document.getElementById(
-            "classBox"
-        );
-
-
-    if(
-        box.style.display === "block"
-    ){
-
-        box.style.display = "none";
-
-    }else{
-
-        box.style.display = "block";
+        }
 
     }
+);
 
-};
 
-
-/* =========================================
+/* =====================================================
    LOAD TEACHERS
-========================================= */
+===================================================== */
 
 async function loadTeachers(){
 
-    const box =
-        document.getElementById(
-            "teachersList"
-        );
+    teachersList.innerHTML =
 
-
-    box.innerHTML = `
-
-        <div class="loading">
+        `<div class="loading">
             ⏳ د ښوونکو معلومات لوډ کېږي...
-        </div>
-
-    `;
+        </div>`;
 
 
     const user =
@@ -731,13 +667,11 @@ async function loadTeachers(){
 
     if(!user){
 
-        box.innerHTML = `
+        teachersList.innerHTML =
 
-            <div class="empty">
+            `<div class="empty">
                 ❌ Firebase Login موجود نه دی.
-            </div>
-
-        `;
+            </div>`;
 
         return;
 
@@ -747,14 +681,11 @@ async function loadTeachers(){
     try{
 
         const snapshot =
-
             await getDocs(
-
                 collection(
                     db,
                     "teachers"
                 )
-
             );
 
 
@@ -762,7 +693,6 @@ async function loadTeachers(){
 
 
         snapshot.forEach(
-
             function(docSnap){
 
                 teachers.push({
@@ -775,18 +705,12 @@ async function loadTeachers(){
                 });
 
             }
-
         );
 
 
         localStorage.setItem(
-
             "teachers",
-
-            JSON.stringify(
-                teachers
-            )
-
+            JSON.stringify(teachers)
         );
 
 
@@ -800,78 +724,37 @@ async function loadTeachers(){
             error
         );
 
-
-        /*
-           LocalStorage fallback
-        */
-
-        try{
-
-            teachers =
-                JSON.parse(
-
-                    localStorage.getItem(
-                        "teachers"
-                    )
-
-                ) || [];
-
-        }catch(e){
-
-            teachers = [];
-
-        }
-
-
-        displayTeachers();
-
-
-        if(error?.code){
-
-            showFirebaseError(error);
-
-        }
+        showFirebaseError(error);
 
     }
 
 }
 
 
-/* =========================================
+/* =====================================================
    DISPLAY TEACHERS
-========================================= */
+===================================================== */
 
 function displayTeachers(){
-
-    const box =
-        document.getElementById(
-            "teachersList"
-        );
-
 
     if(
         teachers.length === 0
     ){
 
-        box.innerHTML = `
+        teachersList.innerHTML =
 
-            <div class="empty">
-
+            `<div class="empty">
                 👨‍🏫 تر اوسه ښوونکی ثبت شوی نه دی.
-
-            </div>
-
-        `;
+            </div>`;
 
         return;
 
     }
 
 
-    box.innerHTML =
+    teachersList.innerHTML =
 
         teachers.map(
-
             function(teacher){
 
                 const classes =
@@ -893,115 +776,126 @@ function displayTeachers(){
 
                 <div class="teacher">
 
-
                     <h3>
-
                         👨‍🏫
-
                         ${escapeHtml(
                             teacher.name || ""
                         )}
-
                     </h3>
-
 
                     <div class="info">
 
-
                         📧
-
                         <b>Email:</b>
-
                         ${escapeHtml(
                             teacher.email ||
                             "ثبت نه دی"
                         )}
 
-
                         <br>
-
 
                         👤
-
                         <b>Username:</b>
-
                         ${escapeHtml(
                             teacher.username ||
-                            ""
+                            "ثبت نه دی"
                         )}
-
 
                         <br>
 
-
                         📚
-
                         <b>ټولګي:</b>
-
                         ${escapeHtml(
                             classes
                         )}
-
 
                     </div>
 
 
                     <div class="actions">
 
-
                         <button
-
                             type="button"
-
                             class="edit"
-
-                            onclick="editTeacher('${escapeJs(teacher.id)}')"
-
+                            data-id="${escapeHtml(
+                                teacher.id
+                            )}"
                         >
-
                             ✏️ Edit
-
                         </button>
 
 
                         <button
-
                             type="button"
-
                             class="delete"
-
-                            onclick="deleteTeacher('${escapeJs(teacher.id)}')"
-
+                            data-id="${escapeHtml(
+                                teacher.id
+                            )}"
                         >
-
                             🗑️ Delete
-
                         </button>
-
 
                     </div>
-
 
                 </div>
 
                 `;
 
             }
-
         ).join("");
+
+
+    /* EDIT BUTTONS */
+
+    document
+    .querySelectorAll(".edit")
+    .forEach(
+        function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    editTeacher(
+                        button.dataset.id
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    /* DELETE BUTTONS */
+
+    document
+    .querySelectorAll(".delete")
+    .forEach(
+        function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    deleteTeacher(
+                        button.dataset.id
+                    );
+
+                }
+            );
+
+        }
+    );
 
 }
 
 
-/* =========================================
+/* =====================================================
    ADD TEACHER
-========================================= */
+===================================================== */
 
-window.addTeacher =
-async function(){
-
-
-    /* WAIT FOR FIREBASE AUTH */
+async function addTeacher(){
 
     const loggedIn =
         await checkFirebaseLogin();
@@ -1014,39 +908,24 @@ async function(){
     }
 
 
-    const saveButton =
-        document.getElementById(
-            "saveTeacherBtn"
-        );
-
-
     const name =
-
         document
-        .getElementById(
-            "teacherName"
-        )
+        .getElementById("teacherName")
         .value
         .trim();
 
 
     const email =
-
         document
-        .getElementById(
-            "teacherEmail"
-        )
+        .getElementById("teacherEmail")
         .value
         .trim()
         .toLowerCase();
 
 
     const username =
-
         document
-        .getElementById(
-            "teacherUsername"
-        )
+        .getElementById("teacherUsername")
         .value
         .trim();
 
@@ -1054,19 +933,14 @@ async function(){
     const selectedClasses =
 
         Array.from(
-
             document.querySelectorAll(
                 "#classBox input:checked"
             )
-
-        ).map(
-
-            function(checkbox){
-
-                return checkbox.value;
-
+        )
+        .map(
+            function(input){
+                return input.value;
             }
-
         );
 
 
@@ -1103,12 +977,9 @@ async function(){
     ){
 
         showMessage(
-
             "⚠️ صحیح Email ولیکئ.<br>" +
             "مثال: teacher@gmail.com",
-
             "error"
-
         );
 
         return;
@@ -1121,11 +992,8 @@ async function(){
     ){
 
         showMessage(
-
             "⚠️ لږ تر لږه یو ټولګی انتخاب کړئ.",
-
             "error"
-
         );
 
         return;
@@ -1133,37 +1001,32 @@ async function(){
     }
 
 
-    saveButton.disabled = true;
+    saveTeacherBtn.disabled = true;
 
-    saveButton.innerText =
+    saveTeacherBtn.innerText =
         "⏳ ښوونکی ثبتېږي...";
 
 
     try{
 
 
-        /* CHECK DUPLICATE EMAIL */
+        /* DUPLICATE EMAIL */
 
         const emailQuery =
-
             query(
-
                 collection(
                     db,
                     "teachers"
                 ),
-
                 where(
                     "email",
                     "==",
                     email
                 )
-
             );
 
 
         const emailSnapshot =
-
             await getDocs(
                 emailQuery
             );
@@ -1174,11 +1037,8 @@ async function(){
         ){
 
             showMessage(
-
                 "⚠️ دا Email لا دمخه د ښوونکو په لست کې موجود دی.",
-
                 "error"
-
             );
 
             return;
@@ -1206,28 +1066,27 @@ async function(){
                 "teacher",
 
             createdAt:
-                new Date().toISOString()
+                new Date().toISOString(),
+
+            createdBy:
+                currentFirebaseUser.email || ""
 
         };
 
 
-        /* SAVE FIRESTORE */
+        /* SAVE */
 
         const result =
-
             await addDoc(
-
                 collection(
                     db,
                     "teachers"
                 ),
-
                 teacherData
-
             );
 
 
-        /* ADD LOCAL */
+        /* LOCAL */
 
         teachers.push({
 
@@ -1240,13 +1099,8 @@ async function(){
 
 
         localStorage.setItem(
-
             "teachers",
-
-            JSON.stringify(
-                teachers
-            )
-
+            JSON.stringify(teachers)
         );
 
 
@@ -1273,33 +1127,28 @@ async function(){
 
             "<br><br>" +
 
-            "⚠️ د دې ښوونکي Login لپاره باید همدا Email په Firebase Authentication کې User موجود وي.",
+            "⚠️ یادونه: د ښوونکي د Login لپاره باید " +
+            "همدا Email په Firebase Authentication کې User ولري.",
 
             "success"
 
         );
 
 
-        /* CLEAR FORM */
+        /* CLEAR */
 
         document
-        .getElementById(
-            "teacherName"
-        )
+        .getElementById("teacherName")
         .value = "";
 
 
         document
-        .getElementById(
-            "teacherEmail"
-        )
+        .getElementById("teacherEmail")
         .value = "";
 
 
         document
-        .getElementById(
-            "teacherUsername"
-        )
+        .getElementById("teacherUsername")
         .value = "";
 
 
@@ -1308,21 +1157,19 @@ async function(){
             "#classBox input"
         )
         .forEach(
+            function(input){
 
-            function(checkbox){
-
-                checkbox.checked = false;
+                input.checked = false;
 
             }
-
         );
 
 
-        document
-        .getElementById(
-            "classBox"
-        )
-        .style.display = "none";
+        classBox.style.display =
+            "none";
+
+        classButton.innerText =
+            "📚 ټولګي انتخاب کړئ ▼";
 
 
         displayTeachers();
@@ -1334,23 +1181,22 @@ async function(){
 
     }finally{
 
-        saveButton.disabled = false;
+        saveTeacherBtn.disabled =
+            false;
 
-        saveButton.innerText =
+        saveTeacherBtn.innerText =
             "💾 ښوونکی ثبت کړه";
 
     }
 
-};
+}
 
 
-/* =========================================
+/* =====================================================
    EDIT TEACHER
-========================================= */
+===================================================== */
 
-window.editTeacher =
-async function(id){
-
+async function editTeacher(id){
 
     const loggedIn =
         await checkFirebaseLogin();
@@ -1364,17 +1210,13 @@ async function(id){
 
 
     const teacher =
-
         teachers.find(
-
             function(item){
 
-                return String(
-                    item.id
-                ) === String(id);
+                return String(item.id) ===
+                       String(id);
 
             }
-
         );
 
 
@@ -1391,13 +1233,9 @@ async function(id){
 
 
     const name =
-
         prompt(
-
             "د ښوونکي نوم:",
-
             teacher.name || ""
-
         );
 
 
@@ -1421,13 +1259,9 @@ async function(id){
 
 
     const email =
-
         prompt(
-
             "Email:",
-
             teacher.email || ""
-
         );
 
 
@@ -1439,10 +1273,7 @@ async function(id){
 
 
     const cleanEmail =
-
-        email
-        .trim()
-        .toLowerCase();
+        email.trim().toLowerCase();
 
 
     if(
@@ -1462,14 +1293,10 @@ async function(id){
 
 
     const username =
-
         prompt(
-
             "Username:",
-
             teacher.username ||
             cleanEmail
-
         );
 
 
@@ -1481,23 +1308,15 @@ async function(id){
 
 
     const classesText =
-
         prompt(
-
             "ټولګي د کامې په وسیله ولیکئ:\nمثال: اول,دوهم,درېیم",
-
             Array.isArray(
                 teacher.classes
             )
-
             ?
-
             teacher.classes.join(",")
-
             :
-
             ""
-
         );
 
 
@@ -1509,39 +1328,25 @@ async function(id){
 
 
     const classes =
-
         classesText
         .split(",")
         .map(
-
             function(item){
-
                 return item.trim();
-
             }
-
         )
         .filter(
-
             function(item){
-
                 return item !== "";
-
             }
-
         );
 
 
-    if(
-        classes.length === 0
-    ){
+    if(classes.length === 0){
 
         showMessage(
-
             "⚠️ لږ تر لږه یو ټولګی انتخاب کړئ.",
-
             "error"
-
         );
 
         return;
@@ -1565,13 +1370,15 @@ async function(id){
             classes,
 
         role:
-            "teacher"
+            "teacher",
+
+        updatedAt:
+            new Date().toISOString()
 
     };
 
 
     try{
-
 
         await updateDoc(
 
@@ -1587,23 +1394,17 @@ async function(id){
 
 
         const index =
-
             teachers.findIndex(
-
                 function(item){
 
-                    return String(
-                        item.id
-                    ) === String(id);
+                    return String(item.id) ===
+                           String(id);
 
                 }
-
             );
 
 
-        if(
-            index !== -1
-        ){
+        if(index !== -1){
 
             teachers[index] = {
 
@@ -1617,22 +1418,14 @@ async function(id){
 
 
         localStorage.setItem(
-
             "teachers",
-
-            JSON.stringify(
-                teachers
-            )
-
+            JSON.stringify(teachers)
         );
 
 
         showMessage(
-
             "✅ د ښوونکي معلومات بدل شول.",
-
             "success"
-
         );
 
 
@@ -1645,16 +1438,14 @@ async function(id){
 
     }
 
-};
+}
 
 
-/* =========================================
+/* =====================================================
    DELETE TEACHER
-========================================= */
+===================================================== */
 
-window.deleteTeacher =
-async function(id){
-
+async function deleteTeacher(id){
 
     const loggedIn =
         await checkFirebaseLogin();
@@ -1668,17 +1459,13 @@ async function(id){
 
 
     const teacher =
-
         teachers.find(
-
             function(item){
 
-                return String(
-                    item.id
-                ) === String(id);
+                return String(item.id) ===
+                       String(id);
 
             }
-
         );
 
 
@@ -1695,13 +1482,9 @@ async function(id){
 
 
     const confirmDelete =
-
         confirm(
-
             "ایا غواړئ دا ښوونکی حذف کړئ؟\n\n" +
-
             teacher.name
-
         );
 
 
@@ -1713,7 +1496,6 @@ async function(id){
 
 
     try{
-
 
         await deleteDoc(
 
@@ -1727,37 +1509,25 @@ async function(id){
 
 
         teachers =
-
             teachers.filter(
-
                 function(item){
 
-                    return String(
-                        item.id
-                    ) !== String(id);
+                    return String(item.id) !==
+                           String(id);
 
                 }
-
             );
 
 
         localStorage.setItem(
-
             "teachers",
-
-            JSON.stringify(
-                teachers
-            )
-
+            JSON.stringify(teachers)
         );
 
 
         showMessage(
-
             "✅ ښوونکی حذف شو.",
-
             "success"
-
         );
 
 
@@ -1770,12 +1540,55 @@ async function(id){
 
     }
 
-};
+}
 
 
-/* =========================================
+/* =====================================================
+   FIREBASE ERROR
+===================================================== */
+
+function showFirebaseError(error){
+
+    console.error(
+        "🔥 Firebase Error:",
+        error
+    );
+
+
+    const code =
+        error?.code ||
+        "unknown";
+
+
+    const errorMessage =
+        error?.message ||
+        "Unknown Firebase error";
+
+
+    showMessage(
+
+        "<b>❌ عملیات ترسره نه شول.</b>" +
+
+        "<br><br>" +
+
+        "<b>Firebase Error:</b>" +
+
+        `<div class="firebase-error">
+Code: ${escapeHtml(code)}
+
+${escapeHtml(errorMessage)}
+        </div>`,
+
+        "error"
+
+    );
+
+}
+
+
+/* =====================================================
    ESCAPE HTML
-========================================= */
+===================================================== */
 
 function escapeHtml(value){
 
@@ -1811,42 +1624,32 @@ function escapeHtml(value){
 }
 
 
-/* =========================================
-   ESCAPE JAVASCRIPT
-========================================= */
-
-function escapeJs(value){
-
-    return String(
-        value ?? ""
-    )
-
-    .replace(
-        /\\/g,
-        "\\\\"
-    )
-
-    .replace(
-        /'/g,
-        "\\'"
-    )
-
-    .replace(
-        /"/g,
-        '\\"'
-    );
-
-}
-
-
-/* =========================================
+/* =====================================================
    START
-========================================= */
+===================================================== */
+
+saveTeacherBtn.addEventListener(
+    "click",
+    addTeacher
+);
+
 
 authReady.then(
-    function(){
+    function(user){
 
-        loadTeachers();
+        if(user){
+
+            loadTeachers();
+
+        }else{
+
+            teachersList.innerHTML =
+
+                `<div class="empty">
+                    ❌ Firebase Login موجود نه دی.
+                </div>`;
+
+        }
 
     }
 );
